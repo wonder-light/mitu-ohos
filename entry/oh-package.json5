@@ -1,7 +1,7 @@
 {
   "name": "entry",
   "version": "1.0.0",
-  "description": "Please describe the basic information.",
+  "description": "soutu 的 UI 部分, 用于整合 picture_search 和 picture_bed, 并将结果展示出来",
   "main": "",
   "author": "wonder-light",
   "license": "MIT",

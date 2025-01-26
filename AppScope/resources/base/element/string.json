@@ -2,7 +2,11 @@
   "string": [
     {
       "name": "app_name",
-      "value": "picture"
+      "value": "soutu"
+    },
+    {
+      "name": "app_description",
+      "value": "供搜图和图床功能, 提供 Pixiv 和各类图片搜索引擎支持, 支持自定义搜索, 支持图片上传到图床, 支持图片下载到本地"
     }
   ]
 }

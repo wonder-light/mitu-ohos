@@ -1,7 +1,7 @@
 {
   "name": "picture_bed",
   "version": "1.0.0",
-  "description": "Please describe the basic information.",
+  "description": "存储图片的图床, 一般用于图片的上传和下载",
   "main": "Index.ets",
   "author": "",
   "license": "Apache-2.0",

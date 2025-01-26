@@ -1,7 +1,7 @@
 {
   "name": "picture_search",
   "version": "1.0.0",
-  "description": "Please describe the basic information.",
+  "description": "搜索图片, 一般用于搜图和以图搜图",
   "main": "Index.ets",
   "author": "",
   "license": "Apache-2.0",
