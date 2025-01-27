@@ -1,23 +1,23 @@
+import Log from '../helpers/Log';
+import { RouterBuild, Router } from '../router/Index';
+
 @Entry
 @Component
 struct Index {
-  @State message: string = 'Hello World';
+  pageStack: NavPathStack = new NavPathStack();
 
   build() {
-    RelativeContainer() {
-      Text(this.message)
-        .id('HelloWorld')
-        .fontSize($r('app.float.page_text_font_size'))
-        .fontWeight(FontWeight.Bold)
-        .alignRules({
-          center: { anchor: '__container__', align: VerticalAlign.Center },
-          middle: { anchor: '__container__', align: HorizontalAlign.Center }
-        })
+    Navigation(this.pageStack) {
+      Button('app.string.entry_pageTwo', { stateEffect: true, type: ButtonType.Capsule })
+        .width('app.string.button_width')
+        .height('app.string.button_height')
         .onClick(() => {
-          this.message = 'Welcome';
+          //Push the NavDestination page information specified by name onto the stack, and pass the data as param.
+          Log.i(JSON.stringify(this.pageStack));
+          this.pageStack.pushPathByName("home", null, false);
         })
     }
-    .height('100%')
-    .width('100%')
+    .title('突破')
+    .navDestination(RouterBuild)
   }
 }
