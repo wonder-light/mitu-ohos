@@ -1,9 +1,4 @@
 {
   "routerMap": [
-    {
-      "name": "home",
-      "pageSourceFile": "src/main/ets/pages/Home.ets",
-      "buildFunction": "HomeBuilder"
-    }
   ]
 }

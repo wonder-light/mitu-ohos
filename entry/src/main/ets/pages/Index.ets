@@ -1,23 +1,66 @@
-import Log from '../helpers/Log';
-import { RouterBuild, Router } from '../router/Index';
+import { RouterBuild } from '../router/Index';
+import { VSearch } from './Search';
+import { ItemState, ToolBar, ToolBarOptions } from '@ohos.arkui.advanced.ToolBar';
+import { VAlbum } from './Album';
+import { VRepo } from './Repo';
+import { VSetting } from './Setting';
 
 @Entry
 @Component
 struct Index {
+  /**
+   * 导航栈
+   */
+  @Provide('pageStack')
   pageStack: NavPathStack = new NavPathStack();
+  /**
+   * 激活的页面索引
+   */
+  @State
+  activeIndex: number = 0;
+  /**
+   * 工具栏
+   */
+  @State
+  toolbarItems: ToolBarOptions = new ToolBarOptions();
+  /**
+   * 过渡效果
+   */
+  effect: TransitionEffect = TransitionEffect.OPACITY.animation({ duration: 200, curve: Curve.Ease });
+
+  aboutToAppear(): void {
+    const names = ['search', 'album', 'repo', 'setting'];
+    names.forEach((name, index) => {
+      this.toolbarItems.push({
+        content: $r(`app.string.${name}`),
+        icon: $r(`app.media.${name}`),
+        state: ItemState.ACTIVATE,
+        action: () => this.activeIndex = index,
+      });
+    });
+  }
 
   build() {
     Navigation(this.pageStack) {
-      Button('app.string.entry_pageTwo', { stateEffect: true, type: ButtonType.Capsule })
-        .width('app.string.button_width')
-        .height('app.string.button_height')
-        .onClick(() => {
-          //Push the NavDestination page information specified by name onto the stack, and pass the data as param.
-          Log.i(JSON.stringify(this.pageStack));
-          this.pageStack.pushPathByName("home", null, false);
-        })
+      if (this.activeIndex == 0) {
+        VSearch().transition(this.effect)
+      } else if (this.activeIndex == 1) {
+        VAlbum().transition(this.effect)
+      } else if (this.activeIndex == 2) {
+        VRepo().transition(this.effect)
+      } else {
+        VSetting().transition(this.effect)
+      }
     }
-    .title('突破')
     .navDestination(RouterBuild)
+    .toolbarConfiguration(this.buildToolbar)
+  }
+
+  @Builder
+  buildToolbar() {
+    ToolBar({
+      activateIndex: this.activeIndex,
+      toolBarList: this.toolbarItems,
+    })
   }
 }

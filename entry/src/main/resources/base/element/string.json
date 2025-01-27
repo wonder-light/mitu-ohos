@@ -11,6 +11,22 @@
     {
       "name": "EntryAbility_label",
       "value": "soutu_label"
+    },
+    {
+      "name": "search",
+      "value": "搜图"
+    },
+    {
+      "name": "album",
+      "value": "相册"
+    },
+    {
+      "name": "repo",
+      "value": "仓库"
+    },
+    {
+      "name": "setting",
+      "value": "设置"
     }
   ]
 }

@@ -1,14 +1,13 @@
-import Log from '../helpers/Log';
-
-@Builder
-export function HomeBuilder() {
-  Home()
-}
 
 @Component
-struct Home {
-  @State message: string = 'Hello World';
-  pageInfos: NavPathStack | null = null;
+export struct VSetting {
+  /**
+   * 导航栈
+   */
+  @Consume('pageStack')
+  pageStack: NavPathStack;
+  @State
+  message: string = 'Hello Setting';
 
   build() {
     NavDestination() {
@@ -28,10 +27,6 @@ struct Home {
       .height('100%')
       .width('100%')
     }
-    .title('entry-pageOne')
-    .onReady((context) => {
-      this.pageInfos = context.pathStack;
-      Log.i(JSON.stringify(this.pageInfos));
-    })
+    .title('setting')
   }
 }
