@@ -1,6 +1,6 @@
 import { AbilityConstant, ConfigurationConstant, UIAbility, Want } from '@kit.AbilityKit';
-import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
+import Log from '../helpers/Log';
 
 const DOMAIN = 0x0000;
 
@@ -13,10 +13,10 @@ export default class EntryAbility extends UIAbility {
     // 创建主窗口，设置此功能的主页面
     windowStage.loadContent('pages/Index', (err) => {
       if (err.code) {
-        hilog.error(DOMAIN, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err));
+        Log.d('Failed to load the content. Cause: ' + JSON.stringify(err));
         return;
       }
-      hilog.info(DOMAIN, 'testTag', 'Succeeded in loading the content.');
+      Log.d('Succeeded in loading the content.');
     });
   }
 }
