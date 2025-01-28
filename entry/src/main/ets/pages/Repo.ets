@@ -1,3 +1,7 @@
+@Builder
+export function buildRepo() {
+  VRepo()
+}
 
 @Component
 export struct VRepo {
@@ -13,7 +17,6 @@ export struct VRepo {
     NavDestination() {
       RelativeContainer() {
         Text(this.message)
-          .id('HomeHelloWorld')
           .fontSize($r('app.float.page_text_font_size'))
           .fontWeight(FontWeight.Bold)
           .alignRules({

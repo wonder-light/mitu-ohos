@@ -1,3 +1,7 @@
+@Builder
+export function buildSetting() {
+  VSetting()
+}
 
 @Component
 export struct VSetting {
@@ -13,7 +17,6 @@ export struct VSetting {
     NavDestination() {
       RelativeContainer() {
         Text(this.message)
-          .id('HomeHelloWorld')
           .fontSize($r('app.float.page_text_font_size'))
           .fontWeight(FontWeight.Bold)
           .alignRules({

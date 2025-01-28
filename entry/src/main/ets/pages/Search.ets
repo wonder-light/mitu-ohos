@@ -1,3 +1,8 @@
+@Builder
+export function buildSearch() {
+  VSearch()
+}
+
 @Component
 export struct VSearch {
   /**
@@ -12,7 +17,6 @@ export struct VSearch {
     NavDestination() {
       RelativeContainer() {
         Text(this.message)
-          .id('HomeHelloWorld')
           .fontSize($r('app.float.page_text_font_size'))
           .fontWeight(FontWeight.Bold)
           .alignRules({

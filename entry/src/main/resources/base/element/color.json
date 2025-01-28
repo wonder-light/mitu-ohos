@@ -1,8 +1,12 @@
 {
   "color": [
     {
-      "name": "start_window_background",
+      "name": "background",
       "value": "#FFFFFF"
+    },
+    {
+      "name": "button_active",
+      "value": "#D6F2FF"
     }
   ]
 }

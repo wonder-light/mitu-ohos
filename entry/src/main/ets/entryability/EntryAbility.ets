@@ -16,7 +16,6 @@ export default class EntryAbility extends UIAbility {
         Log.d('Failed to load the content. Cause: ' + JSON.stringify(err));
         return;
       }
-      Log.d('Succeeded in loading the content.');
     });
   }
 }

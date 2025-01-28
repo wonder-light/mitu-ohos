@@ -1,66 +1,141 @@
-import { RouterBuild } from '../router/Index';
+import { Router, RouterBuild } from '../router/Index';
 import { VSearch } from './Search';
-import { ItemState, ToolBar, ToolBarOptions } from '@ohos.arkui.advanced.ToolBar';
+import { ItemState, ToolBar, ToolBarOption, ToolBarOptions } from '@ohos.arkui.advanced.ToolBar';
 import { VAlbum } from './Album';
 import { VRepo } from './Repo';
 import { VSetting } from './Setting';
+import { deviceInfo } from '@kit.BasicServicesKit';
 
 @Entry
 @Component
 struct Index {
-  /**
-   * 导航栈
-   */
-  @Provide('pageStack')
-  pageStack: NavPathStack = new NavPathStack();
-  /**
-   * 激活的页面索引
-   */
-  @State
-  activeIndex: number = 0;
-  /**
-   * 工具栏
-   */
-  @State
-  toolbarItems: ToolBarOptions = new ToolBarOptions();
-  /**
-   * 过渡效果
-   */
+  /** 导航栈 */
+  @Provide('pageStack') pageStack: NavPathStack = new NavPathStack();
+  /** 激活的页面索引 */
+  @State activeIndex: number = 0;
+  /** 工具栏 */
+  @State toolbarItems: ToolBarOptions = new ToolBarOptions();
+  /** 过渡效果 */
   effect: TransitionEffect = TransitionEffect.OPACITY.animation({ duration: 200, curve: Curve.Ease });
+  /** 是大屏 */
+  isLarge: boolean = true;
+  /** 前面 Icon 的前景色 */
+  leadingIconColor: ResourceColor = $r('sys.color.icon_on');
+  leadingIconBg: ResourceColor = Color.Orange;
+  iconSize: Length = $r('app.float.icon_size');
+  iconSizeLg: Length = $r('app.float.icon_size_lg');
+  fontColor: ResourceColor = $r('sys.color.font');
+  arrow: ResourceStr = $r("app.media.arrow_right");
+  arrowColor: ResourceColor = $r('sys.color.ohos_id_color_button_divider');
+  activeColor: ResourceColor = $r('app.color.button_active');
+  bgColor: ResourceColor = $r('sys.color.ohos_id_color_background');
+  bgNormal: ResourceColor = $r('sys.color.ohos_id_color_button_normal');
 
   aboutToAppear(): void {
-    const names = ['search', 'album', 'repo', 'setting'];
+    const names = [Router.search, Router.album, Router.repo, Router.setting];
     names.forEach((name, index) => {
       this.toolbarItems.push({
         content: $r(`app.string.${name}`),
         icon: $r(`app.media.${name}`),
         state: ItemState.ACTIVATE,
-        action: () => this.activeIndex = index,
+        action: (): void => this.toRouter(name, index),
       });
-    });
+    }); // 是否是手机
+    if (deviceInfo.deviceType == 'phone') {
+      this.isLarge = false;
+    }
   }
 
   build() {
     Navigation(this.pageStack) {
-      if (this.activeIndex == 0) {
-        VSearch().transition(this.effect)
-      } else if (this.activeIndex == 1) {
-        VAlbum().transition(this.effect)
-      } else if (this.activeIndex == 2) {
-        VRepo().transition(this.effect)
+      if (!this.isLarge) {
+        if (this.activeIndex == 0) {
+          VSearch().transition(this.effect)
+        } else if (this.activeIndex == 1) {
+          VAlbum().transition(this.effect)
+        } else if (this.activeIndex == 2) {
+          VRepo().transition(this.effect)
+        } else {
+          VSetting().transition(this.effect)
+        }
       } else {
-        VSetting().transition(this.effect)
+        List({ space: 4, initialIndex: this.activeIndex }) {
+          ListItemGroup({ space: 4, style: ListItemGroupStyle.CARD }) {
+            ForEach(this.toolbarItems, (item: ToolBarOption, index) => {
+              ListItem() {
+                Button({ type: ButtonType.Normal, buttonStyle: ButtonStyleMode.TEXTUAL }) {
+                  Row() {
+                    Image(item.icon)
+                      .borderRadius(999)
+                      .backgroundColor(this.leadingIconBg)
+                      .fillColor(this.leadingIconColor)
+                      .width(this.iconSizeLg)
+                      .height(this.iconSizeLg)
+                      .padding(4)
+                    Text(item.content)
+                      .flexGrow(1)
+                      .margin({ left: 8, right: 8 })
+                      .fontColor(this.fontColor)
+                    Image(this.arrow)
+                      .width(this.iconSize)
+                      .height(this.iconSize)
+                      .fillColor(this.arrowColor)
+                  }
+                  .width('100%')
+                }
+                .padding(12)
+                .borderRadius(12)
+                .width('100%')
+                .onClick(item.action)
+                .backgroundColor(this.activeIndex == index ? this.activeColor : this.bgColor)
+              }
+            })
+          }
+          .divider({
+            strokeWidth: 1,
+            color: this.bgNormal,
+            startMargin: this.iconSize,
+            endMargin: this.iconSize
+          })
+        }
+        .width('100%')
+        .height('100%')
+        .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
       }
     }
+    .onAppear(() => this.navAppear())
+    .mode(NavigationMode.Auto)
     .navDestination(RouterBuild)
     .toolbarConfiguration(this.buildToolbar)
+    .hideToolBar(this.isLarge)
+    .title('Soutu')
+    .titleMode(NavigationTitleMode.Mini)
+    .hideTitleBar(!this.isLarge)
+    .hideBackButton(true)
+    .backgroundColor(this.bgNormal)
   }
 
   @Builder
   buildToolbar() {
     ToolBar({
-      activateIndex: this.activeIndex,
-      toolBarList: this.toolbarItems,
+      activateIndex: this.activeIndex, toolBarList: this.toolbarItems,
     })
+  }
+
+  /** 导航栏显示 */
+  navAppear() {
+    if (this.isLarge) {
+      this.pageStack.pushPathByName(Router.search, null, true);
+    }
+  }
+
+  /** 跳转路由 */
+  toRouter(name: string, index: number) {
+    let isCurrent = this.pageStack.getAllPathName().pop() == name;
+    if (this.activeIndex == index && isCurrent) {
+      return;
+    }
+    this.activeIndex = index;
+    this.pageStack.pushPathByName(name, null, true);
   }
 }
