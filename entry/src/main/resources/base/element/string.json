@@ -27,6 +27,10 @@
     {
       "name": "setting",
       "value": "设置"
+    },
+    {
+      "name": "no_set_rule",
+      "value": "暂未设置规则"
     }
   ]
 }

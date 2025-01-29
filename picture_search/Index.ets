@@ -1,1 +1,3 @@
-export { MainPage } from './src/main/ets/components/MainPage';
+export { PictureSource } from './src/main/ets/models/Picture';
+export { SourceItem } from './src/main/ets/models/Source';
+export { DetailRule } from './src/main/ets/models/Detail';
