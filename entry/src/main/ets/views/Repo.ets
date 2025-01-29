@@ -1,20 +1,24 @@
+import { TitleBar } from '../common/TitleBar';
+
 @Builder
-export function buildAlbum() {
-  VAlbum()
+export function buildRepo() {
+  VRepo()
 }
 
 @Component
-export struct VAlbum {
+export struct VRepo {
   /**
    * 导航栈
    */
   @Consume('pageStack')
   pageStack: NavPathStack;
   @State
-  message: string = 'Hello Album';
+  message: string = 'Hello Repo';
 
   build() {
     NavDestination() {
+      TitleBar({ title: $r('app.string.repo') })
+
       RelativeContainer() {
         Text(this.message)
           .fontSize($r('app.float.page_text_font_size'))
@@ -30,6 +34,7 @@ export struct VAlbum {
       .height('100%')
       .width('100%')
     }
-    .title('album')
+    .hideTitleBar(true)
+    .hideToolBar(true)
   }
 }

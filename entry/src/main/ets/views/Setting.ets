@@ -1,3 +1,5 @@
+import { TitleBar } from '../common/TitleBar';
+
 @Builder
 export function buildSetting() {
   VSetting()
@@ -15,6 +17,8 @@ export struct VSetting {
 
   build() {
     NavDestination() {
+      TitleBar({ title: $r('app.string.search') })
+
       RelativeContainer() {
         Text(this.message)
           .fontSize($r('app.float.page_text_font_size'))
@@ -30,6 +34,7 @@ export struct VSetting {
       .height('100%')
       .width('100%')
     }
-    .title('setting')
+    .hideTitleBar(true)
+    .hideToolBar(true)
   }
 }

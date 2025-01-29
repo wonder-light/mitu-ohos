@@ -1,20 +1,24 @@
 import { Router, RouterBuild } from '../router/Index';
-import { VSearch } from './Search';
+import { VSearch } from '../views/Search';
 import { ItemState, ToolBar, ToolBarOption, ToolBarOptions } from '@ohos.arkui.advanced.ToolBar';
-import { VAlbum } from './Album';
-import { VRepo } from './Repo';
-import { VSetting } from './Setting';
+import { VAlbum } from '../views/Album';
+import { VRepo } from '../views/Repo';
+import { VSetting } from '../views/Setting';
 import { deviceInfo } from '@kit.BasicServicesKit';
+import Log from '../helpers/Log';
 
 @Entry
 @Component
 struct Index {
   /** 导航栈 */
-  @Provide('pageStack') pageStack: NavPathStack = new NavPathStack();
+  @Provide('pageStack')
+  pageStack: NavPathStack = new NavPathStack();
   /** 激活的页面索引 */
-  @State activeIndex: number = 0;
+  @State
+  activeIndex: number = 0;
   /** 工具栏 */
-  @State toolbarItems: ToolBarOptions = new ToolBarOptions();
+  @State
+  toolbarItems: ToolBarOptions = new ToolBarOptions();
   /** 过渡效果 */
   effect: TransitionEffect = TransitionEffect.OPACITY.animation({ duration: 200, curve: Curve.Ease });
   /** 是大屏 */
@@ -38,7 +42,7 @@ struct Index {
         content: $r(`app.string.${name}`),
         icon: $r(`app.media.${name}`),
         state: ItemState.ACTIVATE,
-        action: (): void => this.toRouter(name, index),
+        action: (): void => this.toRouter(name, index)
       });
     }); // 是否是手机
     if (deviceInfo.deviceType == 'phone') {
@@ -49,76 +53,85 @@ struct Index {
   build() {
     Navigation(this.pageStack) {
       if (!this.isLarge) {
-        if (this.activeIndex == 0) {
-          VSearch().transition(this.effect)
-        } else if (this.activeIndex == 1) {
-          VAlbum().transition(this.effect)
-        } else if (this.activeIndex == 2) {
-          VRepo().transition(this.effect)
-        } else {
-          VSetting().transition(this.effect)
-        }
-      } else {
-        List({ space: 4, initialIndex: this.activeIndex }) {
-          ListItemGroup({ space: 4, style: ListItemGroupStyle.CARD }) {
-            ForEach(this.toolbarItems, (item: ToolBarOption, index) => {
-              ListItem() {
-                Button({ type: ButtonType.Normal, buttonStyle: ButtonStyleMode.TEXTUAL }) {
-                  Row() {
-                    Image(item.icon)
-                      .borderRadius(999)
-                      .backgroundColor(this.leadingIconBg)
-                      .fillColor(this.leadingIconColor)
-                      .width(this.iconSizeLg)
-                      .height(this.iconSizeLg)
-                      .padding(4)
-                    Text(item.content)
-                      .flexGrow(1)
-                      .margin({ left: 8, right: 8 })
-                      .fontColor(this.fontColor)
-                    Image(this.arrow)
-                      .width(this.iconSize)
-                      .height(this.iconSize)
-                      .fillColor(this.arrowColor)
-                  }
-                  .width('100%')
-                }
-                .padding(12)
-                .borderRadius(12)
-                .width('100%')
-                .onClick(item.action)
-                .backgroundColor(this.activeIndex == index ? this.activeColor : this.bgColor)
-              }
-            })
+        NavDestination() {
+          if (this.activeIndex == 0) {
+            VSearch().transition(this.effect)
+          } else if (this.activeIndex == 1) {
+            VAlbum().transition(this.effect)
+          } else if (this.activeIndex == 2) {
+            VRepo().transition(this.effect)
+          } else {
+            VSetting().transition(this.effect)
           }
-          .divider({
-            strokeWidth: 1,
-            color: this.bgNormal,
-            startMargin: this.iconSize,
-            endMargin: this.iconSize
-          })
         }
-        .width('100%')
-        .height('100%')
-        .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
+        .hideTitleBar(true)
+        .hideToolBar(true)
+      } else {
+        this.buildPanel()
       }
     }
     .onAppear(() => this.navAppear())
     .mode(NavigationMode.Auto)
     .navDestination(RouterBuild)
     .toolbarConfiguration(this.buildToolbar)
-    .hideToolBar(this.isLarge)
     .title('Soutu')
     .titleMode(NavigationTitleMode.Mini)
+    .backgroundColor(this.bgNormal)
+    .hideToolBar(this.isLarge)
     .hideTitleBar(!this.isLarge)
     .hideBackButton(true)
-    .backgroundColor(this.bgNormal)
+  }
+
+  @Builder
+  buildPanel() {
+    List({ space: 4, initialIndex: this.activeIndex }) {
+      ListItemGroup({ space: 4, style: ListItemGroupStyle.CARD }) {
+        ForEach(this.toolbarItems, (item: ToolBarOption, index) => {
+          ListItem() {
+            Button({ type: ButtonType.Normal, buttonStyle: ButtonStyleMode.TEXTUAL }) {
+              Row() {
+                Image(item.icon)
+                  .borderRadius(999)
+                  .backgroundColor(this.leadingIconBg)
+                  .fillColor(this.leadingIconColor)
+                  .width(this.iconSizeLg)
+                  .height(this.iconSizeLg)
+                  .padding(4)
+                Text(item.content)
+                  .flexGrow(1)
+                  .margin({ left: 8, right: 8 })
+                  .fontColor(this.fontColor)
+                Image(this.arrow)
+                  .width(this.iconSize)
+                  .height(this.iconSize)
+                  .fillColor(this.arrowColor)
+              }
+              .width('100%')
+            }
+            .padding(12)
+            .borderRadius(12)
+            .width('100%')
+            .onClick(item.action)
+            .backgroundColor(this.activeIndex == index ? this.activeColor : this.bgColor)
+          }
+        })
+      }
+      .divider({
+        strokeWidth: 1,
+        color: this.bgNormal,
+        startMargin: this.iconSize,
+        endMargin: this.iconSize
+      })
+    }
+    .width('100%')
+    .height('100%')
+    .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
   }
 
   @Builder
   buildToolbar() {
     ToolBar({
-      activateIndex: this.activeIndex, toolBarList: this.toolbarItems,
+      activateIndex: this.activeIndex, toolBarList: this.toolbarItems
     })
   }
 
