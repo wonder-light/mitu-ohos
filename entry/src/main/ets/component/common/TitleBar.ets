@@ -20,6 +20,11 @@ export struct TitleBar {
   menuItems: Array<TitleBarMenuItem> = [];
   /** 启用返回按钮 */
   enableBack: boolean = false;
+  /** 自定义标题组件 */
+  @BuilderParam
+  customTitle: undefined | (() => void);
+  @State
+  private titleMaxWidth: number = 0;
   /** 是否具有返回按钮 */
   private hasBack: boolean = false;
   /** 导航栈 */
@@ -32,14 +37,14 @@ export struct TitleBar {
       //const pageInfo = uiContext.getPageInfoByUniqueId(uniqueId);
       //Log.i('pageInfo: ' + JSON.stringify(pageInfo));
       this.pageStack = uiContext.getNavigationInfoByUniqueId(uniqueId)?.pathStack;
-      if (this.pageStack != null && this.pageStack?.getAllPathName().length > 1) {
+      if (this.pageStack != null && this.pageStack?.getAllPathName().length >= 1) {
         this.hasBack = true;
       }
     }
   }
 
   build() {
-    Flex({ justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Stretch }) {
+    Row({ space: TitleBar.leftPadding }) {
       Row({ space: TitleBar.leftPadding }) {
         if (this.enableBack && this.hasBack) {
           this.buildMenuItem({
@@ -57,26 +62,36 @@ export struct TitleBar {
         }
 
         Column() {
-          if (this.title !== undefined) {
-            Text(this.title)
-              .fontWeight(FontWeight.Medium)
-              .fontSize($r('sys.float.ohos_id_text_size_headline8'))
-              .fontColor($r('sys.color.ohos_id_color_titlebar_text'))
-              .maxLines(this.subtitle !== undefined ? 1 : 2)
-              .textOverflow({ overflow: TextOverflow.Ellipsis })
-          }
-          if (this.subtitle !== undefined) {
-            Text(this.subtitle)
-              .fontSize($r('sys.float.ohos_id_text_size_over_line'))
-              .fontColor($r('sys.color.ohos_id_color_titlebar_subtitle_text'))
-              .maxLines(1)
-              .textOverflow({ overflow: TextOverflow.Ellipsis })
+          if (this.customTitle !== undefined) {
+            this.customTitle()
+          } else {
+            if (this.title !== undefined) {
+              Text(this.title)
+                .fontWeight(FontWeight.Medium)
+                .fontSize($r('sys.float.ohos_id_text_size_headline8'))
+                .fontColor($r('sys.color.ohos_id_color_titlebar_text'))
+                .maxLines(this.subtitle !== undefined ? 1 : 2)
+                .textOverflow({ overflow: TextOverflow.Ellipsis })
+            }
+            if (this.subtitle !== undefined) {
+              Text(this.subtitle)
+                .fontSize($r('sys.float.ohos_id_text_size_over_line'))
+                .fontColor($r('sys.color.ohos_id_color_titlebar_subtitle_text'))
+                .maxLines(1)
+                .textOverflow({ overflow: TextOverflow.Ellipsis })
+            }
           }
         }
         .justifyContent(FlexAlign.Start)
         .alignItems(HorizontalAlign.Start)
+        .constraintSize({ maxWidth: this.titleMaxWidth })
       }
       .flexGrow(1)
+      .onAreaChange((oldArea, newArea) => {
+        let width = Number(newArea.width)
+        width -= (TitleBar.leftPadding + TitleBar.imageHotZoneWidth) * (this.item !== undefined ? 2 : 1);
+        this.titleMaxWidth = width;
+      })
 
       if (this.menuItems.length > 0) {
         Row() {
@@ -88,6 +103,8 @@ export struct TitleBar {
     }
     .width('100%')
     .height(TitleBar.totalHeight)
+    .justifyContent(FlexAlign.SpaceBetween)
+    .alignSelf(ItemAlign.Stretch)
     .padding({ left: $r('sys.float.ohos_id_default_padding_start'), right: $r('sys.float.ohos_id_default_padding_start') })
     .backgroundColor($r('sys.color.ohos_id_color_background'))
   }
