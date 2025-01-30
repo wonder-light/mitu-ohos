@@ -17,7 +17,7 @@ export struct VSetting {
 
   build() {
     NavDestination() {
-      TitleBar({ title: $r('app.string.search') })
+      TitleBar({ title: $r("app.string.soutu") })
 
       RelativeContainer() {
         Text(this.message)

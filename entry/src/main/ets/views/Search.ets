@@ -15,11 +15,11 @@ export struct VSearch {
   /** 导航菜单 */
   navMenus: TitleBarMenuItem[] = [
     {
-      value: $r('app.media.search'),
+      value: $r("app.media.search"),
       action: (): void => { }
     },
     {
-      value: $r('app.media.album'),
+      value: $r('app.media.camera'),
       action: (): void => { }
     }
   ];
@@ -38,7 +38,7 @@ export struct VSearch {
 
   build() {
     NavDestination() {
-      TitleBar({ title: $r('app.string.search'), menuItems: this.navMenus })
+      TitleBar({ title: $r("app.string.soutu"), menuItems: this.navMenus })
       if (this.sources.sourceList.length <= 0) {
         Column() {
           Text($r('app.string.no_set_rule'))

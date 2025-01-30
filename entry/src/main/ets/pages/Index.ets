@@ -5,7 +5,6 @@ import { VAlbum } from '../views/Album';
 import { VRepo } from '../views/Repo';
 import { VSetting } from '../views/Setting';
 import { deviceInfo } from '@kit.BasicServicesKit';
-import Log from '../helpers/Log';
 
 @Entry
 @Component
@@ -37,13 +36,16 @@ struct Index {
 
   aboutToAppear(): void {
     const names = [Router.search, Router.album, Router.repo, Router.setting];
-    names.forEach((name, index) => {
-      this.toolbarItems.push({
-        content: $r(`app.string.${name}`),
-        icon: $r(`app.media.${name}`),
-        state: ItemState.ACTIVATE,
-        action: (): void => this.toRouter(name, index)
-      });
+    const items: ToolBarOption[] = [
+      { content: $r("app.string.soutu"), icon: $r("app.media.soutu") },
+      { content: $r('app.string.album'), icon: $r('app.media.album') },
+      { content: $r('app.string.repo'), icon: $r('app.media.repo') },
+      { content: $r('app.string.setting'), icon: $r('app.media.setting') }
+    ];
+    items.forEach((item, index) => {
+      item.state = ItemState.ACTIVATE;
+      item.action = (): void => this.toRouter(names[index], index);
+      this.toolbarItems.push(item);
     }); // 是否是手机
     if (deviceInfo.deviceType == 'phone') {
       this.isLarge = false;
