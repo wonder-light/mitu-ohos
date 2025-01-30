@@ -1,5 +1,6 @@
 import { PictureSource, SourceItem } from 'picture_search';
-import { TitleBar, TitleBarMenuItem } from '../common/TitleBar';
+import { TitleBar, TitleBarMenuItem } from '../component/common/TitleBar';
+import { SourceResultList } from '../component/search/SourceList';
 
 
 @Builder
@@ -48,9 +49,11 @@ export struct VSearch {
         .justifyContent(FlexAlign.Center)
       } else {
         Tabs({ barPosition: BarPosition.Start, controller: this.controller }) {
-          ForEach(this.sources.sourceList, (source: PictureSource, index: number) => {
+          ForEach(this.sources.sourceList, (source: SourceItem, index: number) => {
             TabContent() {
-              Column().width('100%').height('100%').backgroundColor(Color.Green)
+              SourceResultList({source: source})
+                .width('100%')
+                .height('100%')
             }
             .tabBar(source.name + 'TTT')
           })

@@ -1,4 +1,4 @@
-import { TitleBar } from '../common/TitleBar';
+import { TitleBar } from '../component/common/TitleBar';
 
 @Builder
 export function buildAlbum() {

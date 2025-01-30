@@ -1,6 +1,7 @@
 /**
  * 图片单个源的规则
  */
+@Observed
 export class SourceItem {
   /** 名称: 当前源项的名称 */
   name: string = '';

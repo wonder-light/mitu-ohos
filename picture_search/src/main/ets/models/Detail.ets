@@ -1,6 +1,7 @@
 /**
  * 图片详情URL规则
  */
+@Observed
 export class DetailRule {
   /** 预处理规则 */
   init?: string;
