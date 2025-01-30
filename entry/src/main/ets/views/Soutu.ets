@@ -1,6 +1,7 @@
 import { PictureSource, SourceItem } from 'picture_search';
 import { TitleBar, TitleBarMenuItem } from '../component/common/TitleBar';
 import { SourceResultList } from '../component/search/SourceList';
+import { Router } from '../router/Index';
 
 
 @Builder
@@ -17,7 +18,7 @@ export struct VSoutu {
   navMenus: TitleBarMenuItem[] = [
     {
       value: $r("app.media.search"),
-      action: (): void => { }
+      action: (): void => this.pageStack.pushPathByName(Router.search, null, true)
     },
     {
       value: $r('app.media.camera'),
@@ -51,7 +52,7 @@ export struct VSoutu {
         Tabs({ barPosition: BarPosition.Start, controller: this.controller }) {
           ForEach(this.sources.sourceList, (source: SourceItem, index: number) => {
             TabContent() {
-              SourceResultList({source: source})
+              SourceResultList({ source: source })
                 .width('100%')
                 .height('100%')
             }

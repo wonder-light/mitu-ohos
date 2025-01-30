@@ -35,11 +35,11 @@ struct Index {
   bgNormal: ResourceColor = $r('sys.color.ohos_id_color_button_normal');
 
   aboutToAppear(): void {
-    const names = [Router.search, Router.album, Router.repo, Router.setting];
     // 是否是手机
     if (deviceInfo.deviceType == 'phone') {
       this.isLarge = false;
     }
+    const names = [Router.soutu, Router.album, Router.repo, Router.setting];
     const items: ToolBarOption[] = [
       { content: $r("app.string.soutu"), icon: $r("app.media.soutu") },
       { content: $r('app.string.album'), icon: $r('app.media.album') },
@@ -141,7 +141,7 @@ struct Index {
   /** 导航栏显示 */
   navAppear() {
     if (this.isLarge) {
-      this.pageStack.pushPathByName(Router.search, null, true);
+      this.pageStack.pushPathByName(Router.soutu, null, true);
     }
   }
 
