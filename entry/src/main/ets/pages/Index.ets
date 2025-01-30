@@ -36,6 +36,10 @@ struct Index {
 
   aboutToAppear(): void {
     const names = [Router.search, Router.album, Router.repo, Router.setting];
+    // 是否是手机
+    if (deviceInfo.deviceType == 'phone') {
+      this.isLarge = false;
+    }
     const items: ToolBarOption[] = [
       { content: $r("app.string.soutu"), icon: $r("app.media.soutu") },
       { content: $r('app.string.album'), icon: $r('app.media.album') },
@@ -44,12 +48,13 @@ struct Index {
     ];
     items.forEach((item, index) => {
       item.state = ItemState.ACTIVATE;
-      item.action = (): void => this.toRouter(names[index], index);
+      if (this.isLarge) {
+        item.action = (): void => this.toRouter(names[index], index);
+      } else {
+        item.action = () => this.activeIndex = index;
+      }
       this.toolbarItems.push(item);
-    }); // 是否是手机
-    if (deviceInfo.deviceType == 'phone') {
-      this.isLarge = false;
-    }
+    });
   }
 
   build() {
