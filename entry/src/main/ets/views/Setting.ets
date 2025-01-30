@@ -5,7 +5,7 @@ export function buildSetting() {
   VSetting()
 }
 
-@Component
+@Component({ freezeWhenInactive: true })
 export struct VSetting {
   /**
    * 导航栈

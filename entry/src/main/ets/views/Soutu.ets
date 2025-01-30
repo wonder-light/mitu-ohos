@@ -4,12 +4,12 @@ import { SourceResultList } from '../component/search/SourceList';
 
 
 @Builder
-export function buildSearch() {
-  VSearch();
+export function buildSoutu() {
+  VSoutu();
 }
 
 @Component({ freezeWhenInactive: true })
-export struct VSearch {
+export struct VSoutu {
   /** 导航栈 */
   @Consume('pageStack')
   pageStack: NavPathStack;

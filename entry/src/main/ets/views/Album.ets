@@ -5,7 +5,7 @@ export function buildAlbum() {
   VAlbum()
 }
 
-@Component
+@Component({ freezeWhenInactive: true })
 export struct VAlbum {
   /**
    * 导航栈

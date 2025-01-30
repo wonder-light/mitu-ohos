@@ -1,6 +1,6 @@
 import { buildAlbum } from '../views/Album';
 import { buildRepo } from '../views/Repo';
-import { buildSearch } from '../views/Search';
+import { buildSoutu } from '../views/Soutu';
 import { buildSetting } from '../views/Setting';
 
 /**
@@ -22,7 +22,7 @@ export class Router {
 
 // 路由
 const router: Record<string, WrappedBuilder<object[]>> = {};
-router[Router.search] = new WrappedBuilder(buildSearch);
+router[Router.search] = new WrappedBuilder(buildSoutu);
 router[Router.album] = new WrappedBuilder(buildAlbum);
 router[Router.repo] = new WrappedBuilder(buildRepo);
 router[Router.setting] = new WrappedBuilder(buildSetting);

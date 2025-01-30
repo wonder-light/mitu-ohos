@@ -1,5 +1,5 @@
 import { Router, RouterBuild } from '../router/Index';
-import { VSearch } from '../views/Search';
+import { VSoutu } from '../views/Soutu';
 import { ItemState, ToolBar, ToolBarOption, ToolBarOptions } from '@ohos.arkui.advanced.ToolBar';
 import { VAlbum } from '../views/Album';
 import { VRepo } from '../views/Repo';
@@ -55,19 +55,15 @@ struct Index {
   build() {
     Navigation(this.pageStack) {
       if (!this.isLarge) {
-        NavDestination() {
-          if (this.activeIndex == 0) {
-            VSearch().transition(this.effect)
-          } else if (this.activeIndex == 1) {
-            VAlbum().transition(this.effect)
-          } else if (this.activeIndex == 2) {
-            VRepo().transition(this.effect)
-          } else {
-            VSetting().transition(this.effect)
-          }
+        if (this.activeIndex == 0) {
+          VSoutu().transition(this.effect)
+        } else if (this.activeIndex == 1) {
+          VAlbum().transition(this.effect)
+        } else if (this.activeIndex == 2) {
+          VRepo().transition(this.effect)
+        } else {
+          VSetting().transition(this.effect)
         }
-        .hideTitleBar(true)
-        .hideToolBar(true)
       } else {
         this.buildPanel()
       }

@@ -5,7 +5,7 @@ export function buildRepo() {
   VRepo()
 }
 
-@Component
+@Component({ freezeWhenInactive: true })
 export struct VRepo {
   /**
    * 导航栈
