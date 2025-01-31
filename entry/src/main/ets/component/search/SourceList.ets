@@ -1,4 +1,4 @@
-import { SourceItem } from 'picture_search';
+import { IDiscoverItemRule, IDiscoverRule, SearchResultItem } from 'picture_search';
 import { UDataSource } from '../../common/Data';
 import Log from '../../helpers/Log';
 import { LengthMetrics } from '@kit.ArkUI';
@@ -7,13 +7,16 @@ import { LengthMetrics } from '@kit.ArkUI';
 export struct SourceResultList {
   /** 图片间距 */
   static readonly itemGap = 10;
-  /** 图源源中的一项发现源 */
+  /** 图源源中的发现规则 */
   @Prop
-  source: SourceItem;
+  discoverRule: IDiscoverRule;
+  /** 图源发现项规则 */
+  @Prop
+  item: IDiscoverItemRule;
   /** Grid 滚动控制器 */
   private scroller: Scroller = new Scroller();
   /** Grid 滚动控制器 */
-  private dataSource: UDataSource<SourceItem> = new UDataSource<SourceItem>();
+  private dataSource: UDataSource<SearchResultItem> = new UDataSource<SearchResultItem>();
   /** 数据加载中 */
   private loading: boolean = false;
 

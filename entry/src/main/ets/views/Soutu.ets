@@ -1,4 +1,4 @@
-import { PictureSource, SourceItem } from 'picture_search';
+import { DiscoverItemRule, IDiscoverItemRule, PictureSource } from 'picture_search';
 import { TitleBar, TitleBarMenuItem } from '../component/common/TitleBar';
 import { SourceResultList } from '../component/search/SourceList';
 import { Router } from '../router/Index';
@@ -30,10 +30,10 @@ export struct VSoutu {
   private controller: TabsController = new TabsController();
 
   aboutToAppear(): void {
-    this.sources.sourceList.push(...[
-      new SourceItem(),
-      new SourceItem(),
-      new SourceItem()
+    this.sources.discoverRule.urlRules.push(...[
+      new DiscoverItemRule(),
+      new DiscoverItemRule(),
+      new DiscoverItemRule()
     ]);
     // TODO: JSVM-API 动态加载JS代码
   }
@@ -41,7 +41,7 @@ export struct VSoutu {
   build() {
     NavDestination() {
       TitleBar({ title: $r("app.string.soutu"), menuItems: this.navMenus })
-      if (this.sources.sourceList.length <= 0) {
+      if (this.sources.discoverRule.urlRules.length <= 0) {
         Column() {
           Text($r('app.string.no_set_rule'))
         }
@@ -50,13 +50,13 @@ export struct VSoutu {
         .justifyContent(FlexAlign.Center)
       } else {
         Tabs({ barPosition: BarPosition.Start, controller: this.controller }) {
-          ForEach(this.sources.sourceList, (source: SourceItem, index: number) => {
+          ForEach(this.sources.discoverRule.urlRules, (rule: IDiscoverItemRule, index: number) => {
             TabContent() {
-              SourceResultList({ source: source })
+              SourceResultList({ item: rule, discoverRule: this.sources.discoverRule })
                 .width('100%')
                 .height('100%')
             }
-            .tabBar(source.name + 'TTT')
+            .tabBar(rule.name + 'TTT')
           })
         }
         .scrollable(true)
