@@ -1,7 +1,33 @@
-import { ComposeTitleBarMenuItem } from '@kit.ArkUI';
+/**
+ * 标题栏菜单项
+ * @module TitleBar
+ */
+export declare class TitleBarMenuItem {
+  /**
+   * 此菜单项的图标资源.
+   */
+  value?: ResourceStr;
+  /**
+   * 此菜单项的图标标签.
+   */
+  label?: ResourceStr;
+  /**
+   * 是否启用此菜单项.
+   */
+  isEnabled?: boolean;
+  /**
+   * 单击此菜单项时的回调函数.
+   */
+  action?: () => void;
+  /**
+   * 创建自定义构建.
+   */
+  builder?: CustomBuilder;
+}
 
-export type TitleBarMenuItem = ComposeTitleBarMenuItem;
-
+/**
+ * 标题栏
+ */
 @Component
 export struct TitleBar {
   static readonly imageSize = $r('app.float.icon_size');
@@ -18,13 +44,22 @@ export struct TitleBar {
   subtitle: ResourceStr | undefined = undefined;
   /** 菜单项 */
   menuItems: Array<TitleBarMenuItem> = [];
+  /** 菜单项显示的最大数量 */
+  maxMenuCount: number = 3;
   /** 启用返回按钮 */
   enableBack: boolean = false;
   /** 自定义标题组件 */
   @BuilderParam
   customTitle: undefined | (() => void);
+  /** 自定义菜单组件 */
+  @BuilderParam
+  customPopup: (() => void) = this.menuBuilder;
+  /** 标题的最大宽度 */
   @State
   private titleMaxWidth: number = 0;
+  /** 是否显示菜单弹窗 */
+  @State
+  private showPopup: boolean = false;
   /** 是否具有返回按钮 */
   private hasBack: boolean = false;
   /** 导航栈 */
@@ -47,9 +82,11 @@ export struct TitleBar {
     Row({ space: TitleBar.leftPadding }) {
       Row({ space: TitleBar.leftPadding }) {
         if (this.enableBack && this.hasBack) {
-          this.buildMenuItem({
-            value: TitleBar.PUBLIC_BACK,
-            action: () => this.pageStack?.pop()
+          ImageMenuItem({
+            item: {
+              value: TitleBar.PUBLIC_BACK,
+              action: () => this.pageStack?.pop()
+            }
           })
         }
 
@@ -87,7 +124,7 @@ export struct TitleBar {
         .constraintSize({ maxWidth: this.titleMaxWidth })
       }
       .flexGrow(1)
-      .onAreaChange((oldArea, newArea) => {
+      .onAreaChange((_, newArea) => {
         let width = Number(newArea.width)
         width -= (TitleBar.leftPadding + TitleBar.imageHotZoneWidth) * (this.item !== undefined ? 2 : 1);
         this.titleMaxWidth = width;
@@ -95,9 +132,20 @@ export struct TitleBar {
 
       if (this.menuItems.length > 0) {
         Row() {
-          ForEach(this.menuItems, (item: TitleBarMenuItem, index: number) => {
-            this.buildMenuItem(item)
+          ForEach(this.menuItems.slice(0, this.maxMenuCount), (item: TitleBarMenuItem, index: number) => {
+            ImageMenuItem({ item: item, customBuild: item.builder instanceof Function ? item.builder : undefined })
           })
+
+          if (this.menuItems.length > this.maxMenuCount) {
+            ImageMenuItem({
+              item: {
+                value: $r('sys.media.ohos_ic_public_more'),
+                action: () => this.showPopup = !this.showPopup
+              }
+            }).bindMenu(this.showPopup, this.customPopup, {
+              onDisappear: () => this.showPopup = false
+            })
+          }
         }
       }
     }
@@ -110,43 +158,70 @@ export struct TitleBar {
   }
 
   @Builder
-  buildMenuItem(item: TitleBarMenuItem) {
-    Button({ type: ButtonType.Circle, stateEffect: item.isEnabled ?? true }) {
-      if (this.isSymbolResource(item.value)) {
-        SymbolGlyph(item.value as Resource)
-          .draggable(false)
-          .focusable(item.isEnabled ?? true)
-          .focusable(item.isEnabled ?? true)
-          .fontColor([$r('sys.color.ohos_id_color_text_primary')])
-      } else {
-        Image(item.value)
-          .draggable(false)
-          .matchTextDirection(true)
-          .width(TitleBar.imageSize)
-          .height(TitleBar.imageSize)
-          .focusable(item.isEnabled ?? true)
-          .fillColor($r('sys.color.ohos_id_color_text_primary'))
-      }
+  menuBuilder() {
+    Menu() {
+      ForEach(this.menuItems.slice(this.maxMenuCount), (item: TitleBarMenuItem, index: number) => {
+        if (item.builder != null) {
+          MenuItem(item.builder)
+        } else {
+          MenuItem({ startIcon: item.value, content: item.label })
+        }
+      })
     }
-    .enabled(item.isEnabled ?? true)
-    .width(TitleBar.imageHotZoneWidth)
-    .height(TitleBar.imageHotZoneWidth)
-    .stateStyles({
-      normal: {
-        .foregroundColor(Color.Transparent)
-        .backgroundColor(Color.Transparent)
-      },
-      clicked: {
-        .foregroundColor($r('sys.color.ohos_id_color_click_effect'))
-        .backgroundColor($r('sys.color.ohos_id_color_click_effect'))
+  }
+}
+
+@Component
+export struct ImageMenuItem {
+  /** 菜单项 */
+  @Prop
+  item: TitleBarMenuItem;
+  /** 自定义组件 */
+  @BuilderParam
+  customBuild: undefined | (() => void);
+
+  build() {
+    if (this.customBuild != null) {
+      this.customBuild()
+    } else {
+      Button({ type: ButtonType.Circle, stateEffect: this.item.isEnabled ?? true }) {
+        if (this.isSymbolResource(this.item.value)) {
+          SymbolGlyph(this.item.value as Resource)
+            .draggable(false)
+            .focusable(this.item.isEnabled ?? true)
+            .focusable(this.item.isEnabled ?? true)
+            .fontColor([$r('sys.color.ohos_id_color_text_primary')])
+        } else {
+          Image(this.item.value)
+            .draggable(false)
+            .matchTextDirection(true)
+            .width(TitleBar.imageSize)
+            .height(TitleBar.imageSize)
+            .focusable(this.item.isEnabled ?? true)
+            .fillColor($r('sys.color.ohos_id_color_text_primary'))
+        }
       }
-    })
-    .onClick(() => {
-      return (item.isEnabled ?? true) && item.action?.();
-    })
+      .enabled(this.item.isEnabled ?? true)
+      .width(TitleBar.imageHotZoneWidth)
+      .height(TitleBar.imageHotZoneWidth)
+      .stateStyles({
+        normal: {
+          .foregroundColor(Color.Transparent)
+          .backgroundColor(Color.Transparent)
+        },
+        clicked: {
+          .foregroundColor($r('sys.color.ohos_id_color_click_effect'))
+          .backgroundColor($r('sys.color.ohos_id_color_click_effect'))
+        }
+      })
+      .onClick(() => {
+        return (this.item.isEnabled ?? true) && this.item.action?.();
+      })
+    }
   }
 
-  isSymbolResource(value: ResourceStr) {
+  /** 判断是否是符号资源 */
+  isSymbolResource(value?: ResourceStr) {
     if (typeof value === 'string' || typeof value === 'undefined') {
       return false;
     }

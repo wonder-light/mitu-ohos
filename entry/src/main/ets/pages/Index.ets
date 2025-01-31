@@ -79,7 +79,6 @@ struct Index {
     .toolbarConfiguration(this.buildToolbar)
     .title('Soutu')
     .titleMode(NavigationTitleMode.Mini)
-    .backgroundColor(this.bgNormal)
     .hideToolBar(this.isLarge)
     .hideTitleBar(!this.isLarge)
     .hideBackButton(true)
@@ -125,6 +124,9 @@ struct Index {
         startMargin: this.iconSize,
         endMargin: this.iconSize
       })
+      .borderWidth(0.5)
+      .borderColor(this.bgNormal)
+      .shadow({ color: this.bgNormal, radius: 12 })
     }
     .width('100%')
     .height('100%')

@@ -27,6 +27,14 @@
     {
       "name": "search_placeholder",
       "value": "搜索图片名, 描述"
+    },
+    {
+      "name": "source_manage",
+      "value": "图源管理"
+    },
+    {
+      "name": "multi_group",
+      "value": "多分组/图源"
     }
   ]
 }
