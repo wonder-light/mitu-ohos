@@ -2,15 +2,7 @@
   "string": [
     {
       "name": "module_desc",
-      "value": "soutu 的 UI 部分, 用于整合 picture_search 和 picture_bed, 并将结果展示出来"
-    },
-    {
-      "name": "EntryAbility_desc",
-      "value": "显示 soutu 的 UI"
-    },
-    {
-      "name": "EntryAbility_label",
-      "value": "soutu_label"
+      "value": "MiTu 的 UI 部分, 用于整合 picture_search 和 picture_bed, 并将结果展示出来"
     },
     {
       "name": "soutu",
