@@ -1,0 +1,11 @@
+{
+  "module": {
+    "name": "eval_js",
+    "type": "har",
+    "deviceTypes": [
+      "default",
+      "tablet",
+      "2in1"
+    ]
+  }
+}

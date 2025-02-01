@@ -1,0 +1,11 @@
+{
+  "name": "eval_js",
+  "version": "1.0.0",
+  "description": "Please describe the basic information.",
+  "main": "Index.ets",
+  "author": "",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "libeval_js.so": "file:./src/main/cpp/types/libeval_js"
+  }
+}
