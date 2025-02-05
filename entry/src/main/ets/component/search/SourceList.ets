@@ -5,6 +5,7 @@ import { UDataSource } from '../../common/Data';
 import { SearchResultItem } from '../../models/Result';
 import { ImageCom, ImageDialog } from '../index';
 
+@Reusable
 @Component
 export struct SourceResultList {
   /** 图片间距 */
@@ -15,9 +16,12 @@ export struct SourceResultList {
   /** 发现项规则 */
   @Prop
   item: IDiscoverItemRule;
+  /** 数据刷新中 */
   @State
+  private isRefreshing: boolean = false
   /** 数据加载中 */
-  private loading: boolean = false;
+  @State
+  private isLoading: boolean = false;
   /** Grid 滚动控制器 */
   private scroller: Scroller = new Scroller();
   /** 数据懒加载源 */
@@ -46,29 +50,32 @@ export struct SourceResultList {
 
   build() {
     Column() {
-      WaterFlow({ scroller: this.scroller, footer: () => { this.buildFooter() } }) {
-        LazyForEach(this.dataSource, (item: SearchResultItem, index: number) => {
-          FlowItem() {
-            ImageCom({ src: item.thumbnail ?? item.origin })
-              .onClick(() => {
-                this.controller.setInitialIndex(index);
-                this.dialogController.open();
-              })
+      Refresh({ refreshing: $$this.isRefreshing }) {
+        WaterFlow({ scroller: this.scroller, footer: () => { this.buildFooter() } }) {
+          LazyForEach(this.dataSource, (item: SearchResultItem, index: number) => {
+            FlowItem() {
+              ImageCom({ src: item.thumbnail ?? item.origin })
+                .onClick(() => {
+                  this.controller.setInitialIndex(index);
+                  this.dialogController.open();
+                })
+            }
+          })
+        }
+        .columnsTemplate('repeat(auto-fit, 240)')
+        .columnsGap(SourceResultList.itemGap)
+        .rowsGap(SourceResultList.itemGap)
+        .edgeEffect(EdgeEffect.Spring)
+        .scrollBarWidth(2)
+        .fadingEdge(true, { fadingEdgeLength: LengthMetrics.vp(40) })
+        .onReachEnd(() => {
+          // 触底时增加数据
+          if (this.isLoading === false) {
+            this.loadData();
           }
         })
       }
-      .columnsTemplate('repeat(auto-fit, 240)')
-      .columnsGap(SourceResultList.itemGap)
-      .rowsGap(SourceResultList.itemGap)
-      .edgeEffect(EdgeEffect.Spring)
-      .scrollBarWidth(2)
-      .fadingEdge(true, { fadingEdgeLength: LengthMetrics.vp(40) })
-      .onScrollIndex((_, last: number) => {
-        // 即将触底时提前增加数据
-        if (last + 10 >= this.dataSource.totalCount() && this.loading === false) {
-          this.loadData();
-        }
-      })
+      .onRefreshing(() => this.refreshData())
     }
     .height('100%')
     .padding({ bottom: SourceResultList.itemGap })
@@ -76,21 +83,29 @@ export struct SourceResultList {
 
   @Builder
   buildFooter() {
-    if(this.loading) {
+    if (this.isLoading) {
       Image($r('app.media.loading_gif'))
         .width('100%')
         .constraintSize({ maxHeight: 80 })
         .objectFit(ImageFit.ScaleDown)
-        .transition(TransitionEffect.OPACITY.animation({ duration: 300, curve: Curve.Ease }))
     }
+  }
+
+  /**
+   * 刷新数据
+   */
+  async refreshData() {
+    await new Promise<void>((resolve) => setTimeout(resolve, 4000));
+    this.isRefreshing = false;
   }
 
   /**
    * 加载数据
    */
   async loadData() {
-    this.loading = true;
+    const param: AnimateParam = { duration: 300, curve: Curve.Ease };
+    animateTo(param, () => this.isLoading = true)
     await new Promise<void>((resolve) => setTimeout(resolve, 4000));
-    this.loading = false;
+    animateTo(param, () => this.isLoading = false)
   }
 }
