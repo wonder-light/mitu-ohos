@@ -44,10 +44,6 @@
     {
       "name": "picture_bed",
       "srcPath": "./picture_bed",
-    },
-    {
-      "name": "eval_js",
-      "srcPath": "./eval_js",
     }
   ]
 }

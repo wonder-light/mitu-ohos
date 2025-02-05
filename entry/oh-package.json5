@@ -8,7 +8,6 @@
   "dependencies": {
     "picture_search": "file:../picture_search",
     "picture_bed": "file:../picture_bed",
-    "eval_js": "file:../eval_js"
   },
   "devDependencies": {},
   "dynamicDependencies": {}

@@ -3,7 +3,6 @@ import { TitleBar, TitleBarMenuItem } from '../component/common/TitleBar';
 import { SourceResultList } from '../component/search/SourceList';
 import Log from '../helpers/Log';
 import { Router } from '../router/Index';
-import hello from 'eval_js'
 
 
 @Builder
@@ -39,7 +38,6 @@ export struct VSoutu {
     ]);
     // TODO: JSVM-API 动态加载JS代码
     Log.i('----------------------------------')
-    Log.i(typeof hello)
     Log.i('----------------------------------')
   }
 
