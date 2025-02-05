@@ -1,4 +1,4 @@
-import { TitleBar } from '../component/common/TitleBar';
+import { TitleBar } from '../component';
 
 @Builder
 export function buildRepo() {

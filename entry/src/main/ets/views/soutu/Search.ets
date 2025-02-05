@@ -1,4 +1,4 @@
-import { TitleBar, TitleBarMenuItem } from '../../component/common/TitleBar';
+import { TitleBar, TitleBarMenuItem } from '../../component';
 
 @Builder
 export function buildSearch() {

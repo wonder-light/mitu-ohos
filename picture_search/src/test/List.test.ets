@@ -1,7 +1,0 @@
-import localUnitTest from './LocalUnit.test';
-import Picture_localTest from './Picture.test';
-
-export default function testsuite() {
-  localUnitTest();
-  Picture_localTest();
-}

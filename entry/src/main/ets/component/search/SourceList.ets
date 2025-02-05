@@ -1,7 +1,8 @@
-import { IDiscoverItemRule, IDiscoverRule, SearchResultItem } from 'picture_search';
-import { UDataSource } from '../../common/Data';
-import Log from '../../helpers/Log';
 import { LengthMetrics } from '@kit.ArkUI';
+import { IDiscoverItemRule, IDiscoverRule } from '../../common';
+import { UDataSource } from '../../common/Data';
+import { Log } from '../../helpers';
+import { SearchResultItem } from '../../models/Result';
 
 @Component
 export struct SourceResultList {

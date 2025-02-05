@@ -3,7 +3,7 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 /**
  * 日志
  */
-export default class Log {
+export class Log {
   static readonly domain = 0xFF00;
   static readonly prefix = 'logger';
 

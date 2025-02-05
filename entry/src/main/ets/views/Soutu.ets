@@ -1,9 +1,8 @@
-import { DiscoverItemRule, IDiscoverItemRule, PictureSource } from 'picture_search';
-import { TitleBar, TitleBarMenuItem } from '../component/common/TitleBar';
-import { SourceResultList } from '../component/search/SourceList';
-import Log from '../helpers/Log';
+import { IDiscoverItemRule } from '../common';
+import { SourceResultList, TitleBar, TitleBarMenuItem } from '../component';
+import { Log } from '../helpers';
+import { DiscoverItemRule, PictureSource } from '../models';
 import { Router } from '../router/Index';
-
 
 @Builder
 export function buildSoutu() {
