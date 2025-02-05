@@ -1,4 +1,5 @@
 import { ErrorEvent, MessageEvents, ThreadWorkerGlobalScope, worker } from '@kit.ArkTS';
+import { Log } from '../helpers';
 
 const workerPort: ThreadWorkerGlobalScope = worker.workerPort;
 
@@ -9,6 +10,7 @@ const workerPort: ThreadWorkerGlobalScope = worker.workerPort;
  * @param event message data
  */
 workerPort.onmessage = (event: MessageEvents) => {
+  Log.d('onmessage  --  ', event.data.toString());
 };
 
 /**
