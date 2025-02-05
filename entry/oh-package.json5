@@ -5,10 +5,7 @@
   "main": "",
   "author": "wonder-light",
   "license": "MIT",
-  "dependencies": {
-    "picture_search": "file:../picture_search",
-    "picture_bed": "file:../picture_bed",
-  },
+  "dependencies": {},
   "devDependencies": {},
   "dynamicDependencies": {}
 }

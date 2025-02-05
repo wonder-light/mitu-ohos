@@ -40,10 +40,6 @@
     {
       "name": "picture_search",
       "srcPath": "./picture_search",
-    },
-    {
-      "name": "picture_bed",
-      "srcPath": "./picture_bed",
     }
   ]
 }
