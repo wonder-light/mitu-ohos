@@ -1,56 +1,96 @@
 import { LengthMetrics } from '@kit.ArkUI';
+import { ImagePreviewController } from '@rv/image-preview';
 import { IDiscoverItemRule, IDiscoverRule } from '../../common';
 import { UDataSource } from '../../common/Data';
-import { Log } from '../../helpers';
 import { SearchResultItem } from '../../models/Result';
+import { ImageCom, ImageDialog } from '../index';
 
 @Component
 export struct SourceResultList {
   /** 图片间距 */
   static readonly itemGap = 10;
-  /** 图源源中的发现规则 */
+  /** 图源中的发现规则 */
   @Prop
   discoverRule: IDiscoverRule;
-  /** 图源发现项规则 */
+  /** 发现项规则 */
   @Prop
   item: IDiscoverItemRule;
-  /** Grid 滚动控制器 */
-  private scroller: Scroller = new Scroller();
-  /** Grid 滚动控制器 */
-  private dataSource: UDataSource<SearchResultItem> = new UDataSource<SearchResultItem>();
+  @State
   /** 数据加载中 */
   private loading: boolean = false;
+  /** Grid 滚动控制器 */
+  private scroller: Scroller = new Scroller();
+  /** 数据懒加载源 */
+  private dataSource: UDataSource<SearchResultItem> = new UDataSource<SearchResultItem>();
+  /** 预览控制器 */
+  private readonly controller: ImagePreviewController = new ImagePreviewController();
+  /** 图片弹窗 */
+  private readonly dialogController: CustomDialogController = new CustomDialogController({
+    builder: ImageDialog({ controller: this.controller }),
+    customStyle: true,
+    offset: { dx: 0, dy: 0 },
+    alignment: DialogAlignment.Center,
+    autoCancel: true
+  });
 
   aboutToAppear(): void {
-    Log.i('SearchList aboutToAppear');
+    let fill = new SearchResultItem({
+      thumbnail: 'https://images4.alphacoders.com/133/thumb-440-1335428.webp',
+      origin: 'https://images4.alphacoders.com/133/thumb-1920-1335428.png'
+    });
+    this.dataSource.pushAll(Array<SearchResultItem>(20).fill(fill));
+    this.controller.setImage(this.dataSource.getAllData().map((item) => item.origin))
+      .setCachedCount(1)
+      .setAutoResize(true);
   }
 
   build() {
-    WaterFlow({ scroller: this.scroller }) {
-      /*LazyForEach(this.dataSource, (item: SourceItem) => {
-        Row() {
-        }
-      })*/
-      ForEach(Array(30).fill(0).flat(), (item: ResourceStr, i) => {
-        FlowItem() {
-          Image(item).width('100%')
+    Column() {
+      WaterFlow({ scroller: this.scroller, footer: () => { this.buildFooter() } }) {
+        LazyForEach(this.dataSource, (item: SearchResultItem, index: number) => {
+          FlowItem() {
+            ImageCom({ src: item.thumbnail ?? item.origin })
+              .onClick(() => {
+                this.controller.setInitialIndex(index);
+                this.dialogController.open();
+              })
+          }
+        })
+      }
+      .columnsTemplate('repeat(auto-fit, 240)')
+      .columnsGap(SourceResultList.itemGap)
+      .rowsGap(SourceResultList.itemGap)
+      .edgeEffect(EdgeEffect.Spring)
+      .scrollBarWidth(2)
+      .fadingEdge(true, { fadingEdgeLength: LengthMetrics.vp(40) })
+      .onScrollIndex((_, last: number) => {
+        // 即将触底时提前增加数据
+        if (last + 10 >= this.dataSource.totalCount() && this.loading === false) {
+          this.loadData();
         }
       })
     }
-    .columnsTemplate('repeat(auto-fit, 240)')
-    .columnsGap(SourceResultList.itemGap)
-    .rowsGap(SourceResultList.itemGap)
-    .edgeEffect(EdgeEffect.Spring)
-    .scrollBarWidth(2)
-    .fadingEdge(true, { fadingEdgeLength: LengthMetrics.vp(40) })
-    .onScrollIndex((first: number, last: number) => {
-      // 即将触底时提前增加数据
-      if (last + 20 >= 60 && this.loading === false) {
-        this.loading = true;
-        Log.i('即将触底');
-      }
-    })
+    .height('100%')
+    .padding({ bottom: SourceResultList.itemGap })
+  }
 
-    // 添加加载中动画组件
+  @Builder
+  buildFooter() {
+    if(this.loading) {
+      Image($r('app.media.loading_gif'))
+        .width('100%')
+        .constraintSize({ maxHeight: 80 })
+        .objectFit(ImageFit.ScaleDown)
+        .transition(TransitionEffect.OPACITY.animation({ duration: 300, curve: Curve.Ease }))
+    }
+  }
+
+  /**
+   * 加载数据
+   */
+  async loadData() {
+    this.loading = true;
+    await new Promise<void>((resolve) => setTimeout(resolve, 4000));
+    this.loading = false;
   }
 }

@@ -74,7 +74,7 @@ export interface IDiscoverItemRule {
   urlRule?: string;
 
   /** 手动排序编号 */
-  order: number;
+  order?: number;
 }
 
 /**

@@ -1,6 +1,5 @@
 import { IDiscoverItemRule } from '../common';
 import { SourceResultList, TitleBar, TitleBarMenuItem } from '../component';
-import { Log } from '../helpers';
 import { DiscoverItemRule, PictureSource } from '../models';
 import { Router } from '../router/Index';
 
@@ -25,25 +24,23 @@ export struct VSoutu {
       action: (): void => { }
     }
   ];
+  // 数据源 TODO: 从存储中加载
   sources: PictureSource = new PictureSource();
   /** Tabs 控制器 */
   private controller: TabsController = new TabsController();
 
   aboutToAppear(): void {
     this.sources.discoverRule.urlRules.push(...[
-      new DiscoverItemRule(),
-      new DiscoverItemRule(),
-      new DiscoverItemRule()
+      new DiscoverItemRule({ name: '必应' }),
+      new DiscoverItemRule({ name: '百度' }),
+      new DiscoverItemRule({ name: 'Pixiv' })
     ]);
-    // TODO: JSVM-API 动态加载JS代码
-    Log.i('----------------------------------')
-    Log.i('----------------------------------')
   }
 
   build() {
     NavDestination() {
       TitleBar({ title: $r("app.string.soutu"), menuItems: this.navMenus })
-      if (this.sources.discoverRule.urlRules.length <= 0) {
+      if (this.sources!.discoverRule.urlRules.length <= 0) {
         Column() {
           Text($r('app.string.no_set_rule'))
         }
@@ -58,7 +55,7 @@ export struct VSoutu {
                 .width('100%')
                 .height('100%')
             }
-            .tabBar(rule.name + 'TTT')
+            .tabBar(rule.name)
           })
         }
         .scrollable(true)
@@ -66,9 +63,7 @@ export struct VSoutu {
         .barMode(BarMode.Scrollable, { nonScrollableLayoutStyle: LayoutStyle.ALWAYS_AVERAGE_SPLIT })
         .animationDuration(300)
         .fadingEdge(true)
-        .onChange((index: number) => {
-          console.info(index.toString())
-        })
+        .height(`calc(100% - ${TitleBar.totalHeight}vp)`)
       }
     }
     .hideTitleBar(true)

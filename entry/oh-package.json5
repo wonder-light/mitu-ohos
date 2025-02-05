@@ -5,7 +5,9 @@
   "main": "",
   "author": "wonder-light",
   "license": "MIT",
-  "dependencies": {},
+  "dependencies": {
+    "@rv/image-preview": "^1.0.14"
+  },
   "devDependencies": {},
   "dynamicDependencies": {}
 }
