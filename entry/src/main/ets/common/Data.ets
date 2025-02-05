@@ -5,7 +5,9 @@ export class UDataSource<T> implements IDataSource {
   /** 源列表 */
   protected origins: T[] = [];
   /** 监听列表 */
-  private listeners: DataChangeListener[] = [];
+  protected listeners: DataChangeListener[] = [];
+  /** 监听数据操作, 统一调用一个 */
+  protected listenerCallbacks: VoidCallback[] = [];
 
   /**
    * 获取数据源中数据总数
@@ -52,6 +54,27 @@ export class UDataSource<T> implements IDataSource {
   }
 
   /**
+   * 添加数据操作监听
+   * @param listener 数据监听
+   */
+  public registerCallback(listener: VoidCallback): void {
+    if (this.listenerCallbacks.indexOf(listener) < 0) {
+      this.listenerCallbacks.push(listener);
+    }
+  }
+
+  /**
+   * 移除数据操作监听
+   * @param listener 数据监听
+   */
+  public unregisterCallback(listener: VoidCallback): void {
+    const pos = this.listenerCallbacks.indexOf(listener);
+    if (pos >= 0) {
+      this.listenerCallbacks.splice(pos, 1);
+    }
+  }
+
+  /**
    * 预加载数据
    */
   public reload(): void {
@@ -71,7 +94,11 @@ export class UDataSource<T> implements IDataSource {
    * 添加数据集合
    * @param items
    */
-  public pushAll(items: T[]): void {
+  public pushAll(items: T | T[]): void {
+    if (!(items instanceof Array)) {
+      this.push(items);
+      return;
+    }
     const form = this.origins.length - 1;
     this.origins.push(...items);
     this.notifyDatasetChange([
@@ -152,6 +179,7 @@ export class UDataSource<T> implements IDataSource {
    */
   protected notifyDataReload(): void {
     this.listeners.forEach(listener => listener.onDataReloaded())
+    this.listenerCallbacks.forEach(listener => listener())
   }
 
   /**
@@ -161,6 +189,7 @@ export class UDataSource<T> implements IDataSource {
   protected notifyDataAdd(index: number): void {
     this.listeners.forEach(listener => listener.onDataAdd(index));
     // 写法2：listener.onDatasetChange([{type: DataOperationType.ADD, index: index}]);
+    this.listenerCallbacks.forEach(listener => listener())
   }
 
   /**
@@ -169,6 +198,7 @@ export class UDataSource<T> implements IDataSource {
    */
   protected notifyDataChange(index: number): void {
     this.listeners.forEach(listener => listener.onDataChange(index))
+    this.listenerCallbacks.forEach(listener => listener())
   }
 
   /**
@@ -177,6 +207,7 @@ export class UDataSource<T> implements IDataSource {
    */
   protected notifyDataDelete(index: number): void {
     this.listeners.forEach(listener => listener.onDataDelete(index))
+    this.listenerCallbacks.forEach(listener => listener())
   }
 
   /**
@@ -186,6 +217,7 @@ export class UDataSource<T> implements IDataSource {
    */
   protected notifyDataMove(from: number, to: number): void {
     this.listeners.forEach(listener => listener.onDataMove(from, to))
+    this.listenerCallbacks.forEach(listener => listener())
   }
 
   /**
@@ -194,5 +226,6 @@ export class UDataSource<T> implements IDataSource {
    */
   protected notifyDatasetChange(operations: DataOperation[]): void {
     this.listeners.forEach(listener => listener.onDatasetChange(operations))
+    this.listenerCallbacks.forEach(listener => listener())
   }
 }

@@ -1,4 +1,4 @@
-import { IDiscoverRule, IPictureSource, ISearchRule } from '../common/interface';
+import { IDiscoverRule, IPictureSource, ISearchRule } from '../common/Interface';
 import { DiscoverRule } from './rule/Discover';
 
 /**

@@ -1,21 +1,25 @@
 import { LengthMetrics } from '@kit.ArkUI';
 import { ImagePreviewController } from '@rv/image-preview';
-import { IDiscoverItemRule, IDiscoverRule } from '../../common';
 import { UDataSource } from '../../common/Data';
 import { SearchResultItem } from '../../models/Result';
 import { ImageCom, ImageDialog } from '../index';
 
+/** 数据回调函数, 用于添加数据 */
+export type TItemCallback = Callback<SearchResultItem | SearchResultItem[]>;
+
+/** 数据生成函数, 用于生成数据 */
+export type TItemGenerate = Callback<TItemCallback>;
+
+/** 搜索结果列表 */
 @Reusable
 @Component
 export struct SourceResultList {
   /** 图片间距 */
   static readonly itemGap = 10;
-  /** 图源中的发现规则 */
-  @Prop
-  discoverRule: IDiscoverRule;
-  /** 发现项规则 */
-  @Prop
-  item: IDiscoverItemRule;
+  /** 接收根据对应规则生成的数据 */
+  generateData?: TItemGenerate;
+  /** 数据懒加载源 */
+  dataSource: UDataSource<SearchResultItem> = new UDataSource<SearchResultItem>();
   /** 数据刷新中 */
   @State
   private isRefreshing: boolean = false
@@ -24,8 +28,6 @@ export struct SourceResultList {
   private isLoading: boolean = false;
   /** Grid 滚动控制器 */
   private scroller: Scroller = new Scroller();
-  /** 数据懒加载源 */
-  private dataSource: UDataSource<SearchResultItem> = new UDataSource<SearchResultItem>();
   /** 预览控制器 */
   private readonly controller: ImagePreviewController = new ImagePreviewController();
   /** 图片弹窗 */
@@ -38,14 +40,15 @@ export struct SourceResultList {
   });
 
   aboutToAppear(): void {
-    let fill = new SearchResultItem({
-      thumbnail: 'https://images4.alphacoders.com/133/thumb-440-1335428.webp',
-      origin: 'https://images4.alphacoders.com/133/thumb-1920-1335428.png'
-    });
-    this.dataSource.pushAll(Array<SearchResultItem>(20).fill(fill));
-    this.controller.setImage(this.dataSource.getAllData().map((item) => item.origin))
-      .setCachedCount(1)
-      .setAutoResize(true);
+    this.dataSource.registerCallback(this.setImages);
+    this.controller.setCachedCount(1).setAutoResize(true);
+    if (this.generateData != null) {
+      this.generateData((item) => this.dataSource.pushAll(item));
+    }
+  }
+
+  aboutToDisappear(): void {
+    this.dataSource.unregisterCallback(this.setImages);
   }
 
   build() {
@@ -75,6 +78,7 @@ export struct SourceResultList {
           }
         })
       }
+      .refreshOffset(128)
       .onRefreshing(() => this.refreshData())
     }
     .height('100%')
@@ -95,7 +99,7 @@ export struct SourceResultList {
    * 刷新数据
    */
   async refreshData() {
-    await new Promise<void>((resolve) => setTimeout(resolve, 4000));
+    await new Promise<void>((resolve) => setTimeout(resolve, 2000));
     this.isRefreshing = false;
   }
 
@@ -105,7 +109,14 @@ export struct SourceResultList {
   async loadData() {
     const param: AnimateParam = { duration: 300, curve: Curve.Ease };
     animateTo(param, () => this.isLoading = true)
-    await new Promise<void>((resolve) => setTimeout(resolve, 4000));
+    await new Promise<void>((resolve) => setTimeout(resolve, 2000));
     animateTo(param, () => this.isLoading = false)
+  }
+
+  /***
+   * 设置预览图片数组
+   */
+  setImages: VoidCallback = () => {
+    this.controller.setImage(this.dataSource.getAllData().map((item) => item.origin));
   }
 }

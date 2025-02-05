@@ -1,4 +1,4 @@
-import { IDiscoverItemRule, IDiscoverRule } from '../../common/interface';
+import { IDiscoverItemRule, IDiscoverRule } from '../../common/Interface';
 import { SearchRule } from './Search';
 
 /**

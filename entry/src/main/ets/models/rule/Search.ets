@@ -1,4 +1,4 @@
-import { ISearchRule } from '../../common/interface';
+import { ISearchRule } from '../../common/Interface';
 
 /**
  * 图源搜索规则

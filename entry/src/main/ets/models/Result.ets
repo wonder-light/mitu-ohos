@@ -1,4 +1,4 @@
-import { ISearchResultItem } from '../common/interface';
+import { ISearchResultItem } from '../common/Interface';
 
 /**
  * 搜索结果项, 搜索结果的最小单位
