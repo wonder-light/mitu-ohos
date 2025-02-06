@@ -1,93 +1,124 @@
-import { IDiscoverRule, IPictureSource, ISearchRule } from '../common/Interface';
+import { Columns, ColumnType, Entity, Index, ToOne } from '@ohos/dataorm';
+import { TableBasic } from '.';
+import { IPictureSource } from '../common/Interface';
 import { DiscoverRule } from './rule/Discover';
+import { SearchRule } from './rule/Search';
 
 /**
  * 图片模型
  */
 @Observed
-export class PictureSource implements IPictureSource {
-  /** 图源ID */
-  id?: number;
+@Entity('PictureSource')
+export class PictureSource extends TableBasic implements IPictureSource {
   /** 图源 */
+  @Index()
+  @Columns({ columnName: 'origin', types: ColumnType.str })
   origin: string = '';
   /** 图源名称 */
+  @Index()
+  @Columns({ columnName: 'originName', types: ColumnType.str })
   originName: string = '';
   /** PictureType */
-  type?: string;
+  @Columns({ columnName: 'type', types: ColumnType.str })
+  type: string;
   /** 名称: 当前图片模型的名称 */
+  @Columns({ columnName: 'name', types: ColumnType.str })
   name: string;
   /** 作者: 当前图片模型的作者 */
+  @Columns({ columnName: 'author', types: ColumnType.str })
   author: string;
   /** 简介内容 */
-  intro?: string;
+  @Columns({ columnName: 'intro', types: ColumnType.str })
+  intro: string;
   /** 分类 */
-  kind?: string;
+  @Columns({ columnName: 'kind', types: ColumnType.str })
+  kind: string;
   /** 在导入的情况下或则未分组默认为 2 未分组 */
+  @Columns({ columnName: 'groups', types: ColumnType.num })
   group: number;
   /** 创建或更新时间 */
+  @Columns({ columnName: 'time', types: ColumnType.num })
   time: number;
   /** 应用于动态参数或动态JS中的变量 */
+  @Columns({ columnName: 'variable', types: ColumnType.str })
   variable: string;
   /** 自定义变量说明 */
-  variableComment?: string;
+  @Columns({ columnName: 'variableComment', types: ColumnType.str })
+  variableComment: string;
   /** 图源排序 */
+  @Columns({ columnName: 'orders', types: ColumnType.num })
   order: number;
   /** 是否置顶 */
+  @Columns({ columnName: 'isTop', types: ColumnType.real })
   isTop: boolean;
   /** 是否隐藏 */
+  @Columns({ columnName: 'isHide', types: ColumnType.real })
   isHide: boolean;
   /** 响应超时时间 */
+  @Columns({ columnName: 'respondTime', types: ColumnType.num })
   respondTime: number;
   /** 搜索规则 */
-  searchRule?: ISearchRule;
+  @ToOne({ joinProperty: 'searchId', targetObj: SearchRule })
+  searchRule: SearchRule;
   /** 发现规则 */
-  discoverRule: IDiscoverRule;
+  @ToOne({ joinProperty: 'discoverId', targetObj: DiscoverRule })
+  discoverRule: DiscoverRule;
   /** js库 */
-  jsLib?: string;
+  @Columns({ columnName: 'jsLib', types: ColumnType.str })
+  jsLib: string;
   /** 启用 ok http Cookie 自动保存每次请求的cookie */
+  @Columns({ columnName: 'enabledCookie', types: ColumnType.real })
   enabledCookie: boolean;
   /** 并发率 */
-  concurrentRate?: string;
+  @Columns({ columnName: 'concurrentRate', types: ColumnType.str })
+  concurrentRate: string;
   /** 请求头 */
-  header?: string;
+  @Columns({ columnName: 'header', types: ColumnType.str })
+  header: string;
   /** 封面解密js, 依次向上回归 */
-  decodeJs?: string;
+  @Columns({ columnName: 'decodeJs', types: ColumnType.str })
+  decodeJs: string;
   /** 图片样式, 默认大小居中, FULL最大宽度 */
-  style?: string;
+  @Columns({ columnName: 'style', types: ColumnType.str })
+  style: string;
   /** 登录地址 */
-  loginUrl?: string;
+  @Columns({ columnName: 'loginUrl', types: ColumnType.str })
+  loginUrl: string;
   /** 登录UI */
-  loginUi?: string;
+  @Columns({ columnName: 'loginUi', types: ColumnType.str })
+  loginUi: string;
   /** 登录检测js */
-  loginCheckJs?: string;
+  @Columns({ columnName: 'loginCheckJs', types: ColumnType.str })
+  loginCheckJs: string;
 
   constructor(item?: IPictureSource) {
-    this.id = item?.id;
+    super();
+    this.id = 0;
     this.origin = item?.origin ?? '';
     this.originName = item?.originName ?? '';
-    this.type = item?.type;
+    this.type = item?.type ?? '';
     this.name = item?.name ?? '';
     this.author = item?.author ?? '';
-    this.intro = item?.intro;
-    this.kind = item?.kind;
+    this.intro = item?.intro ?? '';
+    this.kind = item?.kind ?? '';
     this.group = item?.group ?? 3;
     this.time = item?.time ?? Date.now();
     this.variable = item?.variable ?? '';
-    this.variableComment = item?.variableComment;
+    this.variableComment = item?.variableComment ?? '';
     this.order = item?.order ?? 0;
     this.isTop = item?.isTop ?? false;
     this.isHide = item?.isHide ?? false;
     this.respondTime = item?.respondTime ?? -1;
-    this.searchRule = item?.searchRule;
-    this.discoverRule = item?.discoverRule ?? new DiscoverRule();
-    this.jsLib = item?.jsLib;
+    this.searchRule = new SearchRule(item?.searchRule);
+    this.discoverRule = new DiscoverRule(item?.discoverRule);
+    this.jsLib = item?.jsLib ?? '';
     this.enabledCookie = item?.enabledCookie ?? true;
-    this.concurrentRate = item?.concurrentRate;
-    this.header = item?.header;
-    this.decodeJs = item?.decodeJs;
-    this.style = item?.style;
-    this.loginUrl = item?.loginUrl;
-    this.loginUi = item?.loginUi;
-    this.loginCheckJs = item?.loginCheckJs;
+    this.concurrentRate = item?.concurrentRate ?? '';
+    this.header = item?.header ?? '';
+    this.decodeJs = item?.decodeJs ?? '';
+    this.style = item?.style ?? '';
+    this.loginUrl = item?.loginUrl ?? '';
+    this.loginUi = item?.loginUi ?? '';
+    this.loginCheckJs = item?.loginCheckJs ?? '';
   }
 }

@@ -1,4 +1,6 @@
+import { Columns, ColumnType, Convert, Entity, NotNull, Transient } from '@ohos/dataorm';
 import { IDiscoverItemRule, IDiscoverRule } from '../../common/Interface';
+import { DiscoverItemsConverter } from '../../utils';
 import { SearchRule } from './Search';
 
 /**
@@ -24,14 +26,19 @@ export class DiscoverItemRule implements IDiscoverItemRule {
  * 图源发现规则
  */
 @Observed
+@Entity('DiscoverRule')
 export class DiscoverRule extends SearchRule implements IDiscoverRule {
   /** 发现项 URL规则 */
+  @NotNull(true)
+  @Convert({ columnType: ColumnType.str, converter: DiscoverItemsConverter })
+  @Columns({ columnName: 'urlRules', types: ColumnType.str })
   urlRules: DiscoverItemRule[];
   /**
    * 发现项 URL规则
    * @deprecated 其使用 urlRules 代替
    */
-  urlRule?: string;
+  @Transient()
+  urlRule: string = '';
 
   constructor(item?: IDiscoverRule) {
     super(item);

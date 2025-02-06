@@ -1,35 +1,47 @@
+import { Columns, ColumnType, Entity } from '@ohos/dataorm';
 import { ISearchRule } from '../../common/Interface';
+import { TableBasic } from '../TableBasic';
 
 /**
  * 图源搜索规则
  */
 @Observed
-export class SearchRule implements ISearchRule {
+@Entity('SearchRule')
+export class SearchRule extends TableBasic implements ISearchRule {
   /** URL规则 */
-  urlRule?: string;
+  @Columns({ columnName: 'urlRule', types: ColumnType.str })
+  urlRule: string;
   /** 名称规则 */
-  nameRule?: string;
+  @Columns({ columnName: 'nameRule', types: ColumnType.str })
+  nameRule: string;
   /** 作者规则 */
-  authorRule?: string;
+  @Columns({ columnName: 'authorRule', types: ColumnType.str })
+  authorRule: string;
   /** 简介规则 */
-  introRule?: string;
+  @Columns({ columnName: 'introRule', types: ColumnType.str })
+  introRule: string;
   /** 分类规则 */
-  kindRule?: string;
+  @Columns({ columnName: 'kindRule', types: ColumnType.str })
+  kindRule: string;
   /** 列表规则 */
-  listRule?: string;
+  @Columns({ columnName: 'listRule', types: ColumnType.str })
+  listRule: string;
   /** 略缩图 URL 规则 */
-  thumbnailRule?: string;
+  @Columns({ columnName: 'thumbnailRule', types: ColumnType.str })
+  thumbnailRule: string;
   /** 详情图 URL 规则: 有效时转到详情规则获取图片的原始大小URL */
-  detailRule?: string;
+  @Columns({ columnName: 'detailRule', types: ColumnType.str })
+  detailRule: string;
 
   constructor(item?: ISearchRule) {
-    this.urlRule = item?.urlRule;
-    this.nameRule = item?.nameRule;
-    this.authorRule = item?.authorRule;
-    this.introRule = item?.introRule;
-    this.kindRule = item?.kindRule;
-    this.listRule = item?.listRule;
-    this.thumbnailRule = item?.thumbnailRule;
-    this.detailRule = item?.detailRule;
+    super(item?.id);
+    this.urlRule = item?.urlRule ?? '';
+    this.nameRule = item?.nameRule ?? '';
+    this.authorRule = item?.authorRule ?? '';
+    this.introRule = item?.introRule ?? '';
+    this.kindRule = item?.kindRule ?? '';
+    this.listRule = item?.listRule ?? '';
+    this.thumbnailRule = item?.thumbnailRule ?? '';
+    this.detailRule = item?.detailRule ?? '';
   }
 }
