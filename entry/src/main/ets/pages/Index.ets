@@ -1,10 +1,12 @@
-import { Router, RouterBuild } from '../router/Index';
-import { VSoutu } from '../views/Soutu';
+import { common } from '@kit.AbilityKit';
+import { deviceInfo } from '@kit.BasicServicesKit';
 import { ItemState, ToolBar, ToolBarOption, ToolBarOptions } from '@ohos.arkui.advanced.ToolBar';
+import { DEBUG } from 'BuildProfile';
+import { Router, RouterBuild } from '../router/Index';
 import { VAlbum } from '../views/Album';
 import { VRepo } from '../views/Repo';
 import { VSetting } from '../views/Setting';
-import { deviceInfo } from '@kit.BasicServicesKit';
+import { VSoutu } from '../views/Soutu';
 
 @Entry
 @Component
@@ -55,6 +57,11 @@ struct Index {
       }
       this.toolbarItems.push(item);
     });
+    if (DEBUG) {
+      import('@hadss/debug-db').then(async (ns) => {
+        await ns.DebugDB.initialize(getContext(this) as common.UIAbilityContext);
+      });
+    }
   }
 
   build() {
