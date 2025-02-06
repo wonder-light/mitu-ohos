@@ -1,5 +1,5 @@
-import { DataKvUtil } from '@abner/datastore';
 import { worker } from '@kit.ArkTS';
+import { DaoSession } from '@ohos/dataorm';
 
 /**
  * 站点控制
@@ -12,8 +12,8 @@ export class Site {
   declare background: worker.ThreadWorker;
   /** app 包名 */
   bundleName: string = '';
-  /** app 包名 */
-  declare kv: DataKvUtil;
+  /** 数据库 */
+  declare db: DaoSession;
 
   // 私有化构造器
   private constructor() { }

@@ -1,8 +1,7 @@
-import { DataKvUtil } from '@abner/datastore';
 import { AbilityStage } from '@kit.AbilityKit';
 import { worker } from '@kit.ArkTS';
 import app from '@system.app';
-import { site } from '../helpers';
+import { DbHelper, site } from '../helpers';
 
 export class AppAbilityStage extends AbilityStage {
   onCreate(): void {
@@ -15,11 +14,11 @@ export class AppAbilityStage extends AbilityStage {
     // 设置后台线程
     site.background = new worker.ThreadWorker('entry/ets/workers/background.ets');
     site.bundleName = this.context.applicationInfo.name;
-    site.kv = DataKvUtil.getInstance().init(this.context, site.bundleName);
+    //site.kv = DataKvUtil.getInstance().init(this.context, site.bundleName);
+    DbHelper.initialize(this.context);
   }
 
   onDestroy(): void {
     site.background.terminate();
-    site.kv.closeKVStore(site.bundleName);
   }
 }

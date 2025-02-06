@@ -8,6 +8,7 @@
   "dependencies": {
     "@rv/image-preview": "^1.0.14",
     "@abner/datastore": "^1.0.4"
+    "@ohos/dataorm": "^2.2.6-rc.0",
   },
   "devDependencies": {},
   "dynamicDependencies": {}
