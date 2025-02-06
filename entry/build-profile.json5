@@ -11,6 +11,7 @@
     {
       "name": "release",
       "arkOptions": {
+        "branchElimination": true,
         "obfuscation": {
           "ruleOptions": {
             "enable": false,

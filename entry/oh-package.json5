@@ -6,7 +6,8 @@
   "author": "wonder-light",
   "license": "MIT",
   "dependencies": {
-    "@rv/image-preview": "^1.0.14"
+    "@rv/image-preview": "^1.0.14",
+    "@abner/datastore": "^1.0.4"
   },
   "devDependencies": {},
   "dynamicDependencies": {}

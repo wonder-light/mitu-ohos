@@ -43,7 +43,6 @@ export struct TitleBar {
   /** 子标题 */
   subtitle: ResourceStr | undefined = undefined;
   /** 菜单项 */
-  @Prop
   menuItems: Array<TitleBarMenuItem> = [];
   /** 菜单项显示的最大数量 */
   maxMenuCount: number = 3;

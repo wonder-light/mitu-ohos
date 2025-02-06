@@ -23,16 +23,16 @@ struct Index {
   /** 是大屏 */
   isLarge: boolean = true;
   /** 前面 Icon 的前景色 */
-  leadingIconColor: ResourceColor = $r('sys.color.icon_on');
-  leadingIconBg: ResourceColor = Color.Orange;
-  iconSize: Length = $r('app.float.icon_size');
-  iconSizeLg: Length = $r('app.float.icon_size_lg');
-  fontColor: ResourceColor = $r('sys.color.font');
-  arrow: ResourceStr = $r("app.media.arrow_right");
-  arrowColor: ResourceColor = $r('sys.color.ohos_id_color_button_divider');
-  activeColor: ResourceColor = $r('app.color.button_active');
-  bgColor: ResourceColor = $r('sys.color.ohos_id_color_background');
-  bgNormal: ResourceColor = $r('sys.color.ohos_id_color_button_normal');
+  private leadingIconColor: ResourceColor = $r('sys.color.icon_on');
+  private leadingIconBg: ResourceColor = Color.Orange;
+  private iconSize: Length = $r('app.float.icon_size');
+  private iconSizeLg: Length = $r('app.float.icon_size_lg');
+  private fontColor: ResourceColor = $r('sys.color.font');
+  private arrow: ResourceStr = $r("app.media.arrow_right");
+  private arrowColor: ResourceColor = $r('sys.color.ohos_id_color_button_divider');
+  private activeColor: ResourceColor = $r('app.color.button_active');
+  private bgColor: ResourceColor = $r('sys.color.ohos_id_color_background');
+  private bgNormal: ResourceColor = $r('sys.color.ohos_id_color_button_normal');
 
   aboutToAppear(): void {
     // 是否是手机
