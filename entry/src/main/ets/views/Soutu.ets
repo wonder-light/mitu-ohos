@@ -29,6 +29,7 @@ export struct VSoutu {
   source: PictureSource = new PictureSource();
   /** Tabs 控制器 */
   private controller: TabsController = new TabsController();
+  // TODO: 拉起一个全模态用于显示搜索历史
 
   aboutToAppear(): void {
     this.source.discoverRule.urlRules.push(...[
@@ -56,7 +57,7 @@ export struct VSoutu {
                 .width('100%')
                 .height('100%')
             }
-            .tabBar(rule.name)
+            .tabBar(this.getTabBarStyle(rule.name))
           })
         }
         .scrollable(true)
@@ -69,6 +70,21 @@ export struct VSoutu {
     }
     .hideTitleBar(true)
     .hideToolBar(true)
+  }
+
+  /**
+   * 获取 TabBar 样式
+   * @param name
+   * @returns
+   */
+  getTabBarStyle(name: ResourceStr): SubTabBarStyle {
+    return SubTabBarStyle.of(name)
+      .padding(0)
+      .indicator({ color: $r('app.color.accent'), marginTop: 2 })
+      .labelStyle({
+        selectedColor: $r('app.color.accent'),
+        heightAdaptivePolicy: TextHeightAdaptivePolicy.MAX_LINES_FIRST
+      })
   }
 
   /**

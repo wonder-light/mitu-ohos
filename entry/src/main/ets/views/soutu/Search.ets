@@ -55,7 +55,7 @@ export struct VSearch {
       })
       SourceResultList({ dataSource: this.dataSource })
         .width('100%')
-        .height('100%')
+        .height(`calc(100% - ${TitleBar.totalHeight}vp)`)
         .margin({ top: 10 })
     }
     .hideTitleBar(true)
@@ -65,7 +65,7 @@ export struct VSearch {
   @Builder
   buildSearchBar() {
     Search({ placeholder: $r("app.string.search_placeholder"), controller: this.controller })
-      .searchButton('>')
+      .searchButton('>', { fontColor: $r('app.color.accent') })
       .onSubmit((value: string) => {
         this.searchPicture(value)
       })

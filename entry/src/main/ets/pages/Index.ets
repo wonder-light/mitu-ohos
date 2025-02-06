@@ -26,7 +26,7 @@ struct Index {
   isLarge: boolean = true;
   /** 前面 Icon 的前景色 */
   private leadingIconColor: ResourceColor = $r('sys.color.icon_on');
-  private leadingIconBg: ResourceColor = Color.Orange;
+  private leadingIconBg: ResourceColor = $r('app.color.accent');
   private iconSize: Length = $r('app.float.icon_size');
   private iconSizeLg: Length = $r('app.float.icon_size_lg');
   private fontColor: ResourceColor = $r('sys.color.font');
@@ -50,6 +50,7 @@ struct Index {
     ];
     items.forEach((item, index) => {
       item.state = ItemState.ACTIVATE;
+      item.activatedIconColor = item.activatedTextColor = this.leadingIconBg;
       if (this.isLarge) {
         item.action = (): void => this.toRouter(names[index], index);
       } else {

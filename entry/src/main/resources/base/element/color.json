@@ -7,6 +7,10 @@
     {
       "name": "button_active",
       "value": "#D6F2FF"
+    },
+    {
+      "name": "accent",
+      "value": "#FFA500"
     }
   ]
 }
