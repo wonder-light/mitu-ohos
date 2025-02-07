@@ -111,8 +111,6 @@ export class PictureSource extends TableBasic implements IPictureSource {
     this.isTop = item?.isTop ?? false;
     this.isHide = item?.isHide ?? false;
     this.respondTime = item?.respondTime ?? -1;
-    this.searchRule = new SearchRule(item?.searchRule);
-    this.discoverRule = new DiscoverRule(item?.discoverRule);
     this.jsLib = item?.jsLib ?? '';
     this.enabledCookie = item?.enabledCookie ?? true;
     this.concurrentRate = item?.concurrentRate ?? '';
@@ -122,5 +120,11 @@ export class PictureSource extends TableBasic implements IPictureSource {
     this.loginUrl = item?.loginUrl ?? '';
     this.loginUi = item?.loginUi ?? '';
     this.loginCheckJs = item?.loginCheckJs ?? '';
+    let search = item?.searchRule ?? {};
+    search.id = this.id;
+    this.searchRule = new SearchRule(search);
+    let discover = item?.discoverRule ?? {};
+    discover.id = this.id;
+    this.discoverRule = new DiscoverRule(discover);
   }
 }

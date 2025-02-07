@@ -1,7 +1,8 @@
 import { AbilityStage } from '@kit.AbilityKit';
+import { sendablePreferences } from '@kit.ArkData';
 import { worker } from '@kit.ArkTS';
 import app from '@system.app';
-import { DbHelper, site } from '../helpers';
+import { site } from '../helpers';
 
 export class AppAbilityStage extends AbilityStage {
   onCreate(): void {
@@ -13,9 +14,15 @@ export class AppAbilityStage extends AbilityStage {
     app.setImageCacheCount(200);
     // 设置后台线程
     site.background = new worker.ThreadWorker('entry/ets/workers/background.ets');
+    // com.nianian.mitu
     site.bundleName = this.context.applicationInfo.name;
+    // mitu
+    const name = site.bundleName.split('.').pop()!;
+    // 首选项
+    site.pf = sendablePreferences.getPreferencesSync(this.context, { name: name });
     //site.kv = DataKvUtil.getInstance().init(this.context, site.bundleName);
-    DbHelper.initialize(this.context);
+    // 初始化站点数据
+    site.initialize(this.context);
   }
 
   onDestroy(): void {

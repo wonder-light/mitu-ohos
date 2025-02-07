@@ -19,6 +19,7 @@ export class DbHelper extends OpenHelper {
       await dbHelper.setVersion(1);
       // 设定数据实体
       dbHelper.setEntities(DiscoverRule, SearchRule, PictureSource);
+      // 数据库
       const db = await dbHelper.getWritableDb();
       site.db = new DaoMaster(db).newSession();
     } catch (e) {

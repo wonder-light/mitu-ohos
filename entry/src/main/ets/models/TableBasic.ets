@@ -11,6 +11,6 @@ export class TableBasic implements ITableBasic {
   id: number;
 
   constructor(item?: number) {
-    this.id = item ?? 0;
+    this.id = item ?? Date.now();
   }
 }
