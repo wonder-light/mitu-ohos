@@ -29,6 +29,7 @@ export struct VSoutu {
   source: PictureSource = new PictureSource();
   /** Tabs 控制器 */
   private controller: TabsController = new TabsController();
+
   // TODO: 拉起一个全模态用于显示搜索历史
 
   aboutToAppear(): void {

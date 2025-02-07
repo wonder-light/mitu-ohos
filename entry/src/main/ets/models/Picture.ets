@@ -1,6 +1,7 @@
-import { Columns, ColumnType, Entity, Index, ToOne } from '@ohos/dataorm';
+import { Columns, ColumnType, Convert, Entity, Index, ToOne } from '@ohos/dataorm';
 import { TableBasic } from '.';
 import { IPictureSource } from '../common/Interface';
+import { BoolConverter } from '../utils';
 import { DiscoverRule } from './rule/Discover';
 import { SearchRule } from './rule/Search';
 
@@ -49,20 +50,17 @@ export class PictureSource extends TableBasic implements IPictureSource {
   @Columns({ columnName: 'orders', types: ColumnType.num })
   order: number;
   /** 是否置顶 */
-  @Columns({ columnName: 'isTop', types: ColumnType.real })
+  @Columns({ columnName: 'isTop', types: ColumnType.str })
+  @Convert({ columnType: ColumnType.str, converter: BoolConverter })
   isTop: boolean;
   /** 是否隐藏 */
-  @Columns({ columnName: 'isHide', types: ColumnType.real })
+  @Columns({ columnName: 'isHide', types: ColumnType.str })
+  @Convert({ columnType: ColumnType.str, converter: BoolConverter })
   isHide: boolean;
   /** 响应超时时间 */
   @Columns({ columnName: 'respondTime', types: ColumnType.num })
   respondTime: number;
   /** 搜索规则 */
-  @ToOne({ joinProperty: 'searchId', targetObj: SearchRule })
-  searchRule: SearchRule;
-  /** 发现规则 */
-  @ToOne({ joinProperty: 'discoverId', targetObj: DiscoverRule })
-  discoverRule: DiscoverRule;
   /** js库 */
   @Columns({ columnName: 'jsLib', types: ColumnType.str })
   jsLib: string;
@@ -90,10 +88,14 @@ export class PictureSource extends TableBasic implements IPictureSource {
   /** 登录检测js */
   @Columns({ columnName: 'loginCheckJs', types: ColumnType.str })
   loginCheckJs: string;
+  @ToOne({ joinProperty: 'id', targetObj: SearchRule })
+  searchRule: SearchRule;
+  /** 发现规则 */
+  @ToOne({ joinProperty: 'id', targetObj: DiscoverRule })
+  discoverRule: DiscoverRule;
 
   constructor(item?: IPictureSource) {
-    super();
-    this.id = 0;
+    super(item?.id);
     this.origin = item?.origin ?? '';
     this.originName = item?.originName ?? '';
     this.type = item?.type ?? '';

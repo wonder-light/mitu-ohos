@@ -6,7 +6,7 @@ import { ITableBasic } from '../common';
  */
 @Observed
 export class TableBasic implements ITableBasic {
-  @Id()
+  @Id({ autoincrement: true })
   @Columns({ columnName: 'id', types: ColumnType.num })
   id: number;
 
