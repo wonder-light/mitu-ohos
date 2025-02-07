@@ -2,7 +2,7 @@ import { LengthMetrics } from '@kit.ArkUI';
 import { ImagePreviewController } from '@rv/image-preview';
 import { UDataSource } from '../../common/Data';
 import { SearchResultItem } from '../../models/Result';
-import { ImageCom, ImageDialog } from '../index';
+import { ImageCom, ImageDialog, Loading } from '../index';
 
 /** 数据回调函数, 用于添加数据 */
 export type TItemCallback = Callback<SearchResultItem | SearchResultItem[]>;
@@ -88,10 +88,7 @@ export struct SourceResultList {
   @Builder
   buildFooter() {
     if (this.isLoading) {
-      Image($r('app.media.loading_gif'))
-        .width('100%')
-        .constraintSize({ maxHeight: 80 })
-        .objectFit(ImageFit.ScaleDown)
+      Loading()
     }
   }
 
