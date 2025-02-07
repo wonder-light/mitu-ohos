@@ -1,8 +1,8 @@
 import { IDiscoverItemRule } from '../common';
 import { SourceResultList, TItemCallback, TitleBar, TitleBarMenuItem } from '../component';
+import { Const, IDiscoverItemRule } from '../common';
 import { DiscoverItemRule, PictureSource } from '../models';
 import { SearchResultItem } from '../models/Result';
-import { Router } from '../router/Index';
 
 @Builder
 export function buildSoutu() {
@@ -18,7 +18,7 @@ export struct VSoutu {
   navMenus: TitleBarMenuItem[] = [
     {
       value: $r("app.media.search"),
-      action: (): void => this.pageStack.pushPathByName(Router.search, null, true)
+      action: (): void => this.pageStack.pushPathByName(Const.search, null, true)
     },
     {
       value: $r('app.media.camera'),

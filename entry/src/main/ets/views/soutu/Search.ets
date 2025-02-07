@@ -42,6 +42,7 @@ export struct VSearch {
     } else {
       this.lookForPictures()
     }
+    // TODO: 拉起一个全模态用于显示搜索历史
   }
 
   build() {

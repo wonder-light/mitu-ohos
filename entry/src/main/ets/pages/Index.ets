@@ -2,7 +2,8 @@ import { common } from '@kit.AbilityKit';
 import { deviceInfo } from '@kit.BasicServicesKit';
 import { ItemState, ToolBar, ToolBarOption, ToolBarOptions } from '@ohos.arkui.advanced.ToolBar';
 import { DEBUG } from 'BuildProfile';
-import { Router, RouterBuild } from '../router/Index';
+import { Const } from '../common';
+import { RouterBuild } from '../router/Index';
 import { VAlbum } from '../views/Album';
 import { VRepo } from '../views/Repo';
 import { VSetting } from '../views/Setting';
@@ -41,7 +42,7 @@ struct Index {
     if (deviceInfo.deviceType == 'phone') {
       this.isLarge = false;
     }
-    const names = [Router.soutu, Router.album, Router.repo, Router.setting];
+    const names = [Const.soutu, Const.album, Const.repo, Const.setting];
     const items: ToolBarOption[] = [
       { content: $r("app.string.soutu"), icon: $r("app.media.soutu") },
       { content: $r('app.string.album'), icon: $r('app.media.album') },
@@ -151,7 +152,7 @@ struct Index {
   /** 导航栏显示 */
   navAppear() {
     if (this.isLarge) {
-      this.pageStack.pushPathByName(Router.soutu, null, true);
+      this.pageStack.pushPathByName(Const.soutu, null, true);
     }
   }
 
