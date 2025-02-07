@@ -21,8 +21,8 @@ router[Const.search] = new WrappedBuilder(buildSearch);
 @Builder
 export function RouterBuild(name: string, param: object) {
   if (router[name] != null) {
-    router[name].builder()
+    router[name].builder(param)
   } else {
-    router[Const.notFound].builder()
+    router[Const.notFound].builder(param)
   }
 }

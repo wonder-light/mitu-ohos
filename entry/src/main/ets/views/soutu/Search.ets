@@ -4,8 +4,8 @@ import { PictureSource } from '../../models';
 import { SearchResultItem } from '../../models/Result';
 
 @Builder
-export function buildSearch() {
-  VSearch();
+export function buildSearch(isCamera?: Object) {
+  VSearch({ isCamera: typeof isCamera === 'boolean' ? isCamera : false });
 }
 
 @Component({ freezeWhenInactive: true })
@@ -13,6 +13,8 @@ export struct VSearch {
   /** 导航栈 */
   @Consume('pageStack')
   pageStack: NavPathStack;
+  /** 是否是以图搜图 */
+  isCamera: boolean = false;
   /** 数据源集合 TODO: 从存储中加载 */
   sources: PictureSource[] = [];
   /** 搜索控制器 */
@@ -36,8 +38,7 @@ export struct VSearch {
   private dataSource: UDataSource<SearchResultItem> = new UDataSource<SearchResultItem>();
 
   aboutToAppear(): void {
-    let isSearch = true;
-    if (isSearch) {
+    if (this.isCamera) {
       this.searchPicture('');
     } else {
       this.lookForPictures()

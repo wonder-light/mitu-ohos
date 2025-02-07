@@ -20,11 +20,11 @@ export struct VSoutu {
   navMenus: TitleBarMenuItem[] = [
     {
       value: $r("app.media.search"),
-      action: (): void => this.pageStack.pushPathByName(Const.search, null, true)
+      action: (): void => this.pageStack.pushPathByName(Const.search, false, true)
     },
     {
       value: $r('app.media.camera'),
-      action: (): void => { }
+      action: (): void => this.pageStack.pushPathByName(Const.search, true, true)
     }
   ];
   /** 是否正在加载 */

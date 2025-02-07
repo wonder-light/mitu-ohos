@@ -52,6 +52,7 @@ export class DiscoverItemsConverter extends JsonConverter<DiscoverItemRule[]> {
 }
 
 /**
+ * TODO: @ohos/dataorm 变更
  * 文件 : @ohos/dataorm/src/main/ets/core/BaseDao.ts
  * 行数 : 358 行, protected loadCurrentDeep(resultSet: any, lock: boolean): T
  * 修改 :
