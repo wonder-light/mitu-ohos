@@ -61,7 +61,8 @@ export struct VSearch {
    * @returns
    */
   onBackPress(): boolean {
-    return !this.isInit;
+    if (this.isInit) return false;
+    return this.isInit = true;
   }
 
   build() {
@@ -136,8 +137,8 @@ export struct VSearch {
   }
 
   /** 历史记录删除和添加 */
-  historySplice(start: number, deleteCount?: number, ...items: string[]): void {
-    this.histories.splice(start, 1, ...items);
+  historySplice(start: number, deleteCount: number, ...items: string[]): void {
+    this.histories.splice(start, deleteCount, ...items);
     site.pf.put(Const.searchHistory, collections.Array.from(this.histories));
   }
 

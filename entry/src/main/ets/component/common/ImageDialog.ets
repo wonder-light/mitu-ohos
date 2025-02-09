@@ -11,8 +11,8 @@ export struct ImageDialog {
   @State
   isPreview: boolean = true;
   /** 预览背景色 */
-  private _bgColor1: ResourceColor = $r('sys.color.black');
-  private _bgColor2: ResourceColor = $r('sys.color.white');
+  private _bgColor1: ResourceColor = $r('app.color.font');
+  private _bgColor2: ResourceColor = $r('app.color.background');
 
   aboutToAppear(): void {
     this.controller.setOnClick(() => this.switchBgColor());

@@ -51,7 +51,7 @@ export struct TitleBar {
   /** 返回操作 */
   backCall: VoidCallback | undefined;
   /** 背景色 */
-  bgColor: ResourceColor = $r('sys.color.ohos_id_color_background');
+  bgColor: ResourceColor = $r('app.color.background');
   /** 自定义标题组件 */
   @BuilderParam
   customTitle: undefined | (() => void);
@@ -95,15 +95,15 @@ export struct TitleBar {
             if (this.title !== undefined) {
               Text(this.title)
                 .fontWeight(FontWeight.Medium)
-                .fontSize($r('sys.float.ohos_id_text_size_headline8'))
-                .fontColor($r('sys.color.ohos_id_color_titlebar_text'))
+                .fontSize($r('app.float.text_xl'))
+                .fontColor($r('app.color.font'))
                 .maxLines(this.subtitle !== undefined ? 1 : 2)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
             }
             if (this.subtitle !== undefined) {
               Text(this.subtitle)
-                .fontSize($r('sys.float.ohos_id_text_size_over_line'))
-                .fontColor($r('sys.color.ohos_id_color_titlebar_subtitle_text'))
+                .fontSize($r('app.float.text_sm'))
+                .fontColor($r('app.color.subtitle_text'))
                 .maxLines(1)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
             }
@@ -138,7 +138,7 @@ export struct TitleBar {
     .height(TitleBar.totalHeight)
     .justifyContent(FlexAlign.SpaceBetween)
     .alignSelf(ItemAlign.Stretch)
-    .padding({ left: $r('sys.float.ohos_id_default_padding_start'), right: $r('sys.float.ohos_id_default_padding_start') })
+    .padding({ left: TitleBar.leftPadding, right: TitleBar.leftPadding })
     .backgroundColor(this.bgColor)
   }
 
@@ -182,7 +182,7 @@ export struct ImageMenuItem {
             .draggable(false)
             .focusable(this.item.isEnabled ?? true)
             .focusable(this.item.isEnabled ?? true)
-            .fontColor([$r('sys.color.ohos_id_color_text_primary')])
+            .fontColor([$r('app.color.font')])
         } else {
           Image(this.item.value)
             .draggable(false)
@@ -190,7 +190,7 @@ export struct ImageMenuItem {
             .width(TitleBar.imageSize)
             .height(TitleBar.imageSize)
             .focusable(this.item.isEnabled ?? true)
-            .fillColor($r('sys.color.ohos_id_color_text_primary'))
+            .fillColor($r('app.color.font'))
         }
       }
       .enabled(this.item.isEnabled ?? true)
@@ -202,8 +202,8 @@ export struct ImageMenuItem {
           .backgroundColor(Color.Transparent)
         },
         clicked: {
-          .foregroundColor($r('sys.color.ohos_id_color_click_effect'))
-          .backgroundColor($r('sys.color.ohos_id_color_click_effect'))
+          .foregroundColor($r('app.color.button_normal'))
+          .backgroundColor($r('app.color.button_normal'))
         }
       })
       .onClick(() => {

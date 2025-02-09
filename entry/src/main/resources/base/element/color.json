@@ -11,6 +11,26 @@
     {
       "name": "accent",
       "value": "#FFA500"
+    },
+    {
+      "name": "icon_on",
+      "value": "#ffffff"
+    },
+    {
+      "name": "font",
+      "value": "#000000"
+    },
+    {
+      "name": "button_divider",
+      "value": "#33000000"
+    },
+    {
+      "name": "button_normal",
+      "value": "#12000000"
+    },
+    {
+      "name": "subtitle_text",
+      "value": "#99000000"
     }
   ]
 }

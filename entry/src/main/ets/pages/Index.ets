@@ -5,6 +5,7 @@ import { DEBUG } from 'BuildProfile';
 import { Const } from '../common';
 import { site } from '../helpers';
 import { RouterBuild } from '../router/Index';
+import { Log } from '../utils';
 import { VAlbum } from '../views/Album';
 import { VRepo } from '../views/Repo';
 import { VSetting } from '../views/Setting';
@@ -27,16 +28,16 @@ struct Index {
   /** 是大屏 */
   isLarge: boolean = true;
   /** 前面 Icon 的前景色 */
-  private leadingIconColor: ResourceColor = $r('sys.color.icon_on');
+  private leadingIconColor: ResourceColor = $r('app.color.icon_on');
   private leadingIconBg: ResourceColor = $r('app.color.accent');
   private iconSize: Length = $r('app.float.icon_size');
   private iconSizeLg: Length = $r('app.float.icon_size_lg');
-  private fontColor: ResourceColor = $r('sys.color.font');
+  private fontColor: ResourceColor = $r('app.color.font');
   private arrow: ResourceStr = $r("app.media.arrow_right");
-  private arrowColor: ResourceColor = $r('sys.color.ohos_id_color_button_divider');
+  private arrowColor: ResourceColor = $r("app.color.button_divider");
   private activeColor: ResourceColor = $r('app.color.button_active');
-  private bgColor: ResourceColor = $r('sys.color.ohos_id_color_background');
-  private bgNormal: ResourceColor = $r('sys.color.ohos_id_color_button_normal');
+  private bgColor: ResourceColor = $r('app.color.background');
+  private bgNormal: ResourceColor = $r('app.color.button_normal');
 
   aboutToAppear(): void {
     // 是否是手机
@@ -65,6 +66,9 @@ struct Index {
         await ns.DebugDB.initialize(getContext(this) as common.UIAbilityContext);
       });
     }
+    let resourceManager = getContext(this).resourceManager;
+    Log.d('sys.float.ohos_id_color_text_primary: ' + resourceManager.getColorSync($r('sys.color.ohos_id_color_text_primary')).toString(16));
+    Log.d('sys.float.ohos_id_color_click_effect: ' + resourceManager.getColorSync($r('sys.color.ohos_id_color_click_effect')).toString(16));
   }
 
   build() {
@@ -87,7 +91,7 @@ struct Index {
     .mode(NavigationMode.Auto)
     .navDestination(RouterBuild)
     .toolbarConfiguration(this.buildToolbar)
-    .title('Soutu')
+    .title($r('app.string.app_name'))
     .titleMode(NavigationTitleMode.Mini)
     .hideToolBar(this.isLarge)
     .hideTitleBar(!this.isLarge)

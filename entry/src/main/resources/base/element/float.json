@@ -23,6 +23,10 @@
     {
       "name": "text_base",
       "value": "16"
+    },
+    {
+      "name": "text_xl",
+      "value": "20"
     }
   ]
 }
