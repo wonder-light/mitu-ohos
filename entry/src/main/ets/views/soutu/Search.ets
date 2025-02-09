@@ -1,7 +1,7 @@
 import { collections } from '@kit.ArkTS';
 import { Chip, ChipSize, LengthMetrics } from '@kit.ArkUI';
 import { Const, UDataSource } from '../../common';
-import { SourceResultList, TitleBar, TitleBarMenuItem } from '../../component';
+import { Loading, SourceResultList, TitleBar, TitleBarMenuItem } from '../../component';
 import { site } from '../../helpers';
 import { PictureSource } from '../../models';
 import { SearchResultItem } from '../../models/Result';
@@ -22,6 +22,9 @@ export struct VSearch {
   /** 是否是页面初始化 */
   @State
   isInit: boolean = true;
+  /** 是否正在加载 */
+  @State
+  isLoading: boolean = false;
   /** 数据源集合 TODO: 从存储中加载 */
   sources: PictureSource[] = [];
   /** 搜索控制器 */
@@ -45,9 +48,13 @@ export struct VSearch {
   private dataSource: UDataSource<SearchResultItem> = new UDataSource<SearchResultItem>();
   /** 搜索历史 */
   private histories: string[] = [];
+  /** 清除历史 */
+  @State
+  private clearHistory: boolean = false;
   //
   private chipSize: Resource = $r('app.float.text_xs');
   private flexSpace = LengthMetrics.vp(6);
+  private animateParam: AnimateParam = { duration: 200, curve: Curve.Ease };
 
   aboutToAppear(): void {
     const value = site.pf.getSync(Const.searchHistory, new collections.Array<string>()) as collections.Array<string>;
@@ -62,7 +69,8 @@ export struct VSearch {
    */
   onBackPress(): boolean {
     if (this.isInit) return false;
-    return this.isInit = true;
+    animateTo(this.animateParam, () => this.isInit = true);
+    return true;
   }
 
   build() {
@@ -79,32 +87,35 @@ export struct VSearch {
           Row() {
             Text($r("app.string.search_history"))
               .fontSize(this.chipSize)
-              .fontColor($r('sys.color.ohos_id_color_button_divider'))
-            Button($r("app.string.clear"), { buttonStyle: ButtonStyleMode.TEXTUAL })
+              .fontColor($r('app.color.button_divider'))
+            Button($r("app.string.clear"), { buttonStyle: ButtonStyleMode.TEXTUAL, controlSize: ControlSize.SMALL })
               .fontSize(this.chipSize)
-              .fontColor($r('sys.color.ohos_id_color_button_divider'))
+              .fontColor($r('app.color.button_divider'))
+              .onClick(() => this.historySplice(0, this.histories.length))
           }
           .width('100%')
           .justifyContent(FlexAlign.SpaceBetween)
 
           Scroll() {
             Flex({ wrap: FlexWrap.Wrap, direction: FlexDirection.Row, space: { main: this.flexSpace, cross: this.flexSpace } }) {
-              ForEach(this.histories, (item: string, index: number) => {
+              Repeat(this.clearHistory ? this.histories : this.histories).each((item) => {
                 Chip({
-                  label: { text: item, fontSize: this.chipSize },
+                  label: { text: item.item, fontSize: this.chipSize },
                   size: ChipSize.SMALL,
-                  onClose: () => this.historySplice(index, 1)
+                  onClose: () => this.historySplice(item.index, 1)
                 })
               })
             }
-            .constraintSize({ minHeight: '100%' })
           }
           .flex()
           .scrollBar(BarState.Off)
+          .align(Alignment.TopStart)
         }
         .width('100%')
         .flex()
         .padding(10)
+      } else if (this.isLoading) {
+        Loading()
       } else {
         SourceResultList({ dataSource: this.dataSource })
           .width('100%')
@@ -124,7 +135,10 @@ export struct VSearch {
     Search({ placeholder: $r("app.string.search_placeholder"), controller: this.controller })
       .textFont({ size: $r('app.float.text_xs') })
       .searchButton('>', { fontColor: $r('app.color.accent') })
+      .onEditChange((value) => animateTo(this.animateParam, () => this.isInit = this.isInit || value))
       .onSubmit((value: string) => {
+        if (value.trim().length <= 0) return;
+        animateTo(this.animateParam, () => this.isInit = false)
         this.searchPicture(value)
       })
   }
@@ -138,20 +152,29 @@ export struct VSearch {
 
   /** 历史记录删除和添加 */
   historySplice(start: number, deleteCount: number, ...items: string[]): void {
+    let needUpdate = deleteCount > 0 && deleteCount == this.histories.length
     this.histories.splice(start, deleteCount, ...items);
     site.pf.put(Const.searchHistory, collections.Array.from(this.histories));
+    if (needUpdate) {
+      this.clearHistory = !this.clearHistory;
+    }
   }
 
   /** 搜索 changeValue 对应的图片 */
   async searchPicture(value: string) {
+    this.isLoading = true;
+    this.historySplice(this.histories.length - 1, 0, value);
     // TODO: 搜索图片
     this.generateData();
+    this.isLoading = false;
   }
 
   /** 以图搜图 */
   async lookForPictures() {
+    this.isLoading = true;
     // TODO: 以图搜图
     this.generateData();
+    this.isLoading = false;
   }
 
   /**
