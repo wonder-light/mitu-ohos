@@ -3,6 +3,7 @@ import { deviceInfo } from '@kit.BasicServicesKit';
 import { ItemState, ToolBar, ToolBarOption, ToolBarOptions } from '@ohos.arkui.advanced.ToolBar';
 import { DEBUG } from 'BuildProfile';
 import { Const } from '../common';
+import { site } from '../helpers';
 import { RouterBuild } from '../router/Index';
 import { VAlbum } from '../views/Album';
 import { VRepo } from '../views/Repo';
@@ -91,6 +92,10 @@ struct Index {
     .hideToolBar(this.isLarge)
     .hideTitleBar(!this.isLarge)
     .hideBackButton(true)
+  }
+
+  onPageHide(): void {
+    site.pf.flushSync();
   }
 
   @Builder

@@ -35,6 +35,14 @@
     {
       "name": "multi_group",
       "value": "多分组/图源"
+    },
+    {
+      "name": "search_history",
+      "value": "搜索历史"
+    },
+    {
+      "name": "clear",
+      "value": "清除"
     }
   ]
 }

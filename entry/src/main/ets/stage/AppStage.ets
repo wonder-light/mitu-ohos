@@ -27,5 +27,6 @@ export class AppAbilityStage extends AbilityStage {
 
   onDestroy(): void {
     site.background.terminate();
+    site.pf.flushSync();
   }
 }

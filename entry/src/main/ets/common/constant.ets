@@ -15,6 +15,8 @@ export class Const {
   /** 404 页面 */
   static readonly notFound: string = 'notFound';
 
+  /** 搜索历史 */
+  static readonly searchHistory: string = 'searchHistory';
 
 
   /** 站点初始化完成 */

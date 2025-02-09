@@ -20,11 +20,7 @@ export struct VSoutu {
   navMenus: TitleBarMenuItem[] = [
     {
       value: $r("app.media.search"),
-      action: (): void => this.pageStack.pushPathByName(Const.search, false, true)
-    },
-    {
-      value: $r('app.media.camera'),
-      action: (): void => this.pageStack.pushPathByName(Const.search, true, true)
+      action: (): void => this.pageStack.pushPathByName(Const.search, null, true)
     }
   ];
   /** 是否正在加载 */
@@ -69,7 +65,9 @@ export struct VSoutu {
         }
       }
       .height('100%')
-      .height(`calc(100% - ${TitleBar.totalHeight}vp)`)
+      .flexGrow(1)
+      .flexShrink(1)
+      .flexBasis('0%')
       .justifyContent(FlexAlign.Center)
     }
     .hideTitleBar(true)

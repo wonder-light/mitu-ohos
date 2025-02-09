@@ -11,6 +11,18 @@
     {
       "name": "icon_size",
       "value": "24"
+    },
+    {
+      "name": "text_xs",
+      "value": "12"
+    },
+    {
+      "name": "text_sm",
+      "value": "14"
+    },
+    {
+      "name": "text_base",
+      "value": "16"
     }
   ]
 }

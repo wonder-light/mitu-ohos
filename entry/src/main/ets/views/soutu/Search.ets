@@ -1,11 +1,14 @@
-import { UDataSource } from '../../common';
+import { collections } from '@kit.ArkTS';
+import { Chip, ChipSize, LengthMetrics } from '@kit.ArkUI';
+import { Const, UDataSource } from '../../common';
 import { SourceResultList, TitleBar, TitleBarMenuItem } from '../../component';
+import { site } from '../../helpers';
 import { PictureSource } from '../../models';
 import { SearchResultItem } from '../../models/Result';
 
 @Builder
-export function buildSearch(isCamera?: Object) {
-  VSearch({ isCamera: typeof isCamera === 'boolean' ? isCamera : false });
+export function buildSearch() {
+  VSearch();
 }
 
 @Component({ freezeWhenInactive: true })
@@ -14,7 +17,11 @@ export struct VSearch {
   @Consume('pageStack')
   pageStack: NavPathStack;
   /** 是否是以图搜图 */
+  @State
   isCamera: boolean = false;
+  /** 是否是页面初始化 */
+  @State
+  isInit: boolean = true;
   /** 数据源集合 TODO: 从存储中加载 */
   sources: PictureSource[] = [];
   /** 搜索控制器 */
@@ -36,14 +43,25 @@ export struct VSearch {
   ];
   /** 数据懒加载源 */
   private dataSource: UDataSource<SearchResultItem> = new UDataSource<SearchResultItem>();
+  /** 搜索历史 */
+  private histories: string[] = [];
+  //
+  private chipSize: Resource = $r('app.float.text_xs');
+  private flexSpace = LengthMetrics.vp(6);
 
   aboutToAppear(): void {
-    if (this.isCamera) {
-      this.searchPicture('');
-    } else {
-      this.lookForPictures()
-    }
-    // TODO: 拉起一个全模态用于显示搜索历史
+    const value = site.pf.getSync(Const.searchHistory, new collections.Array<string>()) as collections.Array<string>;
+    try {
+      this.histories.push(...value);
+    } catch (e) { }
+  }
+
+  /**
+   * 返回值为 true 时，表示重写返回键逻辑，返回值为 false 时，表示回退到上一个页面
+   * @returns
+   */
+  onBackPress(): boolean {
+    return !this.isInit;
   }
 
   build() {
@@ -55,22 +73,72 @@ export struct VSearch {
         maxMenuCount: 1,
         customTitle: () => { this.buildSearchBar() }
       })
-      SourceResultList({ dataSource: this.dataSource })
+      if (this.isInit) {
+        Column() {
+          Row() {
+            Text($r("app.string.search_history"))
+              .fontSize(this.chipSize)
+              .fontColor($r('sys.color.ohos_id_color_button_divider'))
+            Button($r("app.string.clear"), { buttonStyle: ButtonStyleMode.TEXTUAL })
+              .fontSize(this.chipSize)
+              .fontColor($r('sys.color.ohos_id_color_button_divider'))
+          }
+          .width('100%')
+          .justifyContent(FlexAlign.SpaceBetween)
+
+          Scroll() {
+            Flex({ wrap: FlexWrap.Wrap, direction: FlexDirection.Row, space: { main: this.flexSpace, cross: this.flexSpace } }) {
+              ForEach(this.histories, (item: string, index: number) => {
+                Chip({
+                  label: { text: item, fontSize: this.chipSize },
+                  size: ChipSize.SMALL,
+                  onClose: () => this.historySplice(index, 1)
+                })
+              })
+            }
+            .constraintSize({ minHeight: '100%' })
+          }
+          .flex()
+          .scrollBar(BarState.Off)
+        }
         .width('100%')
-        .height(`calc(100% - ${TitleBar.totalHeight}vp)`)
-        .margin({ top: 10 })
+        .flex()
+        .padding(10)
+      } else {
+        SourceResultList({ dataSource: this.dataSource })
+          .width('100%')
+          .flexGrow(1)
+          .flexShrink(1)
+          .flexBasis('0%')
+          .margin({ top: 10 })
+      }
     }
     .hideTitleBar(true)
     .hideToolBar(true)
+    .onBackPressed(() => this.onBackPress())
   }
 
   @Builder
   buildSearchBar() {
     Search({ placeholder: $r("app.string.search_placeholder"), controller: this.controller })
+      .textFont({ size: $r('app.float.text_xs') })
       .searchButton('>', { fontColor: $r('app.color.accent') })
       .onSubmit((value: string) => {
         this.searchPicture(value)
       })
+  }
+
+  @Styles
+  flex() {
+    .flexGrow(1)
+    .flexShrink(1)
+    .flexBasis('0%')
+  }
+
+  /** 历史记录删除和添加 */
+  historySplice(start: number, deleteCount?: number, ...items: string[]): void {
+    this.histories.splice(start, 1, ...items);
+    site.pf.put(Const.searchHistory, collections.Array.from(this.histories));
   }
 
   /** 搜索 changeValue 对应的图片 */

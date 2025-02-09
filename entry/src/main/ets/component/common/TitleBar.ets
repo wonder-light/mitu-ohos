@@ -58,9 +58,6 @@ export struct TitleBar {
   /** 自定义菜单组件 */
   @BuilderParam
   customPopup: (() => void) = this.menuBuilder;
-  /** 标题的最大宽度 */
-  @State
-  private titleMaxWidth: number = 0;
   /** 是否显示菜单弹窗 */
   @State
   private showPopup: boolean = false;
@@ -112,16 +109,11 @@ export struct TitleBar {
             }
           }
         }
+        .flex()
         .justifyContent(FlexAlign.Start)
         .alignItems(HorizontalAlign.Start)
-        .constraintSize({ maxWidth: this.titleMaxWidth })
       }
-      .flexGrow(1)
-      .onAreaChange((_, newArea) => {
-        let width = Number(newArea.width)
-        width -= (TitleBar.leftPadding + TitleBar.imageHotZoneWidth) * (this.item !== undefined ? 2 : 1);
-        this.titleMaxWidth = width;
-      })
+      .flex()
 
       if (this.menuItems.length > 0) {
         Row() {
@@ -161,6 +153,13 @@ export struct TitleBar {
         }
       })
     }
+  }
+
+  @Styles
+  flex(){
+    .flexGrow(1)
+    .flexShrink(1)
+    .flexBasis('0%')
   }
 }
 
