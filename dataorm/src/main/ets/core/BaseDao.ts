@@ -212,6 +212,11 @@ export class BaseDao<T, K> extends AbstractDao<T, K> {
     return entity;
   }
 
+  public readEntityAs<Y extends unknown = T>(cursor: any, offset: number): Y {
+    let entity = cursor.getRow();
+    return entity as Y;
+  }
+
   /**
    * TODO readEntity 方法的无返回值
    */

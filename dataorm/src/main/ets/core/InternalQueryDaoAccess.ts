@@ -37,6 +37,10 @@ export class InternalQueryDaoAccess <T> {
         return this.dao.loadAllAndCloseCursor(cursor);
     }
 
+    public loadAllAndCloseCursorAs<Y extends any = T>(cursor: any): Array<Y> {
+        return this.dao.loadAllAndCloseCursor<Y>(cursor, true);
+    }
+
     public loadUniqueAndCloseCursor(cursor: any): T {
         return this.dao.loadUniqueAndCloseCursor(cursor);
     }

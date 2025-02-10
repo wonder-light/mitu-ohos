@@ -65,6 +65,11 @@ export class Query<T> extends AbstractQueryWithLimit<T> {
     let cursor: any = await this.dao.getDatabase().rawQueries(<string> this.predicates, this.parameters);
     return this.daoAccess.loadAllAndCloseCursor(cursor);
   }
+
+  public async listSqlAs<Y extends any = T>(): Promise<Array<Y>>{
+    let cursor: any = await this.dao.getDatabase().rawQueries(<string> this.predicates, this.parameters);
+    return this.daoAccess.loadAllAndCloseCursorAs<Y>(cursor);
+  }
   /**
    * Executes the query and returns the unique result or null.
    *

@@ -42,6 +42,7 @@ export class QueryBuilder<T> {
   private whereCollector: WhereCollector<T>;
   private orderBuilder: StringBuilder;
   private values: Array<any>;
+  private columns: Array<any>;
   private joins: Array<Join<T, any>>;
   private dao: AbstractDao<T, any>;
   private tablePrefix: string;
@@ -66,6 +67,7 @@ export class QueryBuilder<T> {
       this.tablePrefix = tablePrefix;
     }
     this.values = new Array<any>();
+    this.columns = new Array<any>();
     this.joins = new Array<Join<T, any>>();
     this.whereCollector = new WhereCollector<T>(dao, this.tablePrefix);
     this.stringOrderCollations = " COLLATE NOCASE";
@@ -436,6 +438,16 @@ export class QueryBuilder<T> {
   }
 
   /**
+   * 将给定的属性添加到 SELECT 节, 仅限于 buildSql, buildCursorSql 和 listSqlAs
+   * @param name sql语句中需要查询的字段
+   * @returns
+   */
+  public select(...name: string[]): QueryBuilder<T> {
+    this.columns.push(...name);
+    return this;
+  }
+
+  /**
    * Builds a reusable query object (Query objects can be executed more efficiently than creating a QueryBuilder for
    * each execution.
    */
@@ -483,7 +495,8 @@ export class QueryBuilder<T> {
   }
 
   private createSelectSql(): string {
-    let select = SqlUtils.createSqlSelect(this.dao.getTableName(), this.tablePrefix, this.dao.getAllColumns(), this.isDistinct);
+    let columns = this.columns.length > 0 ? this.columns : this.dao.getAllColumns();
+    let select = SqlUtils.createSqlSelect(this.dao.getTableName(), this.tablePrefix, columns, this.isDistinct);
     let builder = new StringBuilder(select);
     this.appendJoinAndWheres(builder, this.tablePrefix);
     if (this.orderBuilder != null && this.orderBuilder.toString().length > 0) {

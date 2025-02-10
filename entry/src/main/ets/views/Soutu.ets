@@ -1,11 +1,10 @@
 import { BaseDao } from '@ohos/dataorm';
-import { Const, IDiscoverItemRule } from '../common';
+import { Const, IDiscoverItemRule, IPictureSource } from '../common';
 import { Loading, SourceResultList, TItemCallback, TitleBar, TitleBarMenuItem } from '../component';
 import { site } from '../helpers';
 import { DiscoverItemRule, PictureSource } from '../models';
 import { SearchResultItem } from '../models/Result';
 import { Log } from '../utils';
-import { relationalStore } from '@kit.ArkData';
 
 @Builder
 export function buildSoutu() {
@@ -98,18 +97,11 @@ export struct VSoutu {
    * 打开切换图源的弹窗页面
    */
   async openSwitchSource(): Promise<void> {
-    try {
-      Log.i('打开切换图源的弹窗页面')
-      //let result = site.db.getDatabase().getRawDatabase().querySqlSync('select id,name from PictureSource');
-      let result = await this.dao.rawQuery('select id,name from PictureSource') as relationalStore.ResultSet;
-      Log.i('columnNames: ' + JSON.stringify(result.columnNames))
-      Log.i('rowCount: ' + JSON.stringify(result.rowCount))
-      result.goToFirstRow()
-      Log.i('row: ' + JSON.stringify(result.getRow()))
-      result.close();
-    } catch (e) {
-      Log.e(e)
-    }
+    let results = await this.dao.queryBuilder()
+      .select('id', 'name')
+      .buildSql()
+      .listSqlAs<IPictureSource>();
+    Log.i('results: ' + JSON.stringify(results))
   }
 
   /**

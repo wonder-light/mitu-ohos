@@ -244,9 +244,9 @@ export abstract class AbstractDao<T, K> {
     }
   }
 
-  protected loadAllAndCloseCursor(cursor: any): Array<T> {
+  protected loadAllAndCloseCursor<Y extends any = T>(cursor: any, isAs?: boolean): Array<Y> {
     try {
-      return this.loadAllFromCursor(cursor);
+      return this.loadAllFromCursor<Y>(cursor, isAs);
     } finally {
       if (cursor) {
         cursor.close();
@@ -672,13 +672,13 @@ export abstract class AbstractDao<T, K> {
 
 
   /** Reads all available rows from the given cursor and returns a JList of entities. */
-  protected loadAllFromCursor(cursor: dataRdb.ResultSet): Array<T> {
+  protected loadAllFromCursor<Y extends any = T>(cursor: dataRdb.ResultSet, isAs?: boolean): Array<Y> {
 
     let count: number = cursor.rowCount;
     if (count == 0) {
-      return new JList<T>().dataSource;
+      return new JList<Y>().dataSource;
     }
-    let list: JList<T> = new JList<T>();
+    let list: JList<Y> = new JList<Y>();
     if (cursor && cursor.goToFirstRow()) {
 
       if (this.identityScope != null) {
@@ -688,7 +688,8 @@ export abstract class AbstractDao<T, K> {
 
       try {
         do {
-          list.insert(this.loadCurrent(cursor, 0, false));
+          let value = isAs === true ? this.loadCurrentAs<Y>(cursor, 0, false) : this.loadCurrent(cursor, 0, false);
+          list.insert(value as Y);
         } while (cursor.goToNextRow());
       } finally {
         if (this.identityScope != null) {
@@ -739,6 +740,13 @@ export abstract class AbstractDao<T, K> {
       this.attachEntity(entity);
       return entity;
     }
+  }
+
+  /**
+   * 返回实体对象而不是对应的类
+   */
+  protected loadCurrentAs<Y extends any = T>(cursor: dataRdb.ResultSet, offset: number, lock: boolean): Y {
+    return this.readEntityAs<Y>(cursor, offset);
   }
 
   /** Internal use only. Considers identity scope. */
@@ -1388,6 +1396,7 @@ export abstract class AbstractDao<T, K> {
   /** Reads the values from the current position of the given cursor and returns a new entity. */
   protected abstract readEntity(cursor: any, offset: number): T;
 
+  protected abstract readEntityAs<Y extends any = T>(cursor: any, offset: number): Y;
 
   /** Reads the key from the current position of the given cursor, or returns null if there's no single-value key. */
   protected abstract readKey(cursor: any, offset: number): K;
