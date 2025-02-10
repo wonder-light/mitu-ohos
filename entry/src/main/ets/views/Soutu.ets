@@ -2,7 +2,7 @@ import { BaseDao } from '@ohos/dataorm';
 import { Const, IDiscoverItemRule, IPictureSource } from '../common';
 import { Loading, SourceResultList, TItemCallback, TitleBar, TitleBarMenuItem } from '../component';
 import { site } from '../helpers';
-import { DiscoverItemRule, PictureSource } from '../models';
+import { PictureSource } from '../models';
 import { SearchResultItem } from '../models/Result';
 import { Log } from '../utils';
 
@@ -98,7 +98,7 @@ export struct VSoutu {
    */
   async openSwitchSource(): Promise<void> {
     let results = await this.dao.queryBuilder()
-      .select('id', 'name')
+      .select('id', 'name', 'groups')
       .buildSql()
       .listSqlAs<IPictureSource>();
     Log.i('results: ' + JSON.stringify(results))
@@ -119,13 +119,6 @@ export struct VSoutu {
     } else {
       this.source = await this.dao.loadDeep(id);
     }
-    // TODO: 需要删除
-    if (!this.source) this.source = new PictureSource();
-    this.source.discoverRule.urlRules.push(...[
-      new DiscoverItemRule({ name: '必应' }),
-      new DiscoverItemRule({ name: '百度' }),
-      new DiscoverItemRule({ name: 'Pixiv' })
-    ]);
     this.isLoading = false;
   }
 

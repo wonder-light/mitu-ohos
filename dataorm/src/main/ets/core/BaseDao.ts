@@ -213,7 +213,68 @@ export class BaseDao<T, K> extends AbstractDao<T, K> {
   }
 
   public readEntityAs<Y extends unknown = T>(cursor: any, offset: number): Y {
-    let entity = cursor.getRow();
+    let entity = {};
+    let properties = GlobalContext.getContext().getValue(GlobalContext.KEY_CLS)[DbUtils.getEntityClassName(this.entityCls)];
+    let propertyMaps = new HashMap<string, Property>();
+    // 设置属性
+    for (let key in properties) {
+      let item = properties[key];
+      propertyMaps.set(item.columnName, item);
+    }
+    // 设置实体属性
+    for(let key of cursor.columnNames){
+      let property = propertyMaps.get(key);
+      let entityProperty = property.name;
+      let propertyValue = cursor.getValue(cursor.getColumnIndex(key));
+
+      // embedded注解修饰处理
+      if (property.sourcesPropertyArray && property.sourcesPropertyArray.size() > 0) {
+        // 存储Embedded修饰的Object
+        let embeddedObjectMap = new HashMap<string, Object>();
+        let objectMap = new HashMap<string, Object>();
+        let sourcesNameArray: Queue<string> = property.sourcesPropertyArray.clone() as Queue<string>;
+        let array = sourcesNameArray.getElements();
+        let result = entity;
+        let parentsProperty = "";
+        for (let i = 0; i < array.length; i++) {
+          const element = array[i];
+          parentsProperty += element;
+          let sourcesPropertyName = JSON.stringify(property.sourcesPropertyArray);
+          let sourcesTarget;
+          if (embeddedObjectMap.hasKey(sourcesPropertyName)) {
+            sourcesTarget = embeddedObjectMap.get(sourcesPropertyName);
+          } else {
+            sourcesTarget = {}; // 这里需要判断之前的entity里面是否已经存在过
+            if (objectMap.hasKey(sourcesNameArray.toArrayString())) {
+              sourcesTarget = objectMap.get(sourcesNameArray.toArrayString())
+            }
+            embeddedObjectMap.set(sourcesPropertyName, sourcesTarget);
+          }
+          sourcesTarget[entityProperty] = propertyValue;
+          if (i === array.length - 1) {
+            result[element] = sourcesTarget;
+          } else {
+            result[element] = result[element] ? result[element] : {};
+            objectMap.set(parentsProperty, result[element]);
+          }
+          result = result[element];
+        }
+        embeddedObjectMap = null;
+        objectMap = null;
+      } else {
+        let convertParamObj = property.getConvertParamObj();
+        if (convertParamObj) {
+          let obj = convertParamObj as ConvertParameter;
+          let convertTarget = obj.getConverter();
+          convertTarget = new convertTarget();
+          if (convertTarget instanceof PropertyConverter) {
+            propertyValue = convertTarget.convertToEntityProperty(propertyValue);
+          }
+        }
+        entity[entityProperty] = propertyValue;
+      }
+    }
+    propertyMaps = null;
     return entity as Y;
   }
 
