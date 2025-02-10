@@ -1,11 +1,7 @@
 import { lang } from '@kit.ArkTS';
 
-export interface ISendable<T> extends lang.ISendable {
-  value: T;
-}
-
 @Sendable
-export class USendable<T> implements ISendable<T> {
+export class USendable<T> implements lang.ISendable {
   value: T;
 
   constructor(value: T) {

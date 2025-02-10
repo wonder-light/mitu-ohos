@@ -36,7 +36,7 @@ export class PictureSource extends TableBasic implements IPictureSource {
   kind: string;
   /** 在导入的情况下或则未分组默认为 2 未分组 */
   @Columns({ columnName: 'groups', types: ColumnType.num })
-  group: number;
+  group: string;
   /** 创建或更新时间 */
   @Columns({ columnName: 'time', types: ColumnType.num })
   time: number;
@@ -103,7 +103,7 @@ export class PictureSource extends TableBasic implements IPictureSource {
     this.author = item?.author ?? '';
     this.intro = item?.intro ?? '';
     this.kind = item?.kind ?? '';
-    this.group = item?.group ?? 3;
+    this.group = item?.group ?? '';
     this.time = item?.time ?? Date.now();
     this.variable = item?.variable ?? '';
     this.variableComment = item?.variableComment ?? '';

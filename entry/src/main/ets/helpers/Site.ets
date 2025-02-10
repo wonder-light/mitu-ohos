@@ -21,8 +21,6 @@ export class Site {
   declare db: DaoSession;
   /** 共享用户首选项 */
   declare pf: sendablePreferences.Preferences;
-  /** 搜图页面的初始图片源 */
-  soutu?: PictureSource;
 
   // 私有化构造器
   private constructor() { }

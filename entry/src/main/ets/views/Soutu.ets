@@ -1,4 +1,3 @@
-import { emitter } from '@kit.BasicServicesKit';
 import { BaseDao } from '@ohos/dataorm';
 import { Const, IDiscoverItemRule } from '../common';
 import { Loading, SourceResultList, TItemCallback, TitleBar, TitleBarMenuItem } from '../component';
@@ -40,7 +39,7 @@ export struct VSoutu {
 
   build() {
     NavDestination() {
-      TitleBar({ title: $r("app.string.soutu"), menuItems: this.navMenus })
+      TitleBar({ title: $r("app.string.soutu"), maxMenuCount: 1, menuItems: this.navMenus })
       Column() {
         if (this.isLoading) {
           Loading()
@@ -78,10 +77,6 @@ export struct VSoutu {
    * 加载初始数据
    */
   async loadData(): Promise<void> {
-    // 判断 site.db 是否已经初始化
-    if (!site.db) {
-      return emitter.on(Const.siteInit, () => this.loadData());
-    }
     // 加载搜图页面的初始图片源
     let id: number = await site.pf.get(Const.soutu, -1) as number;
     this.dao = site.db.getBaseDao<PictureSource, number>(PictureSource);

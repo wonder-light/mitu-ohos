@@ -124,7 +124,7 @@ export interface IPictureSource extends ITableBasic {
   kind?: string;
 
   /** 在导入的情况下或则未分组默认为 2 未分组 */
-  group?: number;
+  group?: string;
 
   /** 创建或更新时间 */
   time?: number;
