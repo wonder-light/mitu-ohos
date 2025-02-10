@@ -1,0 +1,21 @@
+{
+  "name": "@ohos/dataorm",
+  "version": "2.2.6-rc.0",
+  "description": "dataORM is a relational mapping database with one line of code to manipulate a database or chain call, backup, upgrade, cache, and more",
+  "repository": "https://gitee.com/openharmony-sig/dataORM",
+  "main": "Index.ets",
+  "author": "",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "reflect-metadata": "^0.1.13"
+  },
+  "metadata": {
+    "sourceRoots": [
+      "./src/main"
+    ],
+    "debug": true
+  },
+  "compatibleSdkVersion": 12,
+  "compatibleSdkType": "OpenHarmony",
+  "obfuscated": false
+}

@@ -7,7 +7,7 @@
   "license": "MIT",
   "dependencies": {
     "@rv/image-preview": "^1.0.14",
-    "@ohos/dataorm": "^2.2.6-rc.0",
+    "@ohos/dataorm": "file:../dataorm",
     "@hadss/debug-db": "^1.0.0-rc.6"
   },
   "devDependencies": {},
