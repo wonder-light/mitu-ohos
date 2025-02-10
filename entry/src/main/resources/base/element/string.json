@@ -37,6 +37,10 @@
       "value": "多分组/图源"
     },
     {
+      "name": "switch_source",
+      "value": "切换图源"
+    },
+    {
       "name": "search_history",
       "value": "搜索历史"
     },

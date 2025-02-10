@@ -41,7 +41,10 @@ export struct SourceResultList {
 
   aboutToAppear(): void {
     this.dataSource.registerCallback(this.setImages);
-    this.controller.setCachedCount(1).setAutoResize(true);
+    this.controller.setCachedCount(1)
+      .setAutoResize(true)
+      .setAlt($r('app.media.loading_page'))
+      .setError($r('app.media.loading_page'))
     if (this.generateData != null) {
       this.generateData((item) => this.dataSource.pushAll(item));
     }

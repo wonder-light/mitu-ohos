@@ -20,6 +20,10 @@ export struct VSoutu {
     {
       value: $r("app.media.search"),
       action: (): void => this.pageStack.pushPathByName(Const.search, null, true)
+    },
+    {
+      label: $r("app.string.switch_source"),
+      action: (): void => { }
     }
   ];
   /** 是否正在加载 */
