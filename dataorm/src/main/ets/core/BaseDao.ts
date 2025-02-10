@@ -362,10 +362,12 @@ export class BaseDao<T, K> extends AbstractDao<T, K> {
     let entities: Entity = GlobalContext.getContext().getValue(GlobalContext.KEY_CLS_RE_SHIP)[DbUtils.getEntityClassName(entityCls)]
     for (let i = 0;i < entities.toOneRelations.length; i++) {
       let toOne = entities.toOneRelations[i]
-      let customer = this.loadCurrentOther(this.getSession().getDao(toOne.targetEntityClsName), resultSet, offset);
+      let dao = this.getSession().getDao(toOne.targetEntityClsName);
+      let customer = this.loadCurrentOther(dao, resultSet, offset);
       if (customer != null || customer != undefined) {
         entity[toOne.name] = customer;
       }
+      offset += dao.getAllColumns().length;
     }
     return entity;
   }
