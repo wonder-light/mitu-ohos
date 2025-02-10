@@ -5,7 +5,6 @@ import { DEBUG } from 'BuildProfile';
 import { Const } from '../common';
 import { site } from '../helpers';
 import { RouterBuild } from '../router/Index';
-import { Log } from '../utils';
 import { VAlbum } from '../views/Album';
 import { VRepo } from '../views/Repo';
 import { VSetting } from '../views/Setting';
@@ -66,9 +65,6 @@ struct Index {
         await ns.DebugDB.initialize(getContext(this) as common.UIAbilityContext);
       });
     }
-    let resourceManager = getContext(this).resourceManager;
-    Log.d('sys.float.ohos_id_color_text_primary: ' + resourceManager.getColorSync($r('sys.color.ohos_id_color_text_primary')).toString(16));
-    Log.d('sys.float.ohos_id_color_click_effect: ' + resourceManager.getColorSync($r('sys.color.ohos_id_color_click_effect')).toString(16));
   }
 
   build() {

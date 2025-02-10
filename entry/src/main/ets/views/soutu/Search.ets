@@ -5,6 +5,7 @@ import { Loading, SourceResultList, TitleBar, TitleBarMenuItem } from '../../com
 import { site } from '../../helpers';
 import { PictureSource } from '../../models';
 import { SearchResultItem } from '../../models/Result';
+import { MediaUt } from '../../utils';
 
 @Builder
 export function buildSearch() {
@@ -19,21 +20,24 @@ export struct VSearch {
   /** 是否是以图搜图 */
   @State
   isCamera: boolean = false;
-  /** 是否是页面初始化 */
+  /** 是否显示搜搜历史页面 */
   @State
-  isInit: boolean = true;
+  isShow: boolean = true;
   /** 是否正在加载 */
   @State
   isLoading: boolean = false;
   /** 数据源集合 TODO: 从存储中加载 */
   sources: PictureSource[] = [];
+  /** 搜索文本值 */
+  @State
+  private searchValue: string = '';
   /** 搜索控制器 */
   private controller: SearchController = new SearchController();
   /** 菜单 */
   private navMenus: TitleBarMenuItem[] = [
     {
       value: $r("app.media.camera"),
-      action: (): void => { this.lookForPictures() }
+      action: (): Promise<void> => this.lookForPictures()
     },
     {
       label: $r("app.string.source_manage"),
@@ -58,9 +62,11 @@ export struct VSearch {
 
   aboutToAppear(): void {
     const value = site.pf.getSync(Const.searchHistory, new collections.Array<string>()) as collections.Array<string>;
-    try {
-      this.histories.push(...value);
-    } catch (e) { }
+    this.histories.push(...value);
+  }
+
+  aboutToDisappear(): void {
+    site.pf.putSync(Const.searchHistory, collections.Array.from(this.histories));
   }
 
   /**
@@ -68,8 +74,8 @@ export struct VSearch {
    * @returns
    */
   onBackPress(): boolean {
-    if (this.isInit) return false;
-    animateTo(this.animateParam, () => this.isInit = true);
+    if (this.isShow) return false;
+    animateTo(this.animateParam, () => this.isShow = true);
     return true;
   }
 
@@ -80,10 +86,11 @@ export struct VSearch {
         title: $r("app.string.soutu"),
         menuItems: this.navMenus,
         maxMenuCount: 1,
-        customTitle: () => { this.buildSearchBar() }
+        customTitle: () => { this.buildSearchBar() },
+        backCall: () => (this.onBackPress() ? null : this.pageStack.pop())
       })
-      if (this.isInit) {
-        Column() {
+      Column() {
+        if (this.isShow) {
           Row() {
             Text($r("app.string.search_history"))
               .fontSize(this.chipSize)
@@ -91,9 +98,13 @@ export struct VSearch {
             Button($r("app.string.clear"), { buttonStyle: ButtonStyleMode.TEXTUAL, controlSize: ControlSize.SMALL })
               .fontSize(this.chipSize)
               .fontColor($r('app.color.button_divider'))
-              .onClick(() => this.historySplice(0, this.histories.length))
+              .onClick(() => {
+                this.histories.splice(0, this.histories.length);
+                this.clearHistory = !this.clearHistory;
+              })
           }
           .width('100%')
+          .padding({ left: 8, right: 8 })
           .justifyContent(FlexAlign.SpaceBetween)
 
           Scroll() {
@@ -102,28 +113,30 @@ export struct VSearch {
                 Chip({
                   label: { text: item.item, fontSize: this.chipSize },
                   size: ChipSize.SMALL,
-                  onClose: () => this.historySplice(item.index, 1)
+                  onClose: () => this.histories.splice(item.index, 1),
+                  onClicked: () => this.searchPicture(item.item)
                 })
               })
             }
           }
           .flex()
+          .padding(8)
           .scrollBar(BarState.Off)
           .align(Alignment.TopStart)
+        } else if (this.isLoading) {
+          Column() {
+            Loading()
+          }
+          .justifyContent(FlexAlign.Center)
+        } else {
+          SourceResultList({ dataSource: this.dataSource })
+            .width('100%')
+            .height('100%')
+            .margin({ top: 10 })
         }
-        .width('100%')
-        .flex()
-        .padding(10)
-      } else if (this.isLoading) {
-        Loading()
-      } else {
-        SourceResultList({ dataSource: this.dataSource })
-          .width('100%')
-          .flexGrow(1)
-          .flexShrink(1)
-          .flexBasis('0%')
-          .margin({ top: 10 })
       }
+      .width('100%')
+      .flex()
     }
     .hideTitleBar(true)
     .hideToolBar(true)
@@ -132,15 +145,10 @@ export struct VSearch {
 
   @Builder
   buildSearchBar() {
-    Search({ placeholder: $r("app.string.search_placeholder"), controller: this.controller })
+    Search({ placeholder: $r("app.string.search_placeholder"), value: $$this.searchValue, controller: this.controller })
       .textFont({ size: $r('app.float.text_xs') })
       .searchButton('>', { fontColor: $r('app.color.accent') })
-      .onEditChange((value) => animateTo(this.animateParam, () => this.isInit = this.isInit || value))
-      .onSubmit((value: string) => {
-        if (value.trim().length <= 0) return;
-        animateTo(this.animateParam, () => this.isInit = false)
-        this.searchPicture(value)
-      })
+      .onSubmit((value: string) => this.searchPicture(value))
   }
 
   @Styles
@@ -150,31 +158,41 @@ export struct VSearch {
     .flexBasis('0%')
   }
 
-  /** 历史记录删除和添加 */
-  historySplice(start: number, deleteCount: number, ...items: string[]): void {
-    let needUpdate = deleteCount > 0 && deleteCount == this.histories.length
-    this.histories.splice(start, deleteCount, ...items);
-    site.pf.put(Const.searchHistory, collections.Array.from(this.histories));
-    if (needUpdate) {
-      this.clearHistory = !this.clearHistory;
-    }
-  }
-
   /** 搜索 changeValue 对应的图片 */
   async searchPicture(value: string) {
-    this.isLoading = true;
-    this.historySplice(this.histories.length - 1, 0, value);
-    // TODO: 搜索图片
-    this.generateData();
-    this.isLoading = false;
+    // 无效值
+    if (value.trim().length <= 0) return;
+    // 设置显示的值
+    this.searchValue = value;
+    // 停止编辑
+    this.controller.stopEditing();
+    // 动画
+    animateTo(this.animateParam, () => this.isLoading = !(this.isShow = false))
+    // 添加历史
+    let index = this.histories.indexOf(value);
+    // 把已有的历史放到最前面
+    if (index >= 0) this.histories.splice(index, 1);
+    this.histories.unshift(value);
+    // 以图搜图
+    if (value.startsWith('file://') || value.startsWith('http')) {
+      // TODO: 搜索图片
+      this.generateData();
+    } else {
+      // TODO: 搜索图片
+      this.generateData();
+    }
+    // 动画
+    animateTo(this.animateParam, () => this.isLoading = false);
   }
 
   /** 以图搜图 */
   async lookForPictures() {
-    this.isLoading = true;
-    // TODO: 以图搜图
-    this.generateData();
-    this.isLoading = false;
+    //await MediaUt.selectFile({ fileSuffixFilters:  ['jpg', 'jpeg', 'png', 'gif'] });
+    // 拉起图片选择器
+    const fileUrl = await MediaUt.selectPicture();
+    if (fileUrl) {
+      this.searchValue = fileUrl;
+    }
   }
 
   /**
