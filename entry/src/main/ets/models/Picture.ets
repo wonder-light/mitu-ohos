@@ -35,7 +35,7 @@ export class PictureSource extends TableBasic implements IPictureSource {
   @Columns({ columnName: 'kind', types: ColumnType.str })
   kind: string;
   /** 在导入的情况下或则未分组默认为 2 未分组 */
-  @Columns({ columnName: 'groups', types: ColumnType.num })
+  @Columns({ columnName: 'groups', types: ColumnType.str })
   group: string;
   /** 创建或更新时间 */
   @Columns({ columnName: 'time', types: ColumnType.num })

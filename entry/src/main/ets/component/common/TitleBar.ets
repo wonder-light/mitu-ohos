@@ -147,9 +147,9 @@ export struct TitleBar {
     Menu() {
       ForEach(this.menuItems.slice(this.maxMenuCount), (item: TitleBarMenuItem, index: number) => {
         if (item.builder != null) {
-          MenuItem(item.builder)
+          MenuItem(item.builder).onClick(() => item.action?.())
         } else {
-          MenuItem({ startIcon: item.value, content: item.label })
+          MenuItem({ startIcon: item.value, content: item.label }).onClick(() => item.action?.())
         }
       })
     }

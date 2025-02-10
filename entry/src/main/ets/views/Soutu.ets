@@ -4,6 +4,8 @@ import { Loading, SourceResultList, TItemCallback, TitleBar, TitleBarMenuItem } 
 import { site } from '../helpers';
 import { DiscoverItemRule, PictureSource } from '../models';
 import { SearchResultItem } from '../models/Result';
+import { Log } from '../utils';
+import { relationalStore } from '@kit.ArkData';
 
 @Builder
 export function buildSoutu() {
@@ -19,11 +21,11 @@ export struct VSoutu {
   navMenus: TitleBarMenuItem[] = [
     {
       value: $r("app.media.search"),
-      action: (): void => this.pageStack.pushPathByName(Const.search, null, true)
+      action: () => this.pageStack.pushPathByName(Const.search, null, true)
     },
     {
       label: $r("app.string.switch_source"),
-      action: (): void => { }
+      action: () => this.openSwitchSource()
     }
   ];
   /** 是否正在加载 */
@@ -78,9 +80,42 @@ export struct VSoutu {
   }
 
   /**
+   * 获取 TabBar 样式
+   * @param name
+   * @returns
+   */
+  getTabBarStyle(name: ResourceStr): SubTabBarStyle {
+    return SubTabBarStyle.of(name)
+      .padding(0)
+      .indicator({ color: $r('app.color.accent'), marginTop: 2 })
+      .labelStyle({
+        selectedColor: $r('app.color.accent'),
+        heightAdaptivePolicy: TextHeightAdaptivePolicy.MAX_LINES_FIRST
+      })
+  }
+
+  /**
+   * 打开切换图源的弹窗页面
+   */
+  async openSwitchSource(): Promise<void> {
+    try {
+      Log.i('打开切换图源的弹窗页面')
+      //let result = site.db.getDatabase().getRawDatabase().querySqlSync('select id,name from PictureSource');
+      let result = await this.dao.rawQuery('select id,name from PictureSource') as relationalStore.ResultSet;
+      Log.i('columnNames: ' + JSON.stringify(result.columnNames))
+      Log.i('rowCount: ' + JSON.stringify(result.rowCount))
+      result.goToFirstRow()
+      Log.i('row: ' + JSON.stringify(result.getRow()))
+      result.close();
+    } catch (e) {
+      Log.e(e)
+    }
+  }
+
+  /**
    * 加载初始数据
    */
-  async loadData(): Promise<void> {
+  private async loadData(): Promise<void> {
     // 加载搜图页面的初始图片源
     let id: number = await site.pf.get(Const.soutu, -1) as number;
     this.dao = site.db.getBaseDao<PictureSource, number>(PictureSource);
@@ -103,26 +138,11 @@ export struct VSoutu {
   }
 
   /**
-   * 获取 TabBar 样式
-   * @param name
-   * @returns
-   */
-  getTabBarStyle(name: ResourceStr): SubTabBarStyle {
-    return SubTabBarStyle.of(name)
-      .padding(0)
-      .indicator({ color: $r('app.color.accent'), marginTop: 2 })
-      .labelStyle({
-        selectedColor: $r('app.color.accent'),
-        heightAdaptivePolicy: TextHeightAdaptivePolicy.MAX_LINES_FIRST
-      })
-  }
-
-  /**
    * 生成的数据
    * @param callback 添加数据的回调
    * @param rule 发现项规则
    */
-  generateData(callback: TItemCallback, rule: IDiscoverItemRule): void {
+  private generateData(callback: TItemCallback, rule: IDiscoverItemRule): void {
     // 发现规则
     let discoverRule = this.source?.discoverRule;
     let fill = new SearchResultItem({

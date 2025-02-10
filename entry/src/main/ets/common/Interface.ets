@@ -103,10 +103,10 @@ export interface IDiscoverRule extends ISearchRule {
  */
 export interface IPictureSource extends ITableBasic {
   /** 图源基础URL */
-  origin: string;
+  origin?: string;
 
   /** 图源名称 */
-  originName: string;
+  originName?: string;
 
   /** 图源类型 */
   type?: string;
