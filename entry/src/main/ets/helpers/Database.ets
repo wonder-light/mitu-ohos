@@ -8,6 +8,15 @@ import { site } from './Site';
  */
 export class DbHelper extends OpenHelper {
   /**
+   * 数据库版本
+   *
+   * @description 初始化数据库, 将各个模块的实体类注册到数据库中
+   * @readonly
+   * @version 1
+   */
+  static readonly dbVersion: number = 1;
+
+  /**
    * 初始化数据
    */
   static async initialize(context: Context, name: string = 'mitu.db'): Promise<void> {
@@ -16,7 +25,7 @@ export class DbHelper extends OpenHelper {
       // 设定数据加密
       dbHelper.setEncrypt(false);
       // 设定数据库版本
-      await dbHelper.setVersion(1);
+      await dbHelper.setVersion(DbHelper.dbVersion);
       // 设定数据实体
       dbHelper.setEntities(DiscoverRule, SearchRule, PictureSource);
       // 数据库
