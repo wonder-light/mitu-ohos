@@ -21,9 +21,9 @@ import hilog from '@ohos.hilog';
 
 /**
  * Internal dataORM logger class.
- * 
+ *
  * @author markus
- * 
+ *
  */
 export class DaoLog {
     private static TAG: string = "dataORM";
@@ -33,7 +33,7 @@ export class DaoLog {
     public static WARN: number = 5;
     public static ERROR: number = 6;
     public static FATAL: number = 7;
-    private static domain: number = 0xFFF0;
+    private static domain: number = 0xFF00;
 
     public static isLoggable(level: number): boolean {
         return hilog.isLoggable(this.domain, this.TAG, level);
@@ -43,44 +43,24 @@ export class DaoLog {
         return th.stack;
     }
 
-    public static println(level: number, msg: string): void {
-        switch (level) {
-            case this.INFO:
-                hilog.info(this.domain, this.TAG, "%{public}s", msg);
-                break;
-            case this.DEBUG:
-                hilog.debug(this.domain, this.TAG, "%{public}s", msg);
-                break;
-            case this.WARN:
-                hilog.warn(this.domain, this.TAG, "%{public}s", msg);
-                break;
-            case this.ERROR:
-                hilog.error(this.domain, this.TAG, "%{public}s", msg);
-                break;
-            case this.FATAL:
-                hilog.fatal(this.domain, this.TAG, "%{public}s", msg);
-                break;
-        }
-    }
-
     public static v(msg: string, th?: Error): void {
-        return this.println(this.FATAL, this.wrapMsg(msg, th));
+        hilog.fatal(this.domain, this.TAG, '%{public}s', this.wrapMsg(msg, th));
     }
 
     public static d(msg: string, th?: Error): void {
-        return this.println(this.DEBUG, msg + th.message);
+        hilog.debug(this.domain, this.TAG, '%{public}s', this.wrapMsg(msg, th));
     }
 
     public static i(msg: string, th?: Error): void {
-        return this.println(this.INFO, this.wrapMsg(msg, th));
+        hilog.info(this.domain, this.TAG, '%{public}s', this.wrapMsg(msg, th));
     }
 
     public static w(msg: string, th?: Error): void {
-        return this.println(this.WARN, this.wrapMsg(msg, th));
+        hilog.warn(this.domain, this.TAG, '%{public}s', this.wrapMsg(msg, th));
     }
 
     public static e(msg: string, th?: Error): void {
-        return this.println(this.ERROR, this.wrapMsg(msg, th));
+        hilog.error(this.domain, this.TAG, '%{public}s', this.wrapMsg(msg, th));
     }
 
     public static wrapMsg(msg: string, th?: Error): string{
