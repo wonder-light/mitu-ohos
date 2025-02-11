@@ -1,6 +1,7 @@
 import { ImagePreview, ImagePreviewController } from '@rv/image-preview';
 import { TitleBar } from './TitleBar';
 
+@Component
 @CustomDialog
 export struct ImageDialog {
   /** 弹窗控制器 */
@@ -13,21 +14,6 @@ export struct ImageDialog {
   /** 预览背景色 */
   private _bgColor1: ResourceColor = $r('app.color.font');
   private _bgColor2: ResourceColor = $r('app.color.background');
-
-  /**
-   * 创建图片预览弹窗
-   * @param controller 预览控制器
-   * @returns { CustomDialogController } 弹窗控制器
-   */
-  static create(controller: ImagePreviewController): CustomDialogController {
-    return new CustomDialogController({
-      builder: ImageDialog({ controller: controller }),
-      customStyle: true,
-      offset: { dx: 0, dy: 0 },
-      alignment: DialogAlignment.Center,
-      autoCancel: true
-    });
-  }
 
   aboutToAppear(): void {
     this.controller.setOnClick(() => this.switchBgColor());
