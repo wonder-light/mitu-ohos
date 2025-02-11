@@ -1,13 +1,82 @@
+import { HashMap, HashSet } from '@kit.ArkTS';
+import { BasicPrefetcher, IDataSourcePrefetching } from '@kit.ArkUI';
+import { AsyncCallback } from './Type';
+
+type ICallback<T> = AsyncCallback<number, T>;
+
+/** 数据源数据接口 */
+export declare interface IDataSource<T> {
+  /** 源列表 */
+  origins?: T[];
+
+  /** 预加载回调 */
+  preloadCallback?: ICallback<T>;
+
+  /** 预加载器 */
+  prefetcher?: BasicPrefetcher;
+}
+
 /**
  * 数据源
  */
-export class UDataSource<T> implements IDataSource {
+export class UDataSource<T> implements IDataSourcePrefetching {
+
   /** 源列表 */
-  protected origins: T[] = [];
+  protected origins: T[];
   /** 监听列表 */
-  protected listeners: DataChangeListener[] = [];
-  /** 监听数据操作, 统一调用一个 */
-  protected listenerCallbacks: VoidCallback[] = [];
+  protected listeners: HashSet<DataChangeListener | VoidCallback> = new HashSet();
+  /** 预加载操作集合 */
+  protected preloads: HashMap<number, Promise<void>> = new HashMap();
+  /** 预加载回调 */
+  protected preloadCallback?: ICallback<T>;
+  /** 预加载器 */
+  protected prefetcher?: BasicPrefetcher;
+
+  constructor(item?: IDataSource<T>) {
+    this.origins = item?.origins || [];
+    this.preloadCallback = item?.preloadCallback;
+    this.prefetcher = item?.prefetcher;
+    if (this.prefetcher) this.prefetcher.setDataSource(this);
+  }
+
+  /**
+   * 预取数据集合中指定元素的数据。
+   * 此方法可以是同步的，也可以是异步的
+   * @param index 集合中项的索引
+   * @returns
+   */
+  public prefetch(index: number): void | Promise<void> {
+    if (!this.preloadCallback || !this.origins[index]) return;
+    if (this.preloads.hasKey(index)) return;
+    // 预加载数据
+    this.preloads.set(index, this.execute(index));
+  }
+
+  /**
+   * 取消为数据集合中的指定元素预取数据。
+   此方法可以是同步的，也可以是异步的
+   * @param index 集合中项的索引
+   * @returns
+   */
+  public cancel?(index: number): void | Promise<void> { }
+
+  /** 设置预加载函数 */
+  public setPreloadFun(callback: ICallback<T>): void {
+    this.preloadCallback = callback;
+  }
+
+  /**
+   * 当可见区域发生变化时调用此方法
+   *
+   * @param minVisible - 第一个可见数据项的索引
+   * @param maxVisible - 最后一个可见数据项的索引
+   */
+  public visibleAreaChanged(minVisible: number, maxVisible: number): void {
+    if (this.prefetcher == null) {
+      this.prefetcher = new BasicPrefetcher(this);
+    }
+    this.prefetcher.visibleAreaChanged(minVisible, maxVisible);
+  }
 
   /**
    * 获取数据源中数据总数
@@ -36,9 +105,9 @@ export class UDataSource<T> implements IDataSource {
    * 该方法为框架侧调用，为LazyForEach组件向其数据源处添加listener监听
    * @param listener 数据监听
    */
-  public registerDataChangeListener(listener: DataChangeListener): void {
-    if (this.listeners.indexOf(listener) < 0) {
-      this.listeners.push(listener);
+  public registerDataChangeListener(listener: DataChangeListener | VoidCallback): void {
+    if (!this.listeners.has(listener)) {
+      this.listeners.add(listener);
     }
   }
 
@@ -46,36 +115,12 @@ export class UDataSource<T> implements IDataSource {
    * 该方法为框架侧调用，为LazyForEach组件向其数据源处移除listener监听
    * @param listener 数据监听
    */
-  public unregisterDataChangeListener(listener: DataChangeListener): void {
-    const pos = this.listeners.indexOf(listener);
-    if (pos >= 0) {
-      this.listeners.splice(pos, 1);
-    }
+  public unregisterDataChangeListener(listener: DataChangeListener | VoidCallback): void {
+    this.listeners.remove(listener);
   }
 
   /**
-   * 添加数据操作监听
-   * @param listener 数据监听
-   */
-  public registerCallback(listener: VoidCallback): void {
-    if (this.listenerCallbacks.indexOf(listener) < 0) {
-      this.listenerCallbacks.push(listener);
-    }
-  }
-
-  /**
-   * 移除数据操作监听
-   * @param listener 数据监听
-   */
-  public unregisterCallback(listener: VoidCallback): void {
-    const pos = this.listenerCallbacks.indexOf(listener);
-    if (pos >= 0) {
-      this.listenerCallbacks.splice(pos, 1);
-    }
-  }
-
-  /**
-   * 预加载数据
+   * 重新加载数据
    */
   public reload(): void {
     this.notifyDataReload();
@@ -178,8 +223,9 @@ export class UDataSource<T> implements IDataSource {
    * 通知 LazyForEach 组件需要重载所有子组件
    */
   protected notifyDataReload(): void {
-    this.listeners.forEach(listener => listener.onDataReloaded())
-    this.listenerCallbacks.forEach(listener => listener())
+    for (let listener of this.listeners) {
+      typeof listener === 'function' ? listener() : listener.onDataReloaded();
+    }
   }
 
   /**
@@ -187,9 +233,9 @@ export class UDataSource<T> implements IDataSource {
    * @param index 添加的位置
    */
   protected notifyDataAdd(index: number): void {
-    this.listeners.forEach(listener => listener.onDataAdd(index));
-    // 写法2：listener.onDatasetChange([{type: DataOperationType.ADD, index: index}]);
-    this.listenerCallbacks.forEach(listener => listener())
+    for (let listener of this.listeners) {
+      typeof listener === 'function' ? listener() : listener.onDataAdd(index);
+    }
   }
 
   /**
@@ -197,8 +243,9 @@ export class UDataSource<T> implements IDataSource {
    * @param index 改变的位置
    */
   protected notifyDataChange(index: number): void {
-    this.listeners.forEach(listener => listener.onDataChange(index))
-    this.listenerCallbacks.forEach(listener => listener())
+    for (let listener of this.listeners) {
+      typeof listener === 'function' ? listener() : listener.onDataChange(index);
+    }
   }
 
   /**
@@ -206,8 +253,9 @@ export class UDataSource<T> implements IDataSource {
    * @param index 删除的位置
    */
   protected notifyDataDelete(index: number): void {
-    this.listeners.forEach(listener => listener.onDataDelete(index))
-    this.listenerCallbacks.forEach(listener => listener())
+    for (let listener of this.listeners) {
+      typeof listener === 'function' ? listener() : listener.onDataDelete(index);
+    }
   }
 
   /**
@@ -216,8 +264,9 @@ export class UDataSource<T> implements IDataSource {
    * @param to
    */
   protected notifyDataMove(from: number, to: number): void {
-    this.listeners.forEach(listener => listener.onDataMove(from, to))
-    this.listenerCallbacks.forEach(listener => listener())
+    for (let listener of this.listeners) {
+      typeof listener === 'function' ? listener() : listener.onDataMove(from, to);
+    }
   }
 
   /**
@@ -225,7 +274,14 @@ export class UDataSource<T> implements IDataSource {
    * @param operations 操作集合
    */
   protected notifyDatasetChange(operations: DataOperation[]): void {
-    this.listeners.forEach(listener => listener.onDatasetChange(operations))
-    this.listenerCallbacks.forEach(listener => listener())
+    for (let listener of this.listeners) {
+      typeof listener === 'function' ? listener() : listener.onDatasetChange(operations);
+    }
+  }
+
+  /** 执行预加载回调 */
+  protected async execute(index: number) {
+    this.origins[index] = await this.preloadCallback!(index);
+    this.preloads.remove(index);
   }
 }

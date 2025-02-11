@@ -40,18 +40,19 @@ export struct SourceResultList {
   });
 
   aboutToAppear(): void {
-    this.dataSource.registerCallback(this.setImages);
-    this.controller.setCachedCount(1)
+    this.dataSource.registerDataChangeListener(this.setImages);
+    this.controller.setCachedCount(6)
       .setAutoResize(true)
       .setAlt($r('app.media.loading_page'))
       .setError($r('app.media.loading_page'))
     if (this.generateData != null) {
+      //this.dataSource.setPreloadFun();
       this.generateData((item) => this.dataSource.pushAll(item));
     }
   }
 
   aboutToDisappear(): void {
-    this.dataSource.unregisterCallback(this.setImages);
+    this.dataSource.unregisterDataChangeListener(this.setImages);
   }
 
   build() {
@@ -74,6 +75,7 @@ export struct SourceResultList {
         .edgeEffect(EdgeEffect.Spring)
         .scrollBarWidth(2)
         .fadingEdge(true, { fadingEdgeLength: LengthMetrics.vp(40) })
+        .onScrollIndex((first, last) => this.dataSource.visibleAreaChanged(first, last))
         .onReachEnd(() => {
           // 触底时增加数据
           if (this.isLoading === false) {
