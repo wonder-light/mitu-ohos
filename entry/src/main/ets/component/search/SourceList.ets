@@ -31,13 +31,7 @@ export struct SourceResultList {
   /** 预览控制器 */
   private readonly controller: ImagePreviewController = new ImagePreviewController();
   /** 图片弹窗 */
-  private readonly dialogController: CustomDialogController = new CustomDialogController({
-    builder: ImageDialog({ controller: this.controller }),
-    customStyle: true,
-    offset: { dx: 0, dy: 0 },
-    alignment: DialogAlignment.Center,
-    autoCancel: true
-  });
+  private readonly dialogController: CustomDialogController = ImageDialog.create(this.controller);
 
   aboutToAppear(): void {
     this.dataSource.registerDataChangeListener(this.setImages);

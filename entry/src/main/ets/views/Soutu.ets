@@ -23,6 +23,10 @@ export struct VSoutu {
       action: () => this.pageStack.pushPathByName(Const.search, null, true)
     },
     {
+      label: $r("app.string.source_manage"),
+      //action: () => this.pageStack.pushPathByName(Const.sourceManage, null, true)
+    },
+    {
       label: $r("app.string.switch_source"),
       action: () => this.openSwitchSource()
     }
