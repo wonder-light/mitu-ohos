@@ -1,10 +1,9 @@
 import { BaseDao } from '@ohos/dataorm';
 import { Const, IDiscoverItemRule, IPictureSource } from '../common';
-import { Loading, SourceResultList, TItemCallback, TitleBar, TitleBarMenuItem } from '../component';
+import { ISheetInfo, Loading, SelectDialog, SourceResultList, TItemCallback, TitleBar, TitleBarMenuItem } from '../component';
 import { site } from '../helpers';
 import { PictureSource } from '../models';
 import { SearchResultItem } from '../models/Result';
-import { Log } from '../utils';
 
 @Builder
 export function buildSoutu() {
@@ -23,7 +22,7 @@ export struct VSoutu {
       action: () => this.pageStack.pushPathByName(Const.search, null, true)
     },
     {
-      label: $r("app.string.source_manage"),
+      label: $r("app.string.source_manage")
       //action: () => this.pageStack.pushPathByName(Const.sourceManage, null, true)
     },
     {
@@ -33,14 +32,27 @@ export struct VSoutu {
   ];
   /** 是否正在加载 */
   @State
-  private isLoading: boolean = true;
+  isLoading: boolean = true;
   // 数据源
   @State
-  private source?: PictureSource = new PictureSource();
+  source: PictureSource = new PictureSource();
   /** Tabs 控制器 */
-  private controller: TabsController = new TabsController();
+  private tabController: TabsController = new TabsController();
+  /** 弹窗控制器 */
+  private dialogController: CustomDialogController = new CustomDialogController({
+    builder: SelectDialog({
+      title: $r('app.string.switch_source'),
+      options: [{ contents: () => this.getSelectContents(), selectedIndex: () => this.getSelectIndex() }],
+      onConfirm: (_, items) => this.loadData(items.shift() as number | undefined)
+    }),
+    cornerRadius: 16
+  });
+  /** 弹窗的选项列表 */
+  private selectContents: ISheetInfo[] = [];
   /** 数据源 */
   declare private dao: BaseDao<PictureSource, number>;
+  //
+  private _animate: AnimateParam = { duration: 200, curve: Curve.Ease };
 
   aboutToAppear(): void {
     this.loadData();
@@ -55,7 +67,7 @@ export struct VSoutu {
         } else if (!this.source || this.source.discoverRule.urlRules.length <= 0) {
           Text($r('app.string.no_set_rule'))
         } else {
-          Tabs({ barPosition: BarPosition.Start, controller: this.controller }) {
+          Tabs({ barPosition: BarPosition.Start, controller: this.tabController }) {
             ForEach(this.source.discoverRule.urlRules, (rule: IDiscoverItemRule) => {
               TabContent() {
                 SourceResultList({ generateData: (data) => this.generateData(data, rule) })
@@ -97,33 +109,53 @@ export struct VSoutu {
       })
   }
 
-  /**
-   * 打开切换图源的弹窗页面
-   */
+  /** 打开切换图源的弹窗页面 */
   async openSwitchSource(): Promise<void> {
-    let results = await this.dao.queryBuilder()
-      .select('id', 'name', 'groups')
-      .buildSql()
-      .listSqlAs<IPictureSource>();
-    Log.i('results: ' + JSON.stringify(results))
+    // 获取数据源
+    let results = await this.dao.queryBuilder().select('id', 'name').listSqlAs<IPictureSource>();
+    // 设置弹窗的选项数据
+    this.selectContents = results.map((item): ISheetInfo => ({ title: item.name!, value: item.id! }));
+    this.dialogController.open();
   }
 
-  /**
-   * 加载初始数据
-   */
-  private async loadData(): Promise<void> {
+  /** 获取选中的索引 */
+  private getSelectIndex(): number[] {
+    let index = this.selectContents.findIndex((item) => item.value == this.source.id);
+    if (index < 0) index = 0;
+    return [index];
+  }
+
+  /** 获取弹窗的选项 */
+  private getSelectContents(): ISheetInfo[] {
+    return this.selectContents;
+  }
+
+  /** 加载初始数据 */
+  private async loadData(id: number = -1): Promise<void> {
+    animateTo(this._animate, () => this.isLoading = true);
     // 加载搜图页面的初始图片源
-    let id: number = await site.pf.get(Const.soutu, -1) as number;
-    this.dao = site.db.getBaseDao<PictureSource, number>(PictureSource);
+    this.dao ??= site.db.getBaseDao<PictureSource, number>(PictureSource);
+    // 从本地数据中加载一次 id
+    if (id < 0) id = await site.pf.get(Const.soutu, id) as number;
+    // 从数据库中取出第一个的 id
     if (id < 0) {
-      let items = await this.dao.queryBuilder().limit(1).list();
-      this.source = items.shift();
-      // 记录
-      if (this.source) await site.pf.put(Const.soutu, this.source.id);
-    } else {
-      this.source = await this.dao.loadDeep(id);
+      let items = await this.dao.queryBuilder()
+        .select('id')
+        .limit(1)
+        .listSqlAs<IPictureSource>();
+      id = items.shift()?.id ?? -1;
     }
-    this.isLoading = false;
+    // id < 0 则不改变 this.source, id >= 0 则加载数据
+    if (id >= 0) {
+      // 加载数据
+      let source = await this.dao.loadDeep(id);
+      // 记录
+      if (source) {
+        this.source = source;
+        await site.pf.put(Const.soutu, this.source.id);
+      }
+    }
+    animateTo(this._animate, () => this.isLoading = false);
   }
 
   /**

@@ -667,6 +667,10 @@ export class QueryBuilder<T> {
   public async listSql(): Promise<Array<T>> {
     return await this.build().listSql();
   }
+
+  public async listSqlAs<Y extends any = T>(): Promise<Array<Y>> {
+    return await this.buildSql().listSqlAs<Y>();
+  }
   /**
    * Shorthand for {@link QueryBuilder#build() build()}.{@link Query#unique() unique()}; see {@link Query#unique()}
    * for details. To execute a query more than once, you should build the query and keep the {@link Query} object for

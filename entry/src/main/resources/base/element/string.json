@@ -47,6 +47,22 @@
     {
       "name": "clear",
       "value": "清除"
+    },
+    {
+      "name": "cancel",
+      "value": "取消"
+    },
+    {
+      "name": "confirm",
+      "value": "确认"
+    },
+    {
+      "name": "select_all",
+      "value": "全选"
+    },
+    {
+      "name": "not_select_all",
+      "value": "全不选"
     }
   ]
 }
