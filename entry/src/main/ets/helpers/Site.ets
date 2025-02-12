@@ -1,17 +1,63 @@
 import { sendablePreferences } from '@kit.ArkData';
-import { worker } from '@kit.ArkTS';
+import { HashMap, worker } from '@kit.ArkTS';
 import { emitter } from '@kit.BasicServicesKit';
 import { DaoSession } from '@ohos/dataorm';
 import { DEBUG } from 'BuildProfile';
-import { Const, IDiscoverRule, ISearchRule } from '../common';
+import { Const, IDiscoverRule, INavTransition, ISearchRule, IStage } from '../common';
 import { PictureSource } from '../models';
 import { DbHelper } from './Database';
+
+/**
+ * 站点的导航管理
+ */
+class SiteNavManage implements IStage<Promise<void>> {
+  /**
+   * 导航动画管理
+   */
+  protected navTransitions: HashMap<string, INavTransition> = new HashMap();
+
+  constructor() {
+  }
+
+  public async initState(context: Context): Promise<void> { }
+
+  public dispose(): void {
+    this.navTransitions.clear();
+  }
+
+  /**
+   * 注册导航页面转换动画
+   * @param navDestinationId 导航 id
+   * @param transition 导航页面转换动画接口
+   */
+  public registerNavTransition(navDestinationId: string, transition: INavTransition): void {
+    this.navTransitions.set(navDestinationId, transition);
+  }
+
+  /**
+   * 获取导航页面转换动画
+   * @param navDestinationId 导航 id
+   * @returns
+   */
+  public getNavTransition(navDestinationId?: string): INavTransition | undefined {
+    if (this.navTransitions == null) return undefined;
+    return this.navTransitions.get(navDestinationId);
+  }
+
+  /**
+   * 注销导航页面转换动画
+   * @param navDestinationId 导航 id
+   */
+  public unregisterNavTransition(navDestinationId: string): void {
+    this.navTransitions.remove(navDestinationId);
+  }
+}
 
 /**
  * 站点控制
  */
 @Observed
-export class Site {
+export class Site extends SiteNavManage {
   /** 单例 */
   static readonly instance: Site = new Site();
   /** 后台线程 */
@@ -24,19 +70,27 @@ export class Site {
   declare pf: sendablePreferences.Preferences;
 
   // 私有化构造器
-  private constructor() { }
+  private constructor() {
+    super();
+  }
 
-  /**
-   * 站点数据初始化
-   * @param context
-   * @returns
-   */
-  async initialize(context: Context): Promise<void> {
+  /** 站点数据初始化 */
+  public async initState(context: Context): Promise<void> {
+    await super.initState(context);
+    // 初始化数据库
     await DbHelper.initialize(context);
     if (DEBUG) {
       await site._debug();
     }
+    // 发出初始化事件
     emitter.emit(Const.siteInit);
+  }
+
+  /** 站点销毁 */
+  public dispose(): void {
+    super.dispose();
+    this.background?.terminate();
+    this.pf.flushSync();
   }
 
   private async _debug() {

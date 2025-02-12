@@ -4,6 +4,7 @@ import { ISheetInfo, Loading, SelectDialog, SourceResultList, TItemCallback, Tit
 import { site } from '../helpers';
 import { PictureSource } from '../models';
 import { SearchResultItem } from '../models/Result';
+import { Log } from '../utils/Log';
 
 @Builder
 export function buildSoutu() {
@@ -36,6 +37,9 @@ export struct VSoutu {
   // 数据源
   @State
   source: PictureSource = new PictureSource();
+  /** 页面是否正在进入 */
+  @State
+  private _pageEnter: boolean = false;
   /** Tabs 控制器 */
   private tabController: TabsController = new TabsController();
   /** 弹窗控制器 */
@@ -52,9 +56,10 @@ export struct VSoutu {
   /** 数据源 */
   declare private dao: BaseDao<PictureSource, number>;
   //
-  private _animate: AnimateParam = { duration: 200, curve: Curve.Ease };
+  private _navDestinationId?: string;
 
   aboutToAppear(): void {
+    Log.d('VSoutu aboutToAppear');
     this.loadData();
   }
 
@@ -92,6 +97,14 @@ export struct VSoutu {
     }
     .hideTitleBar(true)
     .hideToolBar(true)
+    .opacity(this._pageEnter ? 0 : 1)
+    .onDisAppear(() => site.unregisterNavTransition(this._navDestinationId!))
+    .onReady((ctx) => {
+      site.registerNavTransition(this._navDestinationId = ctx.navDestinationId!, {
+        onInit: (isExit) => this._pageEnter = !isExit,
+        onEnd: (isExit) => this._pageEnter = isExit
+      });
+    })
   }
 
   /**
@@ -132,7 +145,7 @@ export struct VSoutu {
 
   /** 加载初始数据 */
   private async loadData(id: number = -1): Promise<void> {
-    animateTo(this._animate, () => this.isLoading = true);
+    animateTo(Const.animate, () => this.isLoading = true);
     // 加载搜图页面的初始图片源
     this.dao ??= site.db.getBaseDao<PictureSource, number>(PictureSource);
     // 从本地数据中加载一次 id
@@ -155,7 +168,7 @@ export struct VSoutu {
         await site.pf.put(Const.soutu, this.source.id);
       }
     }
-    animateTo(this._animate, () => this.isLoading = false);
+    animateTo(Const.animate, () => this.isLoading = false);
   }
 
   /**

@@ -21,4 +21,9 @@ export class Const {
 
   /** 站点初始化完成 */
   static readonly siteInit: string = 'siteInit';
+
+  /** 动画参数 */
+  static readonly animate: AnimateParam = { duration: 200, curve: Curve.Ease };
+  /** 动画参数 */
+  static readonly animate3: AnimateParam = { duration: 300, curve: Curve.Ease };
 }

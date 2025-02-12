@@ -180,3 +180,26 @@ export interface IPictureSource extends ITableBasic {
   /** 登录检测js */
   loginCheckJs?: string;
 }
+
+
+/**
+ * 阶段接口
+ */
+export interface IStage<T = void> {
+  /** 初始化状态 */
+  initState(context: Context): T;
+
+  /** 释放 */
+  dispose(): void;
+}
+
+/**
+ * 导航页面转换动画接口
+ */
+export interface INavTransition {
+  /** 动画开始前执行, 用于设置初始值 */
+  onInit: (isExit: boolean) => void;
+
+  /** 动画目标状态, 用于设置终点值 */
+  onEnd: (isExit: boolean) => void;
+}

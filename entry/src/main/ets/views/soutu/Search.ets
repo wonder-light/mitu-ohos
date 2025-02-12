@@ -58,7 +58,6 @@ export struct VSearch {
   //
   private chipSize: Resource = $r('app.float.text_xs');
   private flexSpace = LengthMetrics.vp(6);
-  private animateParam: AnimateParam = { duration: 200, curve: Curve.Ease };
 
   aboutToAppear(): void {
     const value = site.pf.getSync(Const.searchHistory, new collections.Array<string>()) as collections.Array<string>;
@@ -75,7 +74,7 @@ export struct VSearch {
    */
   onBackPress(): boolean {
     if (this.isShow) return false;
-    animateTo(this.animateParam, () => this.isShow = true);
+    animateTo(Const.animate, () => this.isShow = true);
     return true;
   }
 
@@ -167,7 +166,7 @@ export struct VSearch {
     // 停止编辑
     this.controller.stopEditing();
     // 动画
-    animateTo(this.animateParam, () => this.isLoading = !(this.isShow = false))
+    animateTo(Const.animate, () => this.isLoading = !(this.isShow = false))
     // 添加历史
     let index = this.histories.indexOf(value);
     // 把已有的历史放到最前面
@@ -182,7 +181,7 @@ export struct VSearch {
       this.generateData();
     }
     // 动画
-    animateTo(this.animateParam, () => this.isLoading = false);
+    animateTo(Const.animate, () => this.isLoading = false);
   }
 
   /** 以图搜图 */

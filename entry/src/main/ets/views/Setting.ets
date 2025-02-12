@@ -1,4 +1,5 @@
 import { TitleBar } from '../component';
+import { site } from '../helpers';
 
 @Builder
 export function buildSetting() {
@@ -14,6 +15,10 @@ export struct VSetting {
   pageStack: NavPathStack;
   @State
   message: string = 'Hello Setting';
+  /** 页面是否正在进入 */
+  @State
+  private _pageEnter: boolean = true;
+  private _navDestinationId?: string;
 
   build() {
     NavDestination() {
@@ -36,5 +41,13 @@ export struct VSetting {
     }
     .hideTitleBar(true)
     .hideToolBar(true)
+    .opacity(this._pageEnter ? 0 : 1)
+    .onDisAppear(() => site.unregisterNavTransition(this._navDestinationId!))
+    .onReady((ctx) => {
+      site.registerNavTransition(this._navDestinationId = ctx.navDestinationId!, {
+        onInit: (isExit) => this._pageEnter = !isExit,
+        onEnd: (isExit) => this._pageEnter = isExit
+      });
+    })
   }
 }

@@ -1,5 +1,6 @@
 import { LengthMetrics } from '@kit.ArkUI';
 import { ImagePreviewController } from '@rv/image-preview';
+import { Const } from '../../common';
 import { UDataSource } from '../../common/Data';
 import { SearchResultItem } from '../../models/Result';
 import { ImageCom, ImageDialog, Loading } from '../index';
@@ -109,10 +110,9 @@ export struct SourceResultList {
    * 加载数据
    */
   async loadData() {
-    const param: AnimateParam = { duration: 300, curve: Curve.Ease };
-    animateTo(param, () => this.isLoading = true)
+    animateTo(Const.animate3, () => this.isLoading = true)
     await new Promise<void>((resolve) => setTimeout(resolve, 2000));
-    animateTo(param, () => this.isLoading = false)
+    animateTo(Const.animate3, () => this.isLoading = false)
   }
 
   /***

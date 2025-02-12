@@ -82,6 +82,7 @@ struct Index {
     .hideTitleBar(!this.isLarge)
     .hideToolBar(true)
     .hideBackButton(true)
+    .customNavContentTransition((from, to, option) => this.navTransition(from, to, option))
   }
 
   @Builder
@@ -133,11 +134,29 @@ struct Index {
     .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
   }
 
-  @Builder
-  buildToolbar() {
-    ToolBar({
-      activateIndex: this.activeIndex, toolBarList: this.toolbarItems
-    })
+  /** 导航切换动画 */
+  navTransition(from: NavContentInfo, to: NavContentInfo, operation: NavigationOperation): NavigationAnimatedTransition | undefined {
+    // 首页不进行自定义动画
+    if (from.index === -1 || to.index === -1) {
+      return undefined;
+    }
+    const fromTran = site.getNavTransition(from.navDestinationId);
+    const toTran = site.getNavTransition(to.navDestinationId);
+    // 有一个无效时使用默认动画
+    if (!toTran || !fromTran) {
+      return undefined;
+    }
+    fromTran.onInit(true)
+    toTran.onInit(false)
+    return {
+      transition: (proxy) => {
+        animateTo({ duration: Const.animate.duration, curve: Const.animate.curve, onFinish: () => proxy.finishTransition() }, () => {
+          fromTran.onEnd(true);
+          toTran.onEnd(false);
+        });
+      }
+    };
+  }
 
   /** Tab 内容切换动画  */
   tabTransition(from: number, to: number): TabContentAnimatedTransition {

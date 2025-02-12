@@ -1,4 +1,5 @@
 import { TitleBar } from '..';
+import { Const } from '../../common';
 import { Callback2 } from '../../common/Type';
 /** Sheet 信息 */
 export declare interface ISheetInfo {
@@ -51,7 +52,6 @@ export struct SelectDialog {
   private _divider = $r('app.color.button_divider');
   private _selectAll = $r('app.string.select_all');
   private _notSelectAll = $r('app.string.not_select_all');
-  private _animate: AnimateParam = { duration: 200, curve: Curve.Ease }
 
   build() {
     Column() {
@@ -68,8 +68,8 @@ export struct SelectDialog {
           }
           .height('auto')
           .barHeight(this._tabHeight + 6)
-          .animationDuration(this._animate.duration)
-          .onAnimationStart((_, index: number) => animateTo(this._animate, () => this.currentTabIndex = index))
+          .animationDuration(Const.animate.duration)
+          .onAnimationStart((_, index: number) => animateTo(Const.animate, () => this.currentTabIndex = index))
         } else if (this.options.length > 0) {
           this.buildList(this.options[0])
         }

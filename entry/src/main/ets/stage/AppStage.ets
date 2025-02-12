@@ -22,11 +22,10 @@ export class AppAbilityStage extends AbilityStage {
     site.pf = sendablePreferences.getPreferencesSync(this.context, { name: name });
     //site.kv = DataKvUtil.getInstance().init(this.context, site.bundleName);
     // 初始化站点数据
-    site.initialize(this.context);
+    site.initState(this.context);
   }
 
   onDestroy(): void {
-    site.background.terminate();
-    site.pf.flushSync();
+    site.dispose();
   }
 }
