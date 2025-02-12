@@ -4,7 +4,6 @@ import { ISheetInfo, Loading, SelectDialog, SourceResultList, TItemCallback, Tit
 import { site } from '../helpers';
 import { PictureSource } from '../models';
 import { SearchResultItem } from '../models/Result';
-import { Log } from '../utils/Log';
 
 @Builder
 export function buildSoutu() {
@@ -31,7 +30,7 @@ export struct VSoutu {
       action: () => this.openSwitchSource()
     }
   ];
-  /** 是否正在加载 */
+  /** 是否正在加载源数据 */
   @State
   isLoading: boolean = true;
   // 数据源
@@ -40,8 +39,7 @@ export struct VSoutu {
   /** 页面是否正在进入 */
   @State
   private _pageEnter: boolean = false;
-  /** Tabs 控制器 */
-  private tabController: TabsController = new TabsController();
+  private _navDestinationId?: string;
   /** 弹窗控制器 */
   private dialogController: CustomDialogController = new CustomDialogController({
     builder: SelectDialog({
@@ -55,11 +53,8 @@ export struct VSoutu {
   private selectContents: ISheetInfo[] = [];
   /** 数据源 */
   declare private dao: BaseDao<PictureSource, number>;
-  //
-  private _navDestinationId?: string;
 
   aboutToAppear(): void {
-    Log.d('VSoutu aboutToAppear');
     this.loadData();
   }
 
@@ -72,7 +67,7 @@ export struct VSoutu {
         } else if (!this.source || this.source.discoverRule.urlRules.length <= 0) {
           Text($r('app.string.no_set_rule'))
         } else {
-          Tabs({ barPosition: BarPosition.Start, controller: this.tabController }) {
+          Tabs() {
             ForEach(this.source.discoverRule.urlRules, (rule: IDiscoverItemRule) => {
               TabContent() {
                 SourceResultList({ generateData: (data) => this.generateData(data, rule) })

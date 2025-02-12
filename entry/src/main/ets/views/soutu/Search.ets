@@ -51,8 +51,8 @@ export struct VSearch {
   /** 数据懒加载源 */
   private dataSource: UDataSource<SearchResultItem> = new UDataSource<SearchResultItem>();
   /** 搜索历史 */
-  private histories: string[] = [];
-  /** 清除历史 */
+  private histories: collections.Array<string> = new collections.Array<string>();
+  /** 在清除历史后用于更新列表 */
   @State
   private clearHistory: boolean = false;
   //
@@ -60,12 +60,7 @@ export struct VSearch {
   private flexSpace = LengthMetrics.vp(6);
 
   aboutToAppear(): void {
-    const value = site.pf.getSync(Const.searchHistory, new collections.Array<string>()) as collections.Array<string>;
-    this.histories.push(...value);
-  }
-
-  aboutToDisappear(): void {
-    site.pf.putSync(Const.searchHistory, collections.Array.from(this.histories));
+    this.histories = site.pf.getSync(Const.searchHistory, this.histories) as collections.Array<string>;
   }
 
   /**
@@ -108,7 +103,7 @@ export struct VSearch {
 
           Scroll() {
             Flex({ wrap: FlexWrap.Wrap, direction: FlexDirection.Row, space: { main: this.flexSpace, cross: this.flexSpace } }) {
-              Repeat(this.clearHistory ? this.histories : this.histories).each((item) => {
+              Repeat([...this.clearHistory ? this.histories : this.histories]).each((item) => {
                 Chip({
                   label: { text: item.item, fontSize: this.chipSize },
                   size: ChipSize.SMALL,
@@ -167,11 +162,8 @@ export struct VSearch {
     this.controller.stopEditing();
     // 动画
     animateTo(Const.animate, () => this.isLoading = !(this.isShow = false))
-    // 添加历史
-    let index = this.histories.indexOf(value);
-    // 把已有的历史放到最前面
-    if (index >= 0) this.histories.splice(index, 1);
-    this.histories.unshift(value);
+    // 更新历史
+    this.updateHistory(value);
     // 以图搜图
     if (value.startsWith('file://') || value.startsWith('http')) {
       // TODO: 搜索图片
@@ -194,6 +186,21 @@ export struct VSearch {
     }
   }
 
+  /** 更新历史记录 */
+  updateHistory(value: string) {
+    // 获取历史索引
+    let index = this.histories.indexOf(value);
+    // 把已有的历史放到最前面
+    if (index >= 0) this.histories.splice(index, 1);
+    this.histories.unshift(value);
+    // 限制历史数量
+    if (this.histories.length > Const.historyCount) {
+      this.histories.splice(Const.historyCount);
+    }
+    // 保存
+    site.pf.put(Const.searchHistory, this.histories);
+  }
+
   /**
    * 生成的数据
    * @param callback 添加数据的回调
@@ -205,6 +212,7 @@ export struct VSearch {
       origin: 'https://images4.alphacoders.com/133/thumb-1920-1335428.png'
     });
     let items = Array<SearchResultItem>(20).fill(fill);
+    this.dataSource.clear();
     this.dataSource.pushAll(items);
   }
 }

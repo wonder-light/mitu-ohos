@@ -89,8 +89,8 @@ export class Site extends SiteNavManage {
   /** 站点销毁 */
   public dispose(): void {
     super.dispose();
-    this.background?.terminate();
     this.pf.flushSync();
+    this.background?.terminate();
   }
 
   private async _debug() {

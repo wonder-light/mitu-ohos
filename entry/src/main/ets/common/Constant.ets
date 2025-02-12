@@ -17,6 +17,8 @@ export class Const {
 
   /** 搜索历史 */
   static readonly searchHistory: string = 'searchHistory';
+  /** 历史数量 */
+  static readonly historyCount = 100;
 
 
   /** 站点初始化完成 */
