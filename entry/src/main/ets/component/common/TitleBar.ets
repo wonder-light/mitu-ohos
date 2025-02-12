@@ -1,24 +1,29 @@
+import { LengthMetrics } from '@kit.ArkUI';
 /**
  * 标题栏菜单项
  * @module TitleBar
  */
-export declare class TitleBarMenuItem {
+export declare interface TitleBarMenuItem {
   /**
    * 此菜单项的图标资源.
    */
   value?: ResourceStr;
+
   /**
    * 此菜单项的图标标签.
    */
   label?: ResourceStr;
+
   /**
-   * 是否启用此菜单项.
+   * 定义项目类型
    */
-  isEnabled?: boolean;
+  enable?: boolean;
+
   /**
    * 单击此菜单项时的回调函数.
    */
   action?: () => void;
+
   /**
    * 创建自定义构建.
    */
@@ -77,7 +82,7 @@ export struct TitleBar {
     Row({ space: TitleBar.leftPadding }) {
       Row({ space: TitleBar.leftPadding }) {
         if (this.enableBack) {
-          ImageMenuItem({ item: { value: TitleBar.PUBLIC_BACK, action: this.backCall } })
+          ImageButton({ item: { value: TitleBar.PUBLIC_BACK, action: this.backCall } })
         }
 
         if (this.item !== undefined) {
@@ -118,11 +123,11 @@ export struct TitleBar {
       if (this.menuItems.length > 0) {
         Row() {
           ForEach(this.menuItems.slice(0, this.maxMenuCount), (item: TitleBarMenuItem, index: number) => {
-            ImageMenuItem({ item: item, customBuild: item.builder instanceof Function ? item.builder : undefined })
+            ImageButton({ item: item, customBuild: item.builder instanceof Function ? item.builder : undefined })
           })
 
           if (this.menuItems.length > this.maxMenuCount) {
-            ImageMenuItem({
+            ImageButton({
               item: {
                 value: $r('sys.media.ohos_ic_public_more'),
                 action: () => this.showPopup = !this.showPopup
@@ -163,11 +168,24 @@ export struct TitleBar {
   }
 }
 
+@Reusable
 @Component
-export struct ImageMenuItem {
+export struct ImageButton {
+  static readonly space: LengthMetrics = LengthMetrics.vp(4);
+  static font: ResourceColor = $r('app.color.font');
   /** 菜单项 */
   @Prop
   item: TitleBarMenuItem;
+  /** 定义文本fontColor */
+  @Prop
+  textColor?: ResourceColor = ImageButton.font;
+  /** 定义图标填充颜色 */
+  @Prop
+  iconColor?: ResourceColor = ImageButton.font;
+  /** 定义命中测试模式 */
+  hitTest: HitTestMode = HitTestMode.Default;
+  /** 设置元素的水平布局 */
+  textDirection?: FlexDirection = FlexDirection.Column;
   /** 自定义组件 */
   @BuilderParam
   customBuild: undefined | (() => void);
@@ -176,26 +194,30 @@ export struct ImageMenuItem {
     if (this.customBuild != null) {
       this.customBuild()
     } else {
-      Button({ type: ButtonType.Circle, stateEffect: this.item.isEnabled ?? true }) {
-        if (this.isSymbolResource(this.item.value)) {
-          SymbolGlyph(this.item.value as Resource)
-            .draggable(false)
-            .focusable(this.item.isEnabled ?? true)
-            .focusable(this.item.isEnabled ?? true)
-            .fontColor([$r('app.color.font')])
+      Button({
+        type: this.item.label != null ? ButtonType.Normal : ButtonType.Circle,
+        stateEffect: this.item.enable !== false
+      }) {
+        if (!this.item.label) {
+          this.buildImage()
         } else {
-          Image(this.item.value)
-            .draggable(false)
-            .matchTextDirection(true)
-            .width(TitleBar.imageSize)
-            .height(TitleBar.imageSize)
-            .focusable(this.item.isEnabled ?? true)
-            .fillColor($r('app.color.font'))
+          Flex({
+            direction: this.textDirection,
+            space: { main: ImageButton.space, cross: ImageButton.space },
+            justifyContent: FlexAlign.Center,
+            alignContent: FlexAlign.Center,
+            alignItems: ItemAlign.Center
+          }) {
+            this.buildImage()
+            Text(this.item.label)
+              .fontSize($r('app.float.text_xs'))
+              .maxLines(1)
+              .fontColor(this.textColor)//.colorBlend(this.textColor)
+              .textOverflow({ overflow: TextOverflow.Ellipsis })
+          }
         }
       }
-      .enabled(this.item.isEnabled ?? true)
-      .width(TitleBar.imageHotZoneWidth)
-      .height(TitleBar.imageHotZoneWidth)
+      .enabled(this.item.enable !== false)
       .stateStyles({
         normal: {
           .foregroundColor(Color.Transparent)
@@ -206,9 +228,30 @@ export struct ImageMenuItem {
           .backgroundColor($r('app.color.button_normal'))
         }
       })
-      .onClick(() => {
-        return (this.item.isEnabled ?? true) && this.item.action?.();
-      })
+      .borderRadius(this.item.label != null ? 8 : null)
+      .width(this.item.label != null ? '100%' : TitleBar.imageHotZoneWidth)
+      .height(this.item.label != null ? '100%' : TitleBar.imageHotZoneWidth)
+      .align(Alignment.Center)
+      .hitTestBehavior(this.hitTest)
+      .onClick(this.item.action)
+    }
+  }
+
+  @Builder
+  buildImage() {
+    if (this.isSymbolResource(this.item.value)) {
+      SymbolGlyph(this.item.value as Resource)
+        .draggable(false)
+        .fontColor([this.iconColor])
+      //.colorBlend(this.iconColor)
+    } else {
+      Image(this.item.value)
+        .draggable(false)
+        .matchTextDirection(true)
+        .width(TitleBar.imageSize)
+        .height(TitleBar.imageSize)
+        .fillColor(this.iconColor)
+      //.colorBlend(this.iconColor)
     }
   }
 

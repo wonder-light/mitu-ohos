@@ -1,14 +1,10 @@
 import { common } from '@kit.AbilityKit';
 import { deviceInfo } from '@kit.BasicServicesKit';
-import { ItemState, ToolBar, ToolBarOption, ToolBarOptions } from '@ohos.arkui.advanced.ToolBar';
 import { DEBUG } from 'BuildProfile';
 import { Const } from '../common';
+import { TitleBarMenuItem } from '../component';
 import { site } from '../helpers';
 import { RouterBuild } from '../router/Index';
-import { VAlbum } from '../views/Album';
-import { VRepo } from '../views/Repo';
-import { VSetting } from '../views/Setting';
-import { VSoutu } from '../views/Soutu';
 
 @Entry
 @Component
@@ -21,45 +17,32 @@ struct Index {
   activeIndex: number = 0;
   /** 工具栏 */
   @State
-  toolbarItems: ToolBarOptions = new ToolBarOptions();
-  /** 过渡效果 */
-  effect: TransitionEffect = TransitionEffect.OPACITY.animation({ duration: 200, curve: Curve.Ease });
+  toolbarItems: TitleBarMenuItem[] = [
+    { label: $r("app.string.soutu"), value: $r("app.media.soutu") },
+    { label: $r('app.string.album'), value: $r('app.media.album') },
+    { label: $r('app.string.repo'), value: $r('app.media.repo') },
+    { label: $r('app.string.setting'), value: $r('app.media.setting') }
+  ];
+  /** Tabs 控制器 */
+  tabsController: TabsController = new TabsController();
+  /** 路由名称 */
+  private readonly _routeNames: string[] = [Const.soutu, Const.album, Const.repo, Const.setting];
   /** 是大屏 */
-  isLarge: boolean = true;
+  private isLarge: boolean = deviceInfo.deviceType !== 'phone';
   /** 前面 Icon 的前景色 */
-  private leadingIconColor: ResourceColor = $r('app.color.icon_on');
-  private leadingIconBg: ResourceColor = $r('app.color.accent');
-  private iconSize: Length = $r('app.float.icon_size');
-  private iconSizeLg: Length = $r('app.float.icon_size_lg');
-  private fontColor: ResourceColor = $r('app.color.font');
-  private arrow: ResourceStr = $r("app.media.arrow_right");
-  private arrowColor: ResourceColor = $r("app.color.button_divider");
-  private activeColor: ResourceColor = $r('app.color.button_active');
-  private bgColor: ResourceColor = $r('app.color.background');
-  private bgNormal: ResourceColor = $r('app.color.button_normal');
+  private _iconOn: ResourceColor = $r('app.color.icon_on');
+  private _accent: ResourceColor = $r('app.color.accent');
+  private _iconSize: Length = $r('app.float.icon_size');
+  private _iconSizeLg: Length = $r('app.float.icon_size_lg');
+  private _fontColor: ResourceColor = $r('app.color.font');
+  private _arrow: ResourceStr = $r("app.media.arrow_right");
+  private _divider: ResourceColor = $r("app.color.button_divider");
+  private _activeColor: ResourceColor = $r('app.color.button_active');
+  private _background: ResourceColor = $r('app.color.background');
+  private _buttonNormal: ResourceColor = $r('app.color.button_normal');
 
   aboutToAppear(): void {
-    // 是否是手机
-    if (deviceInfo.deviceType == 'phone') {
-      this.isLarge = false;
-    }
-    const names = [Const.soutu, Const.album, Const.repo, Const.setting];
-    const items: ToolBarOption[] = [
-      { content: $r("app.string.soutu"), icon: $r("app.media.soutu") },
-      { content: $r('app.string.album'), icon: $r('app.media.album') },
-      { content: $r('app.string.repo'), icon: $r('app.media.repo') },
-      { content: $r('app.string.setting'), icon: $r('app.media.setting') }
-    ];
-    items.forEach((item, index) => {
-      item.state = ItemState.ACTIVATE;
-      item.activatedIconColor = item.activatedTextColor = this.leadingIconBg;
-      if (this.isLarge) {
-        item.action = (): void => this.toRouter(names[index], index);
-      } else {
-        item.action = () => this.activeIndex = index;
-      }
-      this.toolbarItems.push(item);
-    });
+    this.tabsController.changeIndex(this.activeIndex);
     if (DEBUG) {
       import('@hadss/debug-db').then(async (ns) => {
         await ns.DebugDB.initialize(getContext(this) as common.UIAbilityContext);
@@ -67,80 +50,83 @@ struct Index {
     }
   }
 
+  onPageHide(): void {
+    site.pf.flushSync();
+  }
+
   build() {
     Navigation(this.pageStack) {
-      if (!this.isLarge) {
-        if (this.activeIndex == 0) {
-          VSoutu().transition(this.effect)
-        } else if (this.activeIndex == 1) {
-          VAlbum().transition(this.effect)
-        } else if (this.activeIndex == 2) {
-          VRepo().transition(this.effect)
-        } else {
-          VSetting().transition(this.effect)
-        }
-      } else {
+      if (this.isLarge) {
         this.buildPanel()
+      } else {
+        Tabs({ barPosition: BarPosition.End, controller: this.tabsController }) {
+          ForEach(this.toolbarItems, (item: TitleBarMenuItem, index) => {
+            TabContent() {
+              RouterBuild(this._routeNames[index])
+            }
+            .opacity(this.activeIndex === index ? 1 : 0)
+            .tabBar(this.getTabStyle(item))
+          })
+        }
+        .divider(null)
+        .scrollable(false)
+        .animationDuration(Const.animate.duration)
+        .customContentTransition((from, to) => this.tabTransition(from, to))
       }
     }
     .onAppear(() => this.navAppear())
     .mode(NavigationMode.Auto)
     .navDestination(RouterBuild)
-    .toolbarConfiguration(this.buildToolbar)
     .title($r('app.string.app_name'))
     .titleMode(NavigationTitleMode.Mini)
-    .hideToolBar(this.isLarge)
     .hideTitleBar(!this.isLarge)
+    .hideToolBar(true)
     .hideBackButton(true)
-  }
-
-  onPageHide(): void {
-    site.pf.flushSync();
   }
 
   @Builder
   buildPanel() {
     List({ space: 4, initialIndex: this.activeIndex }) {
       ListItemGroup({ space: 4, style: ListItemGroupStyle.CARD }) {
-        ForEach(this.toolbarItems, (item: ToolBarOption, index) => {
+        ForEach(this.toolbarItems, (item: TitleBarMenuItem, index) => {
           ListItem() {
             Button({ type: ButtonType.Normal, buttonStyle: ButtonStyleMode.TEXTUAL }) {
               Row() {
-                Image(item.icon)
+                Image(item.value)
                   .borderRadius(999)
-                  .backgroundColor(this.leadingIconBg)
-                  .fillColor(this.leadingIconColor)
-                  .width(this.iconSizeLg)
-                  .height(this.iconSizeLg)
+                  .backgroundColor(this._accent)
+                  .fillColor(this._iconOn)
+                  .width(this._iconSizeLg)
+                  .height(this._iconSizeLg)
                   .padding(4)
-                Text(item.content)
+                Text(item.label)
                   .flexGrow(1)
                   .margin({ left: 8, right: 8 })
-                  .fontColor(this.fontColor)
-                Image(this.arrow)
-                  .width(this.iconSize)
-                  .height(this.iconSize)
-                  .fillColor(this.arrowColor)
+                  .fontColor(this._fontColor)
+                Image(this._arrow)
+                  .width(this._iconSize)
+                  .height(this._iconSize)
+                  .fillColor(this._divider)
               }
               .width('100%')
             }
             .padding(12)
             .borderRadius(12)
             .width('100%')
-            .onClick(item.action)
-            .backgroundColor(this.activeIndex == index ? this.activeColor : this.bgColor)
+            .onClick(() => this.toRouter(this._routeNames[index], index))
+            .backgroundColor(this.activeIndex == index ? this._activeColor : this._background)
           }
         })
       }
       .divider({
         strokeWidth: 1,
-        color: this.bgNormal,
-        startMargin: this.iconSize,
-        endMargin: this.iconSize
+        color: this._buttonNormal,
+        startMargin: this._iconSize,
+        endMargin: this._iconSize
       })
       .borderWidth(0.5)
-      .borderColor(this.bgNormal)
-      .shadow({ color: this.bgNormal, radius: 12 })
+      .borderColor(this._buttonNormal)
+      .shadow({ color: this._buttonNormal, radius: 12 })
     }
     .width('100%')
     .height('100%')
@@ -152,6 +138,23 @@ struct Index {
     ToolBar({
       activateIndex: this.activeIndex, toolBarList: this.toolbarItems
     })
+
+  /** Tab 内容切换动画  */
+  tabTransition(from: number, to: number): TabContentAnimatedTransition {
+    return {
+      transition: (proxy: TabContentTransitionProxy) => {
+        animateTo({ duration: Const.animate.duration, curve: Const.animate.curve, onFinish: () => proxy.finishTransition() }, () => {
+          this.activeIndex = to;
+        });
+      }
+    };
+  }
+
+  /** 获取 TabBar 样式 */
+  getTabStyle(item: TitleBarMenuItem) {
+    return BottomTabBarStyle.of(item.value, item.label)
+      .iconStyle({ selectedColor: this._accent, unselectedColor: this._fontColor })
+      .labelStyle({ selectedColor: this._accent, unselectedColor: this._fontColor })
   }
 
   /** 导航栏显示 */
@@ -167,7 +170,8 @@ struct Index {
     if (this.activeIndex == index && isCurrent) {
       return;
     }
-    this.activeIndex = index;
-    this.pageStack.pushPathByName(name, null, true);
+    animateTo(Const.animate, () => this.activeIndex = index)
+    index = this.pageStack.moveToTop(name, true);
+    if (index < 0) this.pageStack.pushPathByName(name, null, true);
   }
 }
