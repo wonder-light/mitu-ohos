@@ -45,10 +45,12 @@ export struct SourceResultList {
     this.controller.setCachedCount(6)
       .setAutoResize(true)
       .setAlt($r('app.media.loading_page'))
-      .setError($r('app.media.loading_page'))
+      .setError($r('app.media.error_egg'))
     if (this.generateData != null) {
       //this.dataSource.setPreloadFun();
       this.generateData((item) => this.dataSource.pushAll(item));
+    } else {
+      this.setImages();
     }
   }
 
