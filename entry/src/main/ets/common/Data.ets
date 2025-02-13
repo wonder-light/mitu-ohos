@@ -10,7 +10,7 @@ export declare interface IDataSource<T> {
   origins?: T[];
 
   /** 预加载回调 */
-  preloadCallback?: ICallback<T>;
+  preloadCallback?: ICallback<T | void>;
 
   /** 预加载器 */
   prefetcher?: BasicPrefetcher;
@@ -28,7 +28,7 @@ export class UDataSource<T> implements IDataSourcePrefetching {
   /** 预加载操作集合 */
   protected preloads: HashMap<number, Promise<void>> = new HashMap();
   /** 预加载回调 */
-  protected preloadCallback?: ICallback<T>;
+  protected preloadCallback?: ICallback<T | void>;
   /** 预加载器 */
   protected prefetcher?: BasicPrefetcher;
 
@@ -46,8 +46,7 @@ export class UDataSource<T> implements IDataSourcePrefetching {
    * @returns
    */
   public prefetch(index: number): void | Promise<void> {
-    if (!this.preloadCallback || !this.origins[index]) return;
-    if (this.preloads.hasKey(index)) return;
+    if (!this.preloadCallback || this.origins[index] || this.preloads.hasKey(index)) return;
     // 预加载数据
     this.preloads.set(index, this.execute(index));
   }
@@ -61,7 +60,7 @@ export class UDataSource<T> implements IDataSourcePrefetching {
   public cancel?(index: number): void | Promise<void> { }
 
   /** 设置预加载函数 */
-  public setPreloadFun(callback: ICallback<T>): void {
+  public setPreloadFun(callback: ICallback<T | void>): void {
     this.preloadCallback = callback;
   }
 
@@ -281,7 +280,8 @@ export class UDataSource<T> implements IDataSourcePrefetching {
 
   /** 执行预加载回调 */
   protected async execute(index: number) {
-    this.origins[index] = await this.preloadCallback!(index);
+    let value = await this.preloadCallback!(index);
+    if (value) this.origins[index] = value;
     this.preloads.remove(index);
   }
 }

@@ -1,4 +1,5 @@
 import { LengthMetrics } from '@kit.ArkUI';
+import { deviceInfo } from '@kit.BasicServicesKit';
 import { ImagePreviewController } from '@rv/image-preview';
 import { Const } from '../../common';
 import { UDataSource } from '../../common/Data';
@@ -27,8 +28,8 @@ export struct SourceResultList {
   /** 数据加载中 */
   @State
   private isLoading: boolean = false;
-  /** Grid 滚动控制器 */
-  private scroller: Scroller = new Scroller();
+  /** 是大屏 */
+  private isLarge: boolean = deviceInfo.deviceType !== 'phone';
   /** 预览控制器 */
   private readonly controller: ImagePreviewController = new ImagePreviewController();
   /** 图片弹窗 */
@@ -61,7 +62,7 @@ export struct SourceResultList {
   build() {
     Column() {
       Refresh({ refreshing: $$this.isRefreshing }) {
-        WaterFlow({ scroller: this.scroller, footer: () => { this.buildFooter() } }) {
+        WaterFlow({ footer: () => { this.buildFooter() } }) {
           LazyForEach(this.dataSource, (item: SearchResultItem, index: number) => {
             FlowItem() {
               ImageCom({ src: item.thumbnail ?? item.origin })
@@ -72,13 +73,12 @@ export struct SourceResultList {
             }
           })
         }
-        .columnsTemplate('repeat(auto-fit, 240)')
+        .columnsTemplate(`repeat(auto-fit, ${this.isLarge ? 240 : 160})`)
         .columnsGap(SourceResultList.itemGap)
         .rowsGap(SourceResultList.itemGap)
         .edgeEffect(EdgeEffect.Spring)
         .scrollBarWidth(2)
         .fadingEdge(true, { fadingEdgeLength: LengthMetrics.vp(40) })
-        .onScrollIndex((first, last) => this.dataSource.visibleAreaChanged(first, last))
         .onReachEnd(() => {
           // 触底时增加数据
           if (this.isLoading === false) {
