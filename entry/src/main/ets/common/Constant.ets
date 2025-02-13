@@ -20,6 +20,9 @@ export class Const {
   /** 历史数量 */
   static readonly historyCount = 100;
 
+  /** 搜索页面选择的分组或源 */
+  static readonly searchSelects: string = 'searchSelects';
+
 
   /** 站点初始化完成 */
   static readonly siteInit: string = 'siteInit';

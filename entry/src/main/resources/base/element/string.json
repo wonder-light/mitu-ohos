@@ -21,6 +21,14 @@
       "value": "设置"
     },
     {
+      "name": "group",
+      "value": "分组"
+    },
+    {
+      "name": "source",
+      "value": "图源"
+    },
+    {
       "name": "no_set_rule",
       "value": "暂未设置规则"
     },

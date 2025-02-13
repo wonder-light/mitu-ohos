@@ -1,9 +1,10 @@
-import { collections } from '@kit.ArkTS';
+import { collections, HashMap } from '@kit.ArkTS';
 import { Chip, ChipSize, LengthMetrics } from '@kit.ArkUI';
-import { Const, UDataSource } from '../../common';
-import { Loading, SourceResultList, TitleBar, TitleBarMenuItem } from '../../component';
+import { BaseDao } from '@ohos/dataorm';
+import { Const, IPictureSource, UDataSource } from '../../common';
+import { ISheetInfo, Loading, SelectDialog, SourceResultList, TitleBar, TitleBarMenuItem } from '../../component';
 import { site } from '../../helpers';
-import { PictureSource } from '../../models';
+import { PictureSource, SearchRule } from '../../models';
 import { SearchResultItem } from '../../models/Result';
 import { MediaUt } from '../../utils';
 
@@ -27,7 +28,7 @@ export struct VSearch {
   @State
   isLoading: boolean = false;
   /** 数据源集合 TODO: 从存储中加载 */
-  sources: PictureSource[] = [];
+  sources: SearchRule[] = [];
   /** 搜索文本值 */
   @State
   private searchValue: string = '';
@@ -45,22 +46,65 @@ export struct VSearch {
     },
     {
       label: $r("app.string.multi_group"),
-      action: (): void => { }
+      action: (): Promise<void> => this.switchSource()
     }
   ];
   /** 数据懒加载源 */
   private dataSource: UDataSource<SearchResultItem> = new UDataSource<SearchResultItem>();
   /** 搜索历史 */
-  private histories: collections.Array<string> = new collections.Array<string>();
+  private histories: collections.Array<string> = new collections.Array();
   /** 在清除历史后用于更新列表 */
   @State
   private clearHistory: boolean = false;
+  /** 弹窗控制器 */
+  private dialogController: CustomDialogController = new CustomDialogController({
+    builder: SelectDialog({
+      title: $r('app.string.switch_source'),
+      options: [
+        {
+          name: $r('app.string.group'),
+          contents: () => this.getSelectContents(0),
+          selectedIndex: () => this.getSelectIndex(0),
+          isRadio: false
+        },
+        {
+          name: $r('app.string.source'),
+          contents: () => this.getSelectContents(1),
+          selectedIndex: () => this.getSelectIndex(1)
+        }
+      ],
+      onConfirm: (index, items) => this.confirmSelects(index, items)
+    }),
+    cornerRadius: 16
+  });
+  /** 数据源 */
+  declare private dao: BaseDao<PictureSource, number>;
+  /** 分组选项: 分组 - id 数组 */
+  private groupOptions: HashMap<string, number[]> = new HashMap();
+  /** 源选项: value - id */
+  private sourceOptions: ISheetInfo[] = [];
+  /** 选择的索引选项: 值 - index */
+  private indexOptions: HashMap<Object, number> = new HashMap();
+  /** 选择的值 index - values*/
+  private selectOptions: HashMap<number, Object[]> = new HashMap();
+  /** 选择的规则分组或id */
+  private selects: collections.Array<string | number> = new collections.Array();
   //
   private chipSize: Resource = $r('app.float.text_xs');
   private flexSpace = LengthMetrics.vp(6);
 
   aboutToAppear(): void {
+    this.dao = site.db.getBaseDao<PictureSource, number>(PictureSource);
     this.histories = site.pf.getSync(Const.searchHistory, this.histories) as collections.Array<string>;
+    this.selects = site.pf.getSync(Const.searchSelects, this.selects) as collections.Array<string | number>;
+    // 设置选项的初始值
+    let groups: Object[] = [];
+    let sources: Object[] = [];
+    for (const element of this.selects) {
+      typeof element === 'string' ? groups.push(element) : sources.push(element);
+    }
+    this.selectOptions.set(0, groups)
+    this.selectOptions.set(1, sources)
   }
 
   /**
@@ -186,6 +230,32 @@ export struct VSearch {
     }
   }
 
+  /** 选择图片源 */
+  async switchSource() {
+    // 获取数据源
+    let results = await this.dao.queryBuilder().select('id', 'name', 'groups').listSqlAs<IPictureSource>();
+    this.indexOptions.clear();
+    this.groupOptions.clear();
+    this.sourceOptions = [];
+    let index = 0;
+    for (let item of results) {
+      this.sourceOptions.push({ title: item.name!, value: item.id! });
+      this.indexOptions.set(item.id!, index++);
+      let groups = item.group!.split(/[,;|]/);
+      for (let group of groups) {
+        let arr = this.groupOptions.get(group) ?? [];
+        arr.push(item.id!);
+        this.groupOptions.set(group, arr);
+      }
+    }
+    index = 0;
+    for (let key of this.groupOptions.keys()) {
+      this.indexOptions.set(key, index++);
+    }
+    // 拉起选择器
+    this.dialogController.open();
+  }
+
   /** 更新历史记录 */
   updateHistory(value: string) {
     // 获取历史索引
@@ -199,6 +269,38 @@ export struct VSearch {
     }
     // 保存
     site.pf.put(Const.searchHistory, this.histories);
+  }
+
+  /** 获取选择项 */
+  getSelectContents(index: number = 0): ISheetInfo[] {
+    if (index > 0) return this.sourceOptions;
+    let arr: ISheetInfo[] = [];
+    for (let key of this.groupOptions.keys()) {
+      arr.push({ title: key, value: key });
+    }
+    return arr;
+  }
+
+  /** 获取选择项索引 */
+  getSelectIndex(index: number = 0): number[] {
+    let items = this.selectOptions.get(index) ?? [];
+    return items.map((item) => this.indexOptions.get(item) ?? -1)
+  }
+
+  /** 确认选择 */
+  confirmSelects(index: number, items: Object[]): void {
+    this.selectOptions.set(index, items);
+    // 空数组是全选
+    this.selects.splice(0);
+    if (index > 0) {
+      // 存储选择的图源id
+      this.selects.push(...items as number[]);
+    } else if (items.length != this.groupOptions.length) {
+      // 存储选择的分组
+      this.selects.push(...items as string[]);
+    }
+    // 保存
+    site.pf.put(Const.searchSelects, this.selects);
   }
 
   /**
