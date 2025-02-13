@@ -87,6 +87,7 @@ export struct SourceResultList {
         })
       }
       .refreshOffset(128)
+      .pullDownRatio(0.4)
       .onRefreshing(() => this.refreshData())
     }
     .height('100%')
