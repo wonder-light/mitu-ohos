@@ -8,18 +8,22 @@ export function buildAlbum() {
 
 @Component({ freezeWhenInactive: true })
 export struct VAlbum {
-  /**
-   * 导航栈
-   */
+  /** 导航栈 */
   @Consume('pageStack')
   pageStack: NavPathStack;
+  /** 是大屏 */
+  @Consume('isLarge')
+  isLarge: boolean;
   @State
   message: string = 'Hello Album';
-  /** 页面是否正在进入 */
+  /** 页面是否正在进入, 大屏为 true, 小屏则为 false */
   @State
   private _pageEnter: boolean = true;
   private _navDestinationId?: string;
 
+  aboutToAppear(): void {
+    this._pageEnter = this.isLarge;
+  }
 
   build() {
     NavDestination() {

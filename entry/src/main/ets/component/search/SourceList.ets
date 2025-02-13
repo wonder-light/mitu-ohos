@@ -1,5 +1,4 @@
 import { LengthMetrics } from '@kit.ArkUI';
-import { deviceInfo } from '@kit.BasicServicesKit';
 import { ImagePreviewController } from '@rv/image-preview';
 import { Const } from '../../common';
 import { UDataSource } from '../../common/Data';
@@ -18,6 +17,9 @@ export type TItemGenerate = Callback<TItemCallback>;
 export struct SourceResultList {
   /** 图片间距 */
   static readonly itemGap = 10;
+  /** 是大屏 */
+  @Consume('isLarge')
+  isLarge: boolean;
   /** 接收根据对应规则生成的数据 */
   generateData?: TItemGenerate;
   /** 数据懒加载源 */
@@ -28,8 +30,6 @@ export struct SourceResultList {
   /** 数据加载中 */
   @State
   private isLoading: boolean = false;
-  /** 是大屏 */
-  private isLarge: boolean = deviceInfo.deviceType !== 'phone';
   /** 预览控制器 */
   private readonly controller: ImagePreviewController = new ImagePreviewController();
   /** 图片弹窗 */

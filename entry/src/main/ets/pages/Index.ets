@@ -12,6 +12,9 @@ struct Index {
   /** 导航栈 */
   @Provide('pageStack')
   pageStack: NavPathStack = new NavPathStack();
+  /** 是大屏 */
+  @Provide('isLarge')
+  isLarge: boolean = deviceInfo.deviceType !== 'phone';
   /** 激活的页面索引 */
   @State
   activeIndex: number = 0;
@@ -20,15 +23,12 @@ struct Index {
   toolbarItems: TitleBarMenuItem[] = [
     { label: $r("app.string.soutu"), value: $r("app.media.soutu") },
     { label: $r('app.string.album'), value: $r('app.media.album') },
-    { label: $r('app.string.repo'), value: $r('app.media.repo') },
     { label: $r('app.string.setting'), value: $r('app.media.setting') }
   ];
   /** Tabs 控制器 */
   tabsController: TabsController = new TabsController();
   /** 路由名称 */
-  private readonly _routeNames: string[] = [Const.soutu, Const.album, Const.repo, Const.setting];
-  /** 是大屏 */
-  private isLarge: boolean = deviceInfo.deviceType !== 'phone';
+  private readonly _routeNames: string[] = [Const.soutu, Const.album, Const.setting];
   /** 前面 Icon 的前景色 */
   private _iconOn: ResourceColor = $r('app.color.icon_on');
   private _accent: ResourceColor = $r('app.color.accent');
