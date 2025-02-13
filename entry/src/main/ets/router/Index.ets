@@ -2,6 +2,7 @@ import { Const } from '../common';
 import { buildAlbum } from '../views/Album';
 import { buildRepo } from '../views/Repo';
 import { buildSetting } from '../views/Setting';
+import { buildSourceManage } from '../views/setting/SourceManage';
 import { buildSoutu } from '../views/Soutu';
 import { buildSearch } from '../views/soutu/Search';
 
@@ -12,6 +13,7 @@ router[Const.album] = new WrappedBuilder(buildAlbum);
 router[Const.repo] = new WrappedBuilder(buildRepo);
 router[Const.setting] = new WrappedBuilder(buildSetting);
 router[Const.search] = new WrappedBuilder(buildSearch);
+router[Const.sourceManage] = new WrappedBuilder(buildSourceManage);
 
 /**
  * 构建路由

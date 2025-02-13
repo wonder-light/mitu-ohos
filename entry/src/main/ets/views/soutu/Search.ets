@@ -42,7 +42,7 @@ export struct VSearch {
     },
     {
       label: $r("app.string.source_manage"),
-      action: (): void => { }
+      action: (): void => this.pageStack.pushPathByName(Const.sourceManage, null, true),
     },
     {
       label: $r("app.string.multi_group"),

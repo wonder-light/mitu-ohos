@@ -12,6 +12,8 @@ export class Const {
   static readonly setting: string = 'setting';
   /** 搜索页面 */
   static readonly search: string = 'search';
+  /** 图源管理页面 */
+  static readonly sourceManage: string = 'sourceManage';
   /** 404 页面 */
   static readonly notFound: string = 'notFound';
 
