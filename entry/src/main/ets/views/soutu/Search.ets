@@ -42,7 +42,7 @@ export struct VSearch {
     },
     {
       label: $r("app.string.img_source_manage"),
-      action: (): void => this.pageStack.pushPathByName(Const.imgSourceManage, null, true),
+      action: (): void => this.pageStack.pushPathByName(Const.imgSourceManage, null, true)
     },
     {
       label: $r("app.string.multi_group"),
@@ -178,6 +178,7 @@ export struct VSearch {
     }
     .hideTitleBar(true)
     .hideToolBar(true)
+    .backgroundColor($r('app.color.background'))
     .onBackPressed(() => this.onBackPress())
   }
 

@@ -17,6 +17,8 @@ export class Const {
   static readonly imgSourceManage: string = 'imgSourceManage';
   /** 图床源管理页面 */
   static readonly bedSourceManage: string = 'bedSourceManage';
+  /** 关于页面 */
+  static readonly about: string = 'about';
   /** 404 页面 */
   static readonly notFound: string = 'notFound';
   // ----------------------------------- 路由 -----------------------------------

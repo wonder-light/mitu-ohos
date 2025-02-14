@@ -14,5 +14,6 @@ export struct VBedSourceManage {
     }
     .hideTitleBar(true)
     .hideToolBar(true)
+    .backgroundColor($r('app.color.background'))
   }
 }

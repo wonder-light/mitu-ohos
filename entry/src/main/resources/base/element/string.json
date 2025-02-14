@@ -147,6 +147,10 @@
     {
       "name": "other_setting_sub",
       "value": "与功能相关的一些设置"
+    },
+    {
+      "name": "about_page_share",
+      "value": "MiTu 下载地址"
     }
   ]
 }

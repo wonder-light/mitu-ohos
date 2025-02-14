@@ -55,7 +55,6 @@ export struct VSoutu {
   declare private dao: BaseDao<PictureSource, number>;
   //
   private _primary: ResourceColor = $r("app.color.primary");
-  private _accent: ResourceColor = $r("app.color.accent");
 
   aboutToAppear(): void {
     this.loadData();
@@ -95,7 +94,7 @@ export struct VSoutu {
     }
     .hideTitleBar(true)
     .hideToolBar(true)
-    .backgroundColor(Color.Transparent)
+    .backgroundColor($r('app.color.background'))
     .opacity(this._pageEnter ? 0 : 1)
     .onDisAppear(() => site.unregisterNavTransition(this._navDestinationId!))
     .onReady((ctx) => {

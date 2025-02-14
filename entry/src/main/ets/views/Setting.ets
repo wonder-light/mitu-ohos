@@ -121,7 +121,7 @@ export struct VSetting {
         {
           value: $r("app.media.about"),
           label: $r("app.string.about"),
-          action: () => { }
+          action: () => this.pageStack.pushPathByName(Const.about, null, true)
         },
         {
           value: $r("app.media.quit"),
@@ -201,7 +201,7 @@ export struct VSetting {
     }
     .hideTitleBar(true)
     .hideToolBar(true)
-    .backgroundColor(Color.Transparent)
+    .backgroundColor($r('app.color.background'))
     .opacity(this._pageEnter ? 0 : 1)
     .onDisAppear(() => site.unregisterNavTransition(this._navDestinationId!))
     .onReady((ctx) => {
