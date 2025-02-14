@@ -146,18 +146,20 @@ struct Index {
     }
     const fromTran = site.getNavTransition(from.navDestinationId);
     const toTran = site.getNavTransition(to.navDestinationId);
+    const finish = () => {
+      fromTran?.onEnd(true);
+      toTran?.onEnd(false);
+    };
+    fromTran?.onInit(true)
+    toTran?.onInit(false)
     // 有一个无效时使用默认动画
     if (!toTran || !fromTran) {
+      animateTo(Const.animate, finish)
       return undefined;
     }
-    fromTran.onInit(true)
-    toTran.onInit(false)
     return {
       transition: (proxy) => {
-        animateTo({ duration: Const.animate.duration, curve: Const.animate.curve, onFinish: () => proxy.finishTransition() }, () => {
-          fromTran.onEnd(true);
-          toTran.onEnd(false);
-        });
+        animateTo({ duration: Const.animate.duration, curve: Const.animate.curve, onFinish: () => proxy.finishTransition() }, finish);
       }
     };
   }
