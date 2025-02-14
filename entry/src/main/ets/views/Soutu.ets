@@ -22,11 +22,11 @@ export struct VSoutu {
       action: () => this.pageStack.pushPathByName(Const.search, null, true)
     },
     {
-      label: $r("app.string.source_manage"),
-      action: () => this.pageStack.pushPathByName(Const.sourceManage, null, true)
+      label: $r("app.string.img_source_manage"),
+      action: () => this.pageStack.pushPathByName(Const.imgSourceManage, null, true)
     },
     {
-      label: $r("app.string.switch_source"),
+      label: $r("app.string.switch_img_source"),
       action: () => this.openSwitchSource()
     }
   ];
@@ -43,7 +43,7 @@ export struct VSoutu {
   /** 弹窗控制器 */
   private dialogController: CustomDialogController = new CustomDialogController({
     builder: SelectDialog({
-      title: $r('app.string.switch_source'),
+      title: $r("app.string.switch_img_source"),
       options: [{ contents: () => this.getSelectContents(), selectedIndex: () => this.getSelectIndex() }],
       onConfirm: (_, items) => this.loadData(items.shift() as number | undefined)
     }),

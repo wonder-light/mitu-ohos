@@ -35,7 +35,7 @@ struct Index {
   private _iconSize: Length = $r('app.float.icon_size');
   private _iconSizeLg: Length = $r('app.float.icon_size_lg');
   private _fontColor: ResourceColor = $r('app.color.font');
-  private _arrow: ResourceStr = $r("app.media.arrow_right");
+  private _arrow: ResourceStr = $r("sys.media.ohos_ic_public_arrow_right");
   private _divider: ResourceColor = $r("app.color.button_divider");
   private _activeColor: ResourceColor = $r('app.color.button_active');
   private _background: ResourceColor = $r('app.color.background');

@@ -21,12 +21,32 @@
       "value": "设置"
     },
     {
+      "name": "other",
+      "value": "其它"
+    },
+    {
+      "name": "quit",
+      "value": "退出"
+    },
+    {
+      "name": "about",
+      "value": "关于"
+    },
+    {
       "name": "group",
       "value": "分组"
     },
     {
       "name": "source",
+      "value": "源"
+    },
+    {
+      "name": "img_source",
       "value": "图源"
+    },
+    {
+      "name": "bed_source",
+      "value": "图床源"
     },
     {
       "name": "no_set_rule",
@@ -37,15 +57,27 @@
       "value": "搜索图片名, 描述"
     },
     {
-      "name": "source_manage",
+      "name": "img_source_manage",
       "value": "图源管理"
+    },
+    {
+      "name": "img_source_manage_sub",
+      "value": "新建、导入、编辑或删除图源"
+    },
+    {
+      "name": "bed_source_manage",
+      "value": "图床源管理"
+    },
+    {
+      "name": "bed_source_manage_sub",
+      "value": "新建、导入、编辑或删除图床源"
     },
     {
       "name": "multi_group",
       "value": "多分组/图源"
     },
     {
-      "name": "switch_source",
+      "name": "switch_img_source",
       "value": "切换图源"
     },
     {
@@ -71,6 +103,38 @@
     {
       "name": "not_select_all",
       "value": "全不选"
+    },
+    {
+      "name": "backup_setting",
+      "value": "备份设置"
+    },
+    {
+      "name": "backup_setting_sub",
+      "value": "WebDav 设置/导入数据"
+    },
+    {
+      "name": "theme_setting",
+      "value": "主题设置"
+    },
+    {
+      "name": "theme_setting_sub",
+      "value": "与界面颜色相关的一些设置"
+    },
+    {
+      "name": "theme_mode",
+      "value": "主题模式"
+    },
+    {
+      "name": "theme_mode_sub",
+      "value": "选择主题模式"
+    },
+    {
+      "name": "other_setting",
+      "value": "其它设置"
+    },
+    {
+      "name": "other_setting_sub",
+      "value": "与功能相关的一些设置"
     }
   ]
 }

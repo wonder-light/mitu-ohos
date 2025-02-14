@@ -41,8 +41,8 @@ export struct VSearch {
       action: (): Promise<void> => this.lookForPictures()
     },
     {
-      label: $r("app.string.source_manage"),
-      action: (): void => this.pageStack.pushPathByName(Const.sourceManage, null, true),
+      label: $r("app.string.img_source_manage"),
+      action: (): void => this.pageStack.pushPathByName(Const.imgSourceManage, null, true),
     },
     {
       label: $r("app.string.multi_group"),
@@ -59,7 +59,7 @@ export struct VSearch {
   /** 弹窗控制器 */
   private dialogController: CustomDialogController = new CustomDialogController({
     builder: SelectDialog({
-      title: $r('app.string.switch_source'),
+      title: $r("app.string.switch_img_source"),
       options: [
         {
           name: $r('app.string.group'),
@@ -68,7 +68,7 @@ export struct VSearch {
           isRadio: false
         },
         {
-          name: $r('app.string.source'),
+          name: $r("app.string.img_source"),
           contents: () => this.getSelectContents(1),
           selectedIndex: () => this.getSelectIndex(1)
         }

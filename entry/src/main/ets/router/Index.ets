@@ -1,7 +1,8 @@
 import { Const } from '../common';
 import { buildAlbum } from '../views/Album';
 import { buildSetting } from '../views/Setting';
-import { buildSourceManage } from '../views/setting/SourceManage';
+import { buildBedSourceManage } from '../views/setting/BedSource';
+import { buildImgSourceManage } from '../views/setting/ImgSource';
 import { buildSoutu } from '../views/Soutu';
 import { buildSearch } from '../views/soutu/Search';
 
@@ -11,7 +12,8 @@ router[Const.soutu] = new WrappedBuilder(buildSoutu);
 router[Const.album] = new WrappedBuilder(buildAlbum);
 router[Const.setting] = new WrappedBuilder(buildSetting);
 router[Const.search] = new WrappedBuilder(buildSearch);
-router[Const.sourceManage] = new WrappedBuilder(buildSourceManage);
+router[Const.imgSourceManage] = new WrappedBuilder(buildImgSourceManage);
+router[Const.bedSourceManage] = new WrappedBuilder(buildBedSourceManage);
 
 /**
  * 构建路由

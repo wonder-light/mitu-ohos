@@ -13,7 +13,9 @@ export class Const {
   /** 搜索页面 */
   static readonly search: string = 'search';
   /** 图源管理页面 */
-  static readonly sourceManage: string = 'sourceManage';
+  static readonly imgSourceManage: string = 'imgSourceManage';
+  /** 图床源管理页面 */
+  static readonly bedSourceManage: string = 'bedSourceManage';
   /** 404 页面 */
   static readonly notFound: string = 'notFound';
 
