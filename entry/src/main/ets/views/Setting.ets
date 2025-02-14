@@ -1,7 +1,6 @@
 import { common, ConfigurationConstant } from '@kit.AbilityKit';
-import { SelectDialog } from '@kit.ArkUI';
 import { Const } from '../common';
-import { TitleBar, TitleBarMenuItem } from '../component';
+import { SelectDialog, TitleBar, TitleBarMenuItem } from '../component';
 import { site } from '../helpers';
 
 /** 分组项 */
@@ -45,22 +44,28 @@ export struct VSetting {
   themeController: CustomDialogController = new CustomDialogController({
     builder: SelectDialog({
       title: $r("app.string.theme_mode"),
-      selectedIndex: site.themeMode + 1,
-      radioContent: [
+      options: [
         {
-          title: $r("app.string.system"),
-          action: () => site.themeMode = ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET
-        },
-        {
-          title: $r("app.string.dark"),
-          action: () => site.themeMode = ConfigurationConstant.ColorMode.COLOR_MODE_DARK
-        },
-        {
-          title: $r("app.string.light"),
-          action: () => site.themeMode = ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT
+          contents: [
+            {
+              title: $r("app.string.system"),
+              value: ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET
+            },
+            {
+              title: $r("app.string.dark"),
+              value: ConfigurationConstant.ColorMode.COLOR_MODE_DARK
+            },
+            {
+              title: $r("app.string.light"),
+              value: ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT
+            }
+          ],
+          selectedIndex: [site.themeMode + 1]
         }
-      ]
-    })
+      ],
+      onConfirm: (_, items) => site.themeMode = items[0] as number
+    }),
+    cornerRadius: 16
   });
   /** 设置分组列表 */
   settingGroups: ISettingGroup[] = [
@@ -131,9 +136,9 @@ export struct VSetting {
   private _pageEnter: boolean = true;
   private _navDestinationId?: string;
   //
-  private _accent: ResourceColor = $r('app.color.accent');
+  private _primary: ResourceColor = $r("app.color.primary");
   private _font: ResourceColor = $r('app.color.font');
-  private _subtitleText: ResourceColor = $r('app.color.subtitle_text');
+  private _subtitleText: ResourceColor = $r("app.color.fontSecondary");
   private _buttonNormal: ResourceColor = $r('app.color.button_normal');
   private _iconSize: Length = $r('app.float.icon_size');
   private _textSm: Length = $r('app.float.text_sm');
@@ -154,7 +159,7 @@ export struct VSetting {
                   Row() {
                     Image(item.value)
                       .borderRadius(999)
-                      .fillColor(this._accent)
+                      .fillColor(this._primary)
                       .width(this._iconSize)
                       .height(this._iconSize)
                     Column() {
@@ -184,6 +189,7 @@ export struct VSetting {
           .borderWidth(0.5)
           .borderColor(this._buttonNormal)
           .shadow({ color: this._buttonNormal, radius: VSetting.padding })
+          .backgroundColor(Color.Transparent)
         })
       }
       .width('100%')
@@ -191,9 +197,11 @@ export struct VSetting {
       .flexGrow(1)
       .flexShrink(1)
       .flexBasis('0%')
+      .padding({ top: 12 })
     }
     .hideTitleBar(true)
     .hideToolBar(true)
+    .backgroundColor(Color.Transparent)
     .opacity(this._pageEnter ? 0 : 1)
     .onDisAppear(() => site.unregisterNavTransition(this._navDestinationId!))
     .onReady((ctx) => {
@@ -208,7 +216,7 @@ export struct VSetting {
   buildHead(group?: ResourceStr) {
     if (group) {
       Text(group)
-        .fontColor(this._accent)
+        .fontColor(this._primary)
         .fontSize(this._textSm)
         .padding({ left: VSetting.padding })
         .margin({ top: 4, bottom: VSetting.margin })

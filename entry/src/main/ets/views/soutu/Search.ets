@@ -185,7 +185,7 @@ export struct VSearch {
   buildSearchBar() {
     Search({ placeholder: $r("app.string.search_placeholder"), value: $$this.searchValue, controller: this.controller })
       .textFont({ size: $r('app.float.text_xs') })
-      .searchButton('>', { fontColor: $r('app.color.accent') })
+      .searchButton('>', { fontColor: $r("app.color.primary") })
       .onSubmit((value: string) => this.searchPicture(value))
   }
 

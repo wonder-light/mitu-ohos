@@ -31,6 +31,9 @@ export declare interface IContentInfo {
 @Component
 @CustomDialog
 export struct SelectDialog {
+  static readonly actionHeight = 40;
+  static readonly padding = 8;
+  static readonly tabHeight = 8;
   /** 弹窗控制器 */
   declare dialogController: CustomDialogController;
   /** 标题 */
@@ -42,14 +45,16 @@ export struct SelectDialog {
   /** 当前选中的索引 */
   @State
   private currentIndex: number = 0;
+  /** 列表的最大高度 */
+  @State
+  private maxHeight?: number = undefined;
   /** 多选框的选中状态 */
   @State
   private selectState: Map<number, boolean> = new Map();
   /** 选中的索引 */
   private selectIndex: Map<number, Set<number>> = new Map();
   //
-  private _accent = $r('app.color.accent');
-  private _tabHeight = 32;
+  private _primary = $r("app.color.primary");
   private _divider = $r('app.color.button_divider');
   private _selectAll = $r('app.string.select_all');
   private _notSelectAll = $r('app.string.not_select_all');
@@ -75,33 +80,33 @@ export struct SelectDialog {
             ForEach(this.options, (content: IContentInfo, index: number) => {
               TabContent() {
                 this.buildList(content, index)
-              }.tabBar(this.buildTabBar(index, content.name))
+              }
+              .tabBar(this.buildTabBar(index, content.name))
+              .constraintSize({ maxHeight: this.maxHeight ? this.maxHeight - (SelectDialog.tabHeight + SelectDialog.padding * 2) : undefined })
             })
           }
           .height('auto')
-          .barHeight(this._tabHeight + 6)
+          .barHeight(SelectDialog.tabHeight)
           .animationDuration(Const.animate.duration)
           .onAnimationStart((_, index: number) => animateTo(Const.animate, () => this.currentIndex = index))
         } else if (this.options.length > 0) {
           this.buildList(this.options[0], 0)
         }
       }
-      .padding(10)
-      .flexGrow(1)
-      .flexShrink(1)
-      .flexBasis('0%')
+      .padding(SelectDialog.padding)
+      .constraintSize({ maxHeight: this.maxHeight })
 
       Row() {
         if (this.options[this.currentIndex]?.isRadio === false) {
           Row() {
             CheckboxGroup({ group: this._prefix + this.currentIndex })
               .margin({ left: 6, right: 6 })
-              .selectedColor(this._accent)
+              .selectedColor(this._primary)
               .onChange((event) => {
                 this.selectState.set(this.currentIndex, event.status !== SelectStatus.None);
               })
             Text(this.selectState.get(this.currentIndex) ? this._notSelectAll : this._selectAll)
-              .fontColor(this._accent)
+              .fontColor(this._primary)
           }
           .width(60)
         }
@@ -111,15 +116,19 @@ export struct SelectDialog {
           .onClick(() => this.dialogController.close())
 
         Button($r('app.string.confirm'), { buttonStyle: ButtonStyleMode.TEXTUAL })
-          .fontColor(this._accent)
+          .fontColor(this._primary)
           .onClick(() => this.confirm())
       }
       .width('100%')
-      .height('auto')
-      .backgroundColor($r('app.color.background'))
-      .padding(8)
+      .height(SelectDialog.actionHeight)
+      .padding({ left: SelectDialog.padding, right: SelectDialog.padding })
       .justifyContent(FlexAlign.SpaceBetween)
     }
+    .padding({ bottom: SelectDialog.padding })
+    .backgroundColor($r('app.color.background'))
+    .onAreaChange((_, area) => {
+      this.maxHeight = area.height as number - TitleBar.totalHeight - SelectDialog.actionHeight - SelectDialog.padding;
+    })
   }
 
   /** 构建 TabBar */
@@ -127,9 +136,9 @@ export struct SelectDialog {
   buildTabBar(index: number, name?: ResourceStr) {
     Button(name, { buttonStyle: ButtonStyleMode.TEXTUAL })
       .width('100%')
-      .height(this._tabHeight)
+      .height(SelectDialog.tabHeight - 6)
       .fontColor(this.currentIndex === index ? $r('app.color.icon_on') : $r('app.color.font'))
-      .backgroundColor(this.currentIndex === index ? this._accent : Color.Transparent)
+      .backgroundColor(this.currentIndex === index ? this._primary : Color.Transparent)
       .border(this.currentIndex !== index ? { width: 1, color: this._divider } : { width: 0 })
   }
 
@@ -143,7 +152,7 @@ export struct SelectDialog {
             if (option.isRadio ?? true) {
               Radio({ value: item.item.value.toString(), group: this._prefix + index })
                 .checked(this.selectIndex.get(index)?.has(item.index))
-                .radioStyle({ checkedBackgroundColor: this._accent })
+                .radioStyle({ checkedBackgroundColor: this._primary })
                 .onChange((isChecked) => {
                   let set = this.selectIndex.get(index);
                   isChecked ? set?.add(item.index) : set?.delete(item.index);
@@ -151,7 +160,7 @@ export struct SelectDialog {
             } else {
               Checkbox({ name: item.item.value.toString(), group: this._prefix + index })
                 .select(this.selectIndex.get(index)?.has(item.index))
-                .selectedColor(this._accent)
+                .selectedColor(this._primary)
                 .onChange((isChecked) => {
                   let set = this.selectIndex.get(index);
                   isChecked ? set?.add(item.index) : set?.delete(item.index);
@@ -164,7 +173,6 @@ export struct SelectDialog {
     }
     .width('auto')
     .height('auto')
-    .displayPriority(5)
   }
 
   /** 获取选中项 */

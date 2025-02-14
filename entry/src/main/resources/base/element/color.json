@@ -1,16 +1,20 @@
 {
   "color": [
     {
+      "name": "primary",
+      "value": "#FFA500"
+    },
+    {
+      "name": "accent",
+      "value": "#FAACA6"
+    },
+    {
       "name": "background",
-      "value": "#FFFFFF"
+      "value": "#FFBEF59D"
     },
     {
       "name": "button_active",
       "value": "#D6F2FF"
-    },
-    {
-      "name": "accent",
-      "value": "#FFA500"
     },
     {
       "name": "icon_on",
@@ -18,7 +22,15 @@
     },
     {
       "name": "font",
-      "value": "#000000"
+      "value": "#212121"
+    },
+    {
+      "name": "fontSecondary",
+      "value": "#99000000"
+    },
+    {
+      "name": "font_on",
+      "value": "#ffffff"
     },
     {
       "name": "button_divider",
@@ -27,10 +39,6 @@
     {
       "name": "button_normal",
       "value": "#12000000"
-    },
-    {
-      "name": "subtitle_text",
-      "value": "#99000000"
     }
   ]
 }

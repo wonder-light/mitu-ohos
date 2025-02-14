@@ -31,6 +31,7 @@ export struct VAlbum {
     }
     .hideTitleBar(true)
     .hideToolBar(true)
+    .backgroundColor(Color.Transparent)
     .opacity(this._pageEnter ? 0 : 1)
     .onDisAppear(() => site.unregisterNavTransition(this._navDestinationId!))
     .onReady((ctx) => {

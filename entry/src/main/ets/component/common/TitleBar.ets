@@ -56,7 +56,7 @@ export struct TitleBar {
   /** 返回操作 */
   backCall: VoidCallback | undefined;
   /** 背景色 */
-  bgColor: ResourceColor = $r('app.color.background');
+  bgColor: ResourceColor = $r('app.color.accent');
   /** 自定义标题组件 */
   @BuilderParam
   customTitle: undefined | (() => void);
@@ -71,8 +71,6 @@ export struct TitleBar {
     if (this.enableBack && this.backCall == null) {
       const uiContext: UIContext = this.getUIContext();
       const uniqueId: number = this.getUniqueId();
-      //const pageInfo = uiContext.getPageInfoByUniqueId(uniqueId);
-      //Log.i('pageInfo: ' + JSON.stringify(pageInfo));
       const pageStack = uiContext.getNavigationInfoByUniqueId(uniqueId)?.pathStack;
       this.backCall = () => pageStack?.pop();
     }
@@ -108,7 +106,7 @@ export struct TitleBar {
             if (this.subtitle !== undefined) {
               Text(this.subtitle)
                 .fontSize($r('app.float.text_sm'))
-                .fontColor($r('app.color.subtitle_text'))
+                .fontColor($r("app.color.fontSecondary"))
                 .maxLines(1)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
             }
@@ -140,11 +138,12 @@ export struct TitleBar {
       }
     }
     .width('100%')
-    .height(TitleBar.totalHeight)
+    .constraintSize({ minHeight: TitleBar.totalHeight })
     .justifyContent(FlexAlign.SpaceBetween)
     .alignSelf(ItemAlign.Stretch)
     .padding({ left: TitleBar.leftPadding, right: TitleBar.leftPadding })
     .backgroundColor(this.bgColor)
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP])
   }
 
   @Builder
@@ -158,6 +157,7 @@ export struct TitleBar {
         }
       })
     }
+    .backgroundColor($r('app.color.background'))
   }
 
   @Styles

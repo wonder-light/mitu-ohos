@@ -31,7 +31,8 @@ struct Index {
   private readonly _routeNames: string[] = [Const.soutu, Const.album, Const.setting];
   /** 前面 Icon 的前景色 */
   private _iconOn: ResourceColor = $r('app.color.icon_on');
-  private _accent: ResourceColor = $r('app.color.accent');
+  private _primary: ResourceColor = $r("app.color.primary");
+  private _accent: ResourceColor = $r("app.color.accent");
   private _iconSize: Length = $r('app.float.icon_size');
   private _iconSizeLg: Length = $r('app.float.icon_size_lg');
   private _fontColor: ResourceColor = $r('app.color.font');
@@ -70,6 +71,7 @@ struct Index {
         }
         .divider(null)
         .scrollable(false)
+        .barBackgroundColor(this._accent)
         .animationDuration(Const.animate.duration)
         .customContentTransition((from, to) => this.tabTransition(from, to))
       }
@@ -82,6 +84,7 @@ struct Index {
     .hideTitleBar(!this.isLarge)
     .hideToolBar(true)
     .hideBackButton(true)
+    .backgroundColor(this._background)
     .customNavContentTransition((from, to, option) => this.navTransition(from, to, option))
   }
 
@@ -95,7 +98,7 @@ struct Index {
               Row() {
                 Image(item.value)
                   .borderRadius(999)
-                  .backgroundColor(this._accent)
+                  .backgroundColor(this._primary)
                   .fillColor(this._iconOn)
                   .width(this._iconSizeLg)
                   .height(this._iconSizeLg)
@@ -115,7 +118,7 @@ struct Index {
             .borderRadius(12)
             .width('100%')
             .onClick(() => this.toRouter(this._routeNames[index], index))
-            .backgroundColor(this.activeIndex == index ? this._activeColor : Color.Transparent)
+            .backgroundColor(this.activeIndex == index ? this._activeColor : this._background)
           }
         })
       }
@@ -127,6 +130,7 @@ struct Index {
       })
       .borderWidth(0.5)
       .borderColor(this._buttonNormal)
+      .backgroundColor(this._background)
       .shadow({ color: this._buttonNormal, radius: 12 })
     }
     .width('100%')
@@ -172,8 +176,8 @@ struct Index {
   /** 获取 TabBar 样式 */
   getTabStyle(item: TitleBarMenuItem) {
     return BottomTabBarStyle.of(item.value, item.label)
-      .iconStyle({ selectedColor: this._accent, unselectedColor: this._fontColor })
-      .labelStyle({ selectedColor: this._accent, unselectedColor: this._fontColor })
+      .iconStyle({ selectedColor: this._primary, unselectedColor: this._fontColor })
+      .labelStyle({ selectedColor: this._primary, unselectedColor: this._fontColor })
   }
 
   /** 导航栏显示 */

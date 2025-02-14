@@ -1,16 +1,20 @@
 {
   "color": [
     {
+      "name": "primary",
+      "value": "#FFA500"
+    },
+    {
+      "name": "accent",
+      "value": "#FAACA6"
+    },
+    {
       "name": "background",
       "value": "#000000"
     },
     {
       "name": "button_active",
       "value": "#FF7EBCD9"
-    },
-    {
-      "name": "accent",
-      "value": "#FFA500"
     },
     {
       "name": "icon_on",
@@ -21,16 +25,20 @@
       "value": "#FFFFFF"
     },
     {
+      "name": "font_on",
+      "value": "#000000"
+    },
+    {
+      "name": "fontSecondary",
+      "value": "#B7BEBEBE"
+    },
+    {
       "name": "button_divider",
       "value": "#9EDDDDDD"
     },
     {
       "name": "button_normal",
       "value": "#689B9A9A"
-    },
-    {
-      "name": "subtitle_text",
-      "value": "#B7BEBEBE"
     }
   ]
 }
