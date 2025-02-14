@@ -1,7 +1,7 @@
 /**
  * 表格基础
  */
-export interface ITableBasic {
+export interface IBasicTable {
   id?: number;
 }
 
@@ -31,7 +31,7 @@ export interface ISearchResultItem {
 /**
  * 图源基础规则接口
  */
-export interface IBaseRule extends ITableBasic {
+export interface IBaseRule extends IBasicTable {
   /** URL规则 */
   urlRule?: string;
 
@@ -99,31 +99,25 @@ export interface IDiscoverRule extends ISearchRule {
 }
 
 /**
- * 图片模型接口
+ * 基础源接口
  */
-export interface IPictureSource extends ITableBasic {
-  /** 图源基础URL */
+export interface IBaseSource extends IBasicTable {
+  /** 源的基础 URL */
   origin?: string;
 
-  /** 图源名称 */
+  /** 源的名称 */
   originName?: string;
 
-  /** 图源类型 */
-  type?: string;
-
-  /** 名称: 当前图片模型的名称 */
+  /** 名称: 当前使用的源的名称 */
   name?: string;
 
-  /** 作者: 当前图片模型的作者 */
+  /** 作者: 当前源的作者 */
   author?: string;
 
-  /** 简介内容 */
+  /** 源的简介内容 */
   intro?: string;
 
-  /** 分类 */
-  kind?: string;
-
-  /** 在导入的情况下或则未分组默认为 2 未分组 */
+  /** 在导入的情况下或则未分组默认为未分组 */
   group?: string;
 
   /** 创建或更新时间 */
@@ -135,7 +129,10 @@ export interface IPictureSource extends ITableBasic {
   /** 自定义变量说明 */
   variableComment?: string;
 
-  /** 图源排序 */
+  /** js库 */
+  jsLib?: string;
+
+  /** 源的排序 */
   order?: number;
 
   /** 是否置顶 */
@@ -147,16 +144,7 @@ export interface IPictureSource extends ITableBasic {
   /** 响应超时时间 */
   respondTime?: number;
 
-  /** 搜索规则 */
-  searchRule?: ISearchRule;
-
-  /** 发现规则 */
-  discoverRule?: IDiscoverRule;
-
-  /** js库 */
-  jsLib?: string;
-
-  /** 启用 ok http Cookie 自动保存每次请求的cookie */
+  /** 启用 ok http Cookie Jar 自动保存每次请求的 cookie */
   enabledCookie?: boolean;
 
   /** 并发率 */
@@ -165,7 +153,7 @@ export interface IPictureSource extends ITableBasic {
   /** 请求头 */
   header?: string;
 
-  /** 封面解密js, 依次向上回归 */
+  /** 封面解密js, 依次向上回退 */
   decodeJs?: string;
 
   /** 图片样式, 默认大小居中, FULL最大宽度 */
@@ -179,6 +167,56 @@ export interface IPictureSource extends ITableBasic {
 
   /** 登录检测js */
   loginCheckJs?: string;
+}
+
+/**
+ * 图片模型接口
+ */
+export interface IPictureSource extends IBaseSource {
+  /** 搜索规则 */
+  searchRule?: ISearchRule;
+
+  /** 发现规则 */
+  discoverRule?: IDiscoverRule;
+}
+
+/**
+ * 相册规则接口
+ */
+export interface IAlbumRule extends IBasicTable {
+  /** 获取相册列表的规则 */
+  listRule?: string;
+
+  /** 创建相册列表的规则 */
+  createRule?: string;
+
+  /** 删除相册列表的规则 */
+  deleteRule?: string;
+}
+
+/**
+ * 图片规则接口
+ */
+export interface IImageRule extends IBaseSource {
+  /** 获取图片列表的规则 */
+  listRule?: string;
+
+  /** 上传图片的规则 */
+  uploadRule?: string;
+
+  /** 删除图片的规则 */
+  deleteRule?: string;
+}
+
+/**
+ * 图床源接口
+ */
+export interface IBedSource extends IBaseSource {
+  /** 相册规则 */
+  albumRule?: IAlbumRule;
+
+  /** 图片规则 */
+  imageRule?: IImageRule;
 }
 
 

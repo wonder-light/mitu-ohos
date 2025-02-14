@@ -1,4 +1,4 @@
-import { Columns, ColumnType, Convert, Entity, NotNull, Transient } from '@ohos/dataorm';
+import { Columns, ColumnType, Convert, Entity, NotNull } from '@ohos/dataorm';
 import { IDiscoverItemRule, IDiscoverRule } from '../../common/Interface';
 import { DiscoverItemsConverter } from '../../utils';
 import { SearchRule } from './Search';
@@ -8,11 +8,8 @@ import { SearchRule } from './Search';
  */
 @Observed
 export class DiscoverItemRule implements IDiscoverItemRule {
-  /** 发现项名称 */
   name: string;
-  /** URL规则 */
   urlRule?: string;
-  /** 手动排序编号 */
   order: number;
 
   constructor(item?: IDiscoverItemRule) {
@@ -28,7 +25,6 @@ export class DiscoverItemRule implements IDiscoverItemRule {
 @Observed
 @Entity('DiscoverRule')
 export class DiscoverRule extends SearchRule implements IDiscoverRule {
-  /** 发现项 URL规则 */
   @NotNull(true)
   @Columns({ columnName: 'urlRules', types: ColumnType.str })
   @Convert({ columnType: ColumnType.str, converter: DiscoverItemsConverter })

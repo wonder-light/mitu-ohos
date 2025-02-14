@@ -1,5 +1,5 @@
 import { DaoMaster, Database, OpenHelper } from '@ohos/dataorm';
-import { DiscoverRule, PictureSource, SearchRule } from '../models';
+import { AlbumRule, BedSource, DiscoverRule, ImageRule, PictureSource, SearchRule } from '../models';
 import { Log } from '../utils';
 import { site } from './Site';
 
@@ -27,7 +27,7 @@ export class DbHelper extends OpenHelper {
       // 设定数据库版本
       await dbHelper.setVersion(DbHelper.dbVersion);
       // 设定数据实体
-      dbHelper.setEntities(DiscoverRule, SearchRule, PictureSource);
+      dbHelper.setEntities(DiscoverRule, SearchRule, PictureSource, AlbumRule, ImageRule, BedSource);
       // 数据库
       const db = await dbHelper.getWritableDb();
       site.db = new DaoMaster(db).newSession();

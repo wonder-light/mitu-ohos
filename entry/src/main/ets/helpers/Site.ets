@@ -4,7 +4,7 @@ import { emitter } from '@kit.BasicServicesKit';
 import { DaoSession } from '@ohos/dataorm';
 import { DEBUG } from 'BuildProfile';
 import { Const, IDiscoverRule, INavTransition, ISearchRule, IStage } from '../common';
-import { PictureSource } from '../models';
+import { BedSource, PictureSource } from '../models';
 import { DbHelper } from './Database';
 
 /**
@@ -119,11 +119,26 @@ export class Site extends SiteNavManage {
         discoverRule: getDiscover(id)
       });
     }
+    const getBed = (id: number): BedSource => {
+      return new BedSource({
+        id: id,
+        origin: 'https://www.pixiv.net/' + id,
+        originName: 'www.pixiv.net-' + id,
+        name: 'Pixiv-' + id,
+        group: 'pixiv,illustration,' + id,
+        albumRule: {},
+        imageRule: {}
+      });
+    }
     for (let i = 0; i < 10; i++) {
       const obj = getPicture(i);
       await site.db.insertOrReplace(obj.searchRule);
       await site.db.insertOrReplace(obj.discoverRule);
       await site.db.insertOrReplace(obj);
+      const bed = getBed(i);
+      await site.db.insertOrReplace(bed.albumRule);
+      await site.db.insertOrReplace(bed.imageRule);
+      await site.db.insertOrReplace(bed);
     }
   }
 }
