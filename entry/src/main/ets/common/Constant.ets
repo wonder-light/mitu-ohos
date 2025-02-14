@@ -27,6 +27,9 @@ export class Const {
   /** 搜索页面选择的分组或源 */
   static readonly searchSelects: string = 'searchSelects';
 
+  /** 主题模式 */
+  static readonly themeMode: string = 'themeMode';
+
 
   /** 站点初始化完成 */
   static readonly siteInit: string = 'siteInit';

@@ -37,6 +37,18 @@
       "value": "分组"
     },
     {
+      "name": "system",
+      "value": "跟随系统"
+    },
+    {
+      "name": "light",
+      "value": "亮色主题"
+    },
+    {
+      "name": "dark",
+      "value": "暗色主题"
+    },
+    {
       "name": "source",
       "value": "源"
     },

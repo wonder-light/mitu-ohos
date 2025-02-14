@@ -1,7 +1,6 @@
-import { DaoMaster, Database, OpenHelper } from '@ohos/dataorm';
+import { DaoMaster, DaoSession, Database, OpenHelper } from '@ohos/dataorm';
 import { AlbumRule, BedSource, DiscoverRule, ImageRule, PictureSource, SearchRule } from '../models';
 import { Log } from '../utils';
-import { site } from './Site';
 
 /**
  * 数据库选项帮助类
@@ -19,21 +18,17 @@ export class DbHelper extends OpenHelper {
   /**
    * 初始化数据
    */
-  static async initialize(context: Context, name: string = 'mitu.db'): Promise<void> {
-    try {
-      const dbHelper = new DbHelper(context, name);
-      // 设定数据加密
-      dbHelper.setEncrypt(false);
-      // 设定数据库版本
-      await dbHelper.setVersion(DbHelper.dbVersion);
-      // 设定数据实体
-      dbHelper.setEntities(DiscoverRule, SearchRule, PictureSource, AlbumRule, ImageRule, BedSource);
-      // 数据库
-      const db = await dbHelper.getWritableDb();
-      site.db = new DaoMaster(db).newSession();
-    } catch (e) {
-      Log.e(`create dao session failed: ${JSON.stringify(e)}`);
-    }
+  static async initialize(context: Context, name: string = 'mitu.db'): Promise<DaoSession> {
+    const dbHelper = new DbHelper(context, name);
+    // 设定数据加密
+    dbHelper.setEncrypt(false);
+    // 设定数据库版本
+    await dbHelper.setVersion(DbHelper.dbVersion);
+    // 设定数据实体
+    dbHelper.setEntities(DiscoverRule, SearchRule, PictureSource, AlbumRule, ImageRule, BedSource);
+    // 数据库
+    const db = await dbHelper.getWritableDb();
+    return new DaoMaster(db).newSession();
   }
 
   async onUpgradeDatabase(db: Database, oldVersion: number, newVersion: number): Promise<void> {

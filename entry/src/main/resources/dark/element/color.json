@@ -3,6 +3,34 @@
     {
       "name": "background",
       "value": "#000000"
+    },
+    {
+      "name": "button_active",
+      "value": "#FF7EBCD9"
+    },
+    {
+      "name": "accent",
+      "value": "#FFA500"
+    },
+    {
+      "name": "icon_on",
+      "value": "#ffffff"
+    },
+    {
+      "name": "font",
+      "value": "#FFFFFF"
+    },
+    {
+      "name": "button_divider",
+      "value": "#9EDDDDDD"
+    },
+    {
+      "name": "button_normal",
+      "value": "#689B9A9A"
+    },
+    {
+      "name": "subtitle_text",
+      "value": "#B7BEBEBE"
     }
   ]
 }

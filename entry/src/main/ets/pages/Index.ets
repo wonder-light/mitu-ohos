@@ -115,7 +115,7 @@ struct Index {
             .borderRadius(12)
             .width('100%')
             .onClick(() => this.toRouter(this._routeNames[index], index))
-            .backgroundColor(this.activeIndex == index ? this._activeColor : this._background)
+            .backgroundColor(this.activeIndex == index ? this._activeColor : Color.Transparent)
           }
         })
       }

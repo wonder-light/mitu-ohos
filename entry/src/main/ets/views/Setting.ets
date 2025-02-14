@@ -1,4 +1,5 @@
-import { common } from '@kit.AbilityKit';
+import { common, ConfigurationConstant } from '@kit.AbilityKit';
+import { SelectDialog } from '@kit.ArkUI';
 import { Const } from '../common';
 import { TitleBar, TitleBarMenuItem } from '../component';
 import { site } from '../helpers';
@@ -40,6 +41,27 @@ export struct VSetting {
       action: () => { }
     }
   ];
+  /** 主题模式对话框 */
+  themeController: CustomDialogController = new CustomDialogController({
+    builder: SelectDialog({
+      title: $r("app.string.theme_mode"),
+      selectedIndex: site.themeMode + 1,
+      radioContent: [
+        {
+          title: $r("app.string.system"),
+          action: () => site.themeMode = ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET
+        },
+        {
+          title: $r("app.string.dark"),
+          action: () => site.themeMode = ConfigurationConstant.ColorMode.COLOR_MODE_DARK
+        },
+        {
+          title: $r("app.string.light"),
+          action: () => site.themeMode = ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT
+        }
+      ]
+    })
+  });
   /** 设置分组列表 */
   settingGroups: ISettingGroup[] = [
     {
@@ -61,7 +83,7 @@ export struct VSetting {
           value: $r("app.media.theme"),
           label: $r("app.string.theme_mode"),
           subtitle: $r("app.string.theme_mode_sub"),
-          action: () => { }
+          action: (): void => this.themeController.open()
         }
       ]
     },
@@ -111,7 +133,7 @@ export struct VSetting {
   //
   private _accent: ResourceColor = $r('app.color.accent');
   private _font: ResourceColor = $r('app.color.font');
-  private _divider: ResourceColor = $r('app.color.button_divider');
+  private _subtitleText: ResourceColor = $r('app.color.subtitle_text');
   private _buttonNormal: ResourceColor = $r('app.color.button_normal');
   private _iconSize: Length = $r('app.float.icon_size');
   private _textSm: Length = $r('app.float.text_sm');
@@ -139,7 +161,7 @@ export struct VSetting {
                       Text(item.label)
                       if (item.subtitle) {
                         Text(item.subtitle)
-                          .fontColor(this._divider)
+                          .fontColor(this._subtitleText)
                           .fontSize(this._textSm)
                           .margin({ top: VSetting.margin })
                       }

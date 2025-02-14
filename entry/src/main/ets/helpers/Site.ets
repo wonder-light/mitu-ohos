@@ -1,3 +1,4 @@
+import { common, ConfigurationConstant } from '@kit.AbilityKit';
 import { sendablePreferences } from '@kit.ArkData';
 import { HashMap, worker } from '@kit.ArkTS';
 import { emitter } from '@kit.BasicServicesKit';
@@ -8,21 +9,92 @@ import { BedSource, PictureSource } from '../models';
 import { DbHelper } from './Database';
 
 /**
+ * 站点基础
+ */
+class BaseSite implements IStage<void> {
+  /** UI 上下文 */
+  protected declare _context: common.UIAbilityContext;
+
+  /** 设置 UI 上下文 */
+  public set context(context: common.UIAbilityContext) {
+    this._context = context;
+  }
+
+  /** 后台线程 */
+  protected declare _background: worker.ThreadWorker;
+
+  /** 后台线程 */
+  public get background(): worker.ThreadWorker {
+    return this._background;
+  }
+
+  /** app 包名 */
+  protected declare _bundleName: string;
+
+  /** app 包名 */
+  public get bundleName(): string {
+    return this._bundleName;
+  }
+
+  /** 共享用户首选项 */
+  protected declare _pf: sendablePreferences.Preferences;
+
+  /** 共享用户首选项 */
+  public get pf(): sendablePreferences.Preferences {
+    return this._pf;
+  }
+
+  /** app 主题模式 */
+  protected _themeMode: ConfigurationConstant.ColorMode = ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET;
+
+  /** 获取 app 主题模式 */
+  public get themeMode(): ConfigurationConstant.ColorMode {
+    return this._themeMode;
+  }
+
+  /** 设置 app 主题模式 */
+  public set themeMode(mode: ConfigurationConstant.ColorMode) {
+    this._themeMode = mode;
+    this._context.getApplicationContext().setColorMode(this._themeMode);
+    this.pf.put(Const.themeMode, mode);
+  }
+
+  public initState(context: Context): void {
+    // 设置后台线程
+    this._background = new worker.ThreadWorker('entry/ets/workers/background.ets');
+    // com.nianian.mitu
+    this._bundleName = context.applicationInfo.name;
+    // mitu
+    const name = site.bundleName.split('.').pop()!;
+    // 首选项
+    this._pf = sendablePreferences.getPreferencesSync(context, { name: name });
+    // 设置主题模式
+    this._themeMode = this.pf.getSync(Const.themeMode, ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET) as ConfigurationConstant.ColorMode;
+  }
+
+  /** 站点销毁 */
+  public dispose(): void {
+    this._pf.flushSync();
+    this.background?.terminate();
+  }
+}
+
+/**
  * 站点的导航管理
  */
-class SiteNavManage implements IStage<Promise<void>> {
+class SiteNavManage extends BaseSite {
   /**
    * 导航动画管理
    */
-  protected navTransitions: HashMap<string, INavTransition> = new HashMap();
+  protected _navTransitions: HashMap<string, INavTransition> = new HashMap();
 
   constructor() {
+    super();
   }
 
-  public async initState(context: Context): Promise<void> { }
-
   public dispose(): void {
-    this.navTransitions.clear();
+    super.dispose();
+    this._navTransitions.clear();
   }
 
   /**
@@ -31,7 +103,7 @@ class SiteNavManage implements IStage<Promise<void>> {
    * @param transition 导航页面转换动画接口
    */
   public registerNavTransition(navDestinationId: string, transition: INavTransition): void {
-    this.navTransitions.set(navDestinationId, transition);
+    this._navTransitions.set(navDestinationId, transition);
   }
 
   /**
@@ -40,8 +112,8 @@ class SiteNavManage implements IStage<Promise<void>> {
    * @returns
    */
   public getNavTransition(navDestinationId?: string): INavTransition | undefined {
-    if (this.navTransitions == null) return undefined;
-    return this.navTransitions.get(navDestinationId);
+    if (this._navTransitions == null) return undefined;
+    return this._navTransitions.get(navDestinationId);
   }
 
   /**
@@ -49,7 +121,7 @@ class SiteNavManage implements IStage<Promise<void>> {
    * @param navDestinationId 导航 id
    */
   public unregisterNavTransition(navDestinationId: string): void {
-    this.navTransitions.remove(navDestinationId);
+    this._navTransitions.remove(navDestinationId);
   }
 }
 
@@ -60,37 +132,30 @@ class SiteNavManage implements IStage<Promise<void>> {
 export class Site extends SiteNavManage {
   /** 单例 */
   static readonly instance: Site = new Site();
-  /** 后台线程 */
-  declare background: worker.ThreadWorker;
-  /** app 包名 */
-  bundleName: string = '';
-  /** 数据库 */
-  declare db: DaoSession;
-  /** 共享用户首选项 */
-  declare pf: sendablePreferences.Preferences;
 
   // 私有化构造器
   private constructor() {
     super();
   }
 
+  /** 数据库 */
+  protected declare _db: DaoSession;
+
+  /** 数据库 */
+  public get db(): DaoSession {
+    return this._db;
+  }
+
   /** 站点数据初始化 */
   public async initState(context: Context): Promise<void> {
-    await super.initState(context);
+    super.initState(context);
     // 初始化数据库
-    await DbHelper.initialize(context);
+    this._db = await DbHelper.initialize(context);
     if (DEBUG) {
       await site._debug();
     }
     // 发出初始化事件
     emitter.emit(Const.siteInit);
-  }
-
-  /** 站点销毁 */
-  public dispose(): void {
-    super.dispose();
-    this.pf.flushSync();
-    this.background?.terminate();
   }
 
   private async _debug() {
