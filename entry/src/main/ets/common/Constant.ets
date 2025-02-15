@@ -54,6 +54,7 @@ export class Const {
   static readonly cFontSecondary: Resource = $r("app.color.fontSecondary");
   static readonly fTextXs: Resource = $r("app.float.text_xs");
   static readonly fTextSm: Resource = $r("app.float.text_sm");
+  static readonly fTextXl: Resource = $r("app.float.text_xl");
   static readonly fIconSize: Resource = $r("app.float.icon_size");
   static readonly fIconSizeLg: Resource = $r("app.float.icon_size_lg");
   static readonly mArrowRight: Resource = $r("sys.media.ohos_ic_public_arrow_right");

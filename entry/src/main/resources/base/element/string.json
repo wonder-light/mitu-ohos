@@ -151,6 +151,26 @@
     {
       "name": "about_page_share",
       "value": "MiTu 下载地址"
+    },
+    {
+      "name": "developer",
+      "value": "开发人员"
+    },
+    {
+      "name": "developer_sub",
+      "value": "详情请在 GitHub 中查看"
+    },
+    {
+      "name": "update_log",
+      "value": "更新日志"
+    },
+    {
+      "name": "version_param",
+      "value": "版本 %s"
+    },
+    {
+      "name": "check_update",
+      "value": "检查更新"
     }
   ]
 }

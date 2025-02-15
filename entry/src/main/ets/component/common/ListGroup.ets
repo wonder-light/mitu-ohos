@@ -1,4 +1,5 @@
 import { Const } from '../../common';
+import { CustomItem } from './Custom';
 import { TitleBarMenuItem } from './TitleBar';
 
 /** 分组项 */
@@ -62,22 +63,26 @@ export struct ListGroup {
 
   build() {
     List({ space: this.ListSpace, initialIndex: this.initialIndex }) {
-      ForEach(this.groups, (group: IListGroup, index: number) => {
-        ListItemGroup({ header: this.buildHead(group.group), space: this.groupSpace, style: ListItemGroupStyle.CARD }) {
-          ForEach(group.items, (item: IListGroupItem, itemIndex: number) => {
+      Repeat(this.groups).each((list) => {
+        ListItemGroup({ header: this.buildHead(list.item.group), space: this.groupSpace, style: ListItemGroupStyle.CARD }) {
+          Repeat(list.item.items).each((item) => {
             ListItem() {
-              Button({ type: ButtonType.Normal, buttonStyle: ButtonStyleMode.TEXTUAL }) {
-                this.buildItem(item)
+              if (item.item.builder !== undefined) {
+                CustomItem({ builder: item.item.builder, params: [item, list.index, item.index] })
+              } else {
+                Button({ type: ButtonType.Normal, buttonStyle: ButtonStyleMode.TEXTUAL }) {
+                  this.buildItem(item.item)
+                }
+                .fontColor(Const.cFont)
+                .padding(this.itemPadding)
+                .borderRadius(this.itemPadding)
+                .width('100%')
+                .onClick(item.item.action)
+                .backgroundColor(this.selectIndex === list.index + item.index ? this.activeColor : Const.cBackground)
               }
-              .fontColor(Const.cFont)
-              .padding(this.itemPadding)
-              .borderRadius(this.itemPadding)
-              .width('100%')
-              .onClick(item.action)
-              .backgroundColor(this.selectIndex === index + itemIndex ? this.activeColor : Const.cBackground)
             }
             .width('100%')
-          })
+          }).virtualScroll()
         }
         .width('100%')
         .borderWidth(0.5)
@@ -90,7 +95,7 @@ export struct ListGroup {
           startMargin: this.dividerMargin,
           endMargin: this.dividerMargin
         })
-      })
+      }).virtualScroll()
     }
     .width('100%')
     .height('auto')
@@ -100,13 +105,16 @@ export struct ListGroup {
   @Builder
   buildItem(item: IListGroupItem) {
     Row() {
-      Image(item.value)
-        .borderRadius(999)
-        .backgroundColor(this.accentPrefix === true ? Const.cPrimary : undefined)
-        .fillColor(this.accentPrefix === true ? Const.cIconOn : Const.cPrimary)
-        .width(this.accentPrefix === true ? Const.fIconSizeLg : Const.fIconSize)
-        .height(this.accentPrefix === true ? Const.fIconSizeLg : Const.fIconSize)
-        .padding(this.accentPrefix === true ? 4 : undefined)
+      if (item.value) {
+        Image(item.value)
+          .borderRadius(999)
+          .backgroundColor(this.accentPrefix === true ? Const.cPrimary : undefined)
+          .fillColor(this.accentPrefix === true ? Const.cIconOn : Const.cPrimary)
+          .width(this.accentPrefix === true ? Const.fIconSizeLg : Const.fIconSize)
+          .height(this.accentPrefix === true ? Const.fIconSizeLg : Const.fIconSize)
+          .padding(this.accentPrefix === true ? 4 : undefined)
+      }
+
       Column() {
         Text(item.label)
         if (item.subtitle) {

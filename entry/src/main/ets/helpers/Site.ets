@@ -1,4 +1,4 @@
-import { common, ConfigurationConstant } from '@kit.AbilityKit';
+import { bundleManager, common, ConfigurationConstant } from '@kit.AbilityKit';
 import { sendablePreferences } from '@kit.ArkData';
 import { HashMap, worker } from '@kit.ArkTS';
 import { emitter } from '@kit.BasicServicesKit';
@@ -36,6 +36,14 @@ class BaseSite implements IStage<void> {
     return this._bundleName;
   }
 
+  /** app 版本名 */
+  protected declare _versionName: string;
+
+  /** app 版本名, 1.*.0 */
+  public get versionName(): string {
+    return this._versionName;
+  }
+
   /** 共享用户首选项 */
   protected declare _pf: sendablePreferences.Preferences;
 
@@ -62,10 +70,15 @@ class BaseSite implements IStage<void> {
   public initState(context: Context): void {
     // 设置后台线程
     this._background = new worker.ThreadWorker('entry/ets/workers/background.ets');
+    // 指示用于指定将返回的BundleInfo对象中包含的信息的标志。
+    const flags = bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_APPLICATION | bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_METADATA;
+    // 获取包信息
+    const info = bundleManager.getBundleInfoForSelfSync(flags);
     // com.nianian.mitu
-    this._bundleName = context.applicationInfo.name;
+    this._bundleName = info.name; // context.applicationInfo.name;
+    this._versionName = info.versionName;
     // mitu
-    const name = site.bundleName.split('.').pop()!;
+    const name = this._bundleName.split('.').pop()!;
     // 首选项
     this._pf = sendablePreferences.getPreferencesSync(context, { name: name });
     // 设置主题模式

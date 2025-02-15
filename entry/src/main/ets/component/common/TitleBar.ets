@@ -1,4 +1,6 @@
 import { LengthMetrics } from '@kit.ArkUI';
+import { TCustomBuilder } from '../../common';
+import { CustomItem } from './Custom';
 /**
  * 标题栏菜单项
  * @module TitleBar
@@ -27,7 +29,7 @@ export declare interface TitleBarMenuItem {
   /**
    * 创建自定义构建.
    */
-  builder?: CustomBuilder;
+  builder?: TCustomBuilder;
 }
 
 /**
@@ -42,11 +44,11 @@ export struct TitleBar {
   static readonly leftPadding = 12;
   static readonly PUBLIC_BACK: Resource = $r('sys.symbol.arrow_left');
   /** 图片项 */
-  item: TitleBarMenuItem | undefined = undefined;
+  item?: TitleBarMenuItem = undefined;
   /** 标题 */
-  title: ResourceStr | undefined = undefined;
+  title?: ResourceStr = undefined;
   /** 子标题 */
-  subtitle: ResourceStr | undefined = undefined;
+  subtitle?: ResourceStr = undefined;
   /** 菜单项 */
   menuItems: Array<TitleBarMenuItem> = [];
   /** 菜单项显示的最大数量 */
@@ -54,15 +56,15 @@ export struct TitleBar {
   /** 启用返回按钮 */
   enableBack: boolean = false;
   /** 返回操作 */
-  backCall: VoidCallback | undefined;
+  backCall?: VoidCallback = undefined;
   /** 背景色 */
   bgColor: ResourceColor = $r('app.color.accent');
   /** 自定义标题组件 */
   @BuilderParam
-  customTitle: undefined | (() => void);
+  customTitle?: () => void;
   /** 自定义菜单组件 */
   @BuilderParam
-  customPopup: (() => void) = this.menuBuilder;
+  customPopup?: () => void = this.menuBuilder;
   /** 是否显示菜单弹窗 */
   @State
   private showPopup: boolean = false;
@@ -121,7 +123,11 @@ export struct TitleBar {
       if (this.menuItems.length > 0) {
         Row() {
           ForEach(this.menuItems.slice(0, this.maxMenuCount), (item: TitleBarMenuItem, index: number) => {
-            ImageButton({ item: item, customBuild: item.builder instanceof Function ? item.builder : undefined })
+            if (item.builder !== undefined) {
+              CustomItem({ builder: item.builder, params: [item, index] })
+            } else {
+              ImageButton({ item: item })
+            }
           })
 
           if (this.menuItems.length > this.maxMenuCount) {
@@ -186,55 +192,48 @@ export struct ImageButton {
   hitTest: HitTestMode = HitTestMode.Default;
   /** 设置元素的水平布局 */
   textDirection?: FlexDirection = FlexDirection.Column;
-  /** 自定义组件 */
-  @BuilderParam
-  customBuild: undefined | (() => void);
 
   build() {
-    if (this.customBuild != null) {
-      this.customBuild()
-    } else {
-      Button({
-        type: this.item.label != null ? ButtonType.Normal : ButtonType.Circle,
-        stateEffect: this.item.enable !== false
-      }) {
-        if (!this.item.label) {
+    Button({
+      type: this.item.label != null ? ButtonType.Normal : ButtonType.Circle,
+      stateEffect: this.item.enable !== false
+    }) {
+      if (!this.item.label) {
+        this.buildImage()
+      } else {
+        Flex({
+          direction: this.textDirection,
+          space: { main: ImageButton.space, cross: ImageButton.space },
+          justifyContent: FlexAlign.Center,
+          alignContent: FlexAlign.Center,
+          alignItems: ItemAlign.Center
+        }) {
           this.buildImage()
-        } else {
-          Flex({
-            direction: this.textDirection,
-            space: { main: ImageButton.space, cross: ImageButton.space },
-            justifyContent: FlexAlign.Center,
-            alignContent: FlexAlign.Center,
-            alignItems: ItemAlign.Center
-          }) {
-            this.buildImage()
-            Text(this.item.label)
-              .fontSize($r('app.float.text_xs'))
-              .maxLines(1)
-              .fontColor(this.textColor)//.colorBlend(this.textColor)
-              .textOverflow({ overflow: TextOverflow.Ellipsis })
-          }
+          Text(this.item.label)
+            .fontSize($r('app.float.text_xs'))
+            .maxLines(1)
+            .fontColor(this.textColor)//.colorBlend(this.textColor)
+            .textOverflow({ overflow: TextOverflow.Ellipsis })
         }
       }
-      .enabled(this.item.enable !== false)
-      .stateStyles({
-        normal: {
-          .foregroundColor(Color.Transparent)
-          .backgroundColor(Color.Transparent)
-        },
-        clicked: {
-          .foregroundColor($r('app.color.button_normal'))
-          .backgroundColor($r('app.color.button_normal'))
-        }
-      })
-      .borderRadius(this.item.label != null ? 8 : null)
-      .width(this.item.label != null ? '100%' : TitleBar.imageHotZoneWidth)
-      .height(this.item.label != null ? '100%' : TitleBar.imageHotZoneWidth)
-      .align(Alignment.Center)
-      .hitTestBehavior(this.hitTest)
-      .onClick(this.item.action)
     }
+    .enabled(this.item.enable !== false)
+    .stateStyles({
+      normal: {
+        .foregroundColor(Color.Transparent)
+        .backgroundColor(Color.Transparent)
+      },
+      clicked: {
+        .foregroundColor($r('app.color.button_normal'))
+        .backgroundColor($r('app.color.button_normal'))
+      }
+    })
+    .borderRadius(this.item.label != null ? 8 : null)
+    .width(this.item.label != null ? '100%' : TitleBar.imageHotZoneWidth)
+    .height(this.item.label != null ? '100%' : TitleBar.imageHotZoneWidth)
+    .align(Alignment.Center)
+    .hitTestBehavior(this.hitTest)
+    .onClick(this.item.action)
   }
 
   @Builder
