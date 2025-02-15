@@ -1,3 +1,4 @@
+import { Const } from '../../common';
 import { TitleBar } from '../../component';
 
 @Builder
@@ -14,6 +15,6 @@ export struct VImgSourceManage {
     }
     .hideTitleBar(true)
     .hideToolBar(true)
-    .backgroundColor($r('app.color.background'))
+    .backgroundColor(Const.cBackground)
   }
 }

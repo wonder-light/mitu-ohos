@@ -90,7 +90,6 @@ export struct VSearch {
   /** 选择的规则分组或id */
   private selects: collections.Array<string | number> = new collections.Array();
   //
-  private chipSize: Resource = $r('app.float.text_xs');
   private flexSpace = LengthMetrics.vp(6);
 
   aboutToAppear(): void {
@@ -131,11 +130,11 @@ export struct VSearch {
         if (this.isShow) {
           Row() {
             Text($r("app.string.search_history"))
-              .fontSize(this.chipSize)
-              .fontColor($r('app.color.button_divider'))
+              .fontSize(Const.fTextXs)
+              .fontColor(Const.cButtonDivider)
             Button($r("app.string.clear"), { buttonStyle: ButtonStyleMode.TEXTUAL, controlSize: ControlSize.SMALL })
-              .fontSize(this.chipSize)
-              .fontColor($r('app.color.button_divider'))
+              .fontSize(Const.fTextXs)
+              .fontColor(Const.cButtonDivider)
               .onClick(() => {
                 this.histories.splice(0, this.histories.length);
                 this.clearHistory = !this.clearHistory;
@@ -149,7 +148,7 @@ export struct VSearch {
             Flex({ wrap: FlexWrap.Wrap, direction: FlexDirection.Row, space: { main: this.flexSpace, cross: this.flexSpace } }) {
               Repeat([...this.clearHistory ? this.histories : this.histories]).each((item) => {
                 Chip({
-                  label: { text: item.item, fontSize: this.chipSize },
+                  label: { text: item.item, fontSize: Const.fTextXs },
                   size: ChipSize.SMALL,
                   onClose: () => this.histories.splice(item.index, 1),
                   onClicked: () => this.searchPicture(item.item)
@@ -178,15 +177,15 @@ export struct VSearch {
     }
     .hideTitleBar(true)
     .hideToolBar(true)
-    .backgroundColor($r('app.color.background'))
+    .backgroundColor(Const.cBackground)
     .onBackPressed(() => this.onBackPress())
   }
 
   @Builder
   buildSearchBar() {
     Search({ placeholder: $r("app.string.search_placeholder"), value: $$this.searchValue, controller: this.controller })
-      .textFont({ size: $r('app.float.text_xs') })
-      .searchButton('>', { fontColor: $r("app.color.primary") })
+      .textFont({ size: Const.fTextXs })
+      .searchButton('>', { fontColor: Const.cPrimary })
       .onSubmit((value: string) => this.searchPicture(value))
   }
 

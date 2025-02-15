@@ -43,5 +43,19 @@ export class Const {
   static readonly animate3: AnimateParam = { duration: 300, curve: Curve.Ease };
   // ----------------------------------- 参数 -----------------------------------
   // ----------------------------------- 资源 -----------------------------------
+  static readonly cFont: Resource = $r('app.color.font');
+  static readonly cPrimary: Resource = $r('app.color.primary');
+  static readonly cAccent: Resource = $r("app.color.accent");
+  static readonly cIconOn: Resource = $r('app.color.icon_on');
+  static readonly cBackground: Resource = $r('app.color.background');
+  static readonly cButtonActive: Resource = $r('app.color.button_active');
+  static readonly cButtonNormal: Resource = $r('app.color.button_normal');
+  static readonly cButtonDivider: Resource = $r('app.color.button_divider');
+  static readonly cFontSecondary: Resource = $r("app.color.fontSecondary");
+  static readonly fTextXs: Resource = $r("app.float.text_xs");
+  static readonly fTextSm: Resource = $r("app.float.text_sm");
+  static readonly fIconSize: Resource = $r("app.float.icon_size");
+  static readonly fIconSizeLg: Resource = $r("app.float.icon_size_lg");
+  static readonly mArrowRight: Resource = $r("sys.media.ohos_ic_public_arrow_right");
   // ----------------------------------- 资源 -----------------------------------
 }

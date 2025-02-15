@@ -1,6 +1,7 @@
 import { common } from '@kit.AbilityKit';
 import { uniformTypeDescriptor as utd } from '@kit.ArkData';
 import { systemShare } from '@kit.ShareKit';
+import { Const } from '../../common';
 import { TitleBar, TitleBarMenuItem } from '../../component';
 
 @Builder
@@ -22,11 +23,21 @@ export struct VAbout {
   build() {
     NavDestination() {
       TitleBar({ enableBack: true, title: $r("app.string.about"), menuItems: this.navMenus })
-
+      List() {
+        ListItem() {
+          Column() {
+            Text($r('app.string.app_name'))
+            Text($r('app.string.app_description'))
+          }
+          .alignItems(HorizontalAlign.Center)
+        }
+      }
+      .width('100%')
+      .height('100%')
     }
     .hideTitleBar(true)
     .hideToolBar(true)
-    .backgroundColor($r('app.color.background'))
+    .backgroundColor(Const.cBackground)
   }
 
   /** 分享 */

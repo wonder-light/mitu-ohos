@@ -1,3 +1,4 @@
+import { Const } from '../common';
 import { TitleBar } from '../component';
 import { site } from '../helpers';
 
@@ -31,7 +32,7 @@ export struct VAlbum {
     }
     .hideTitleBar(true)
     .hideToolBar(true)
-    .backgroundColor($r('app.color.background'))
+    .backgroundColor(Const.cBackground)
     .opacity(this._pageEnter ? 0 : 1)
     .onDisAppear(() => site.unregisterNavTransition(this._navDestinationId!))
     .onReady((ctx) => {

@@ -1,22 +1,7 @@
 import { common, ConfigurationConstant } from '@kit.AbilityKit';
 import { Const } from '../common';
-import { SelectDialog, TitleBar, TitleBarMenuItem } from '../component';
+import { IListGroup, ListGroup, SelectDialog, TitleBar, TitleBarMenuItem } from '../component';
 import { site } from '../helpers';
-
-/** 分组项 */
-declare interface ISettingGroupItem extends TitleBarMenuItem {
-  /** 副标题 */
-  subtitle?: ResourceStr;
-}
-
-/** 分组 */
-declare interface ISettingGroup {
-  /** 分组名 */
-  group?: ResourceStr;
-
-  /** 分组内容 */
-  items: ISettingGroupItem[];
-}
 
 @Builder
 export function buildSetting() {
@@ -25,8 +10,6 @@ export function buildSetting() {
 
 @Component({ freezeWhenInactive: true })
 export struct VSetting {
-  static readonly padding = 12;
-  static readonly margin = 8;
   /** 导航栈 */
   @Consume('pageStack')
   pageStack: NavPathStack;
@@ -68,7 +51,7 @@ export struct VSetting {
     cornerRadius: 16
   });
   /** 设置分组列表 */
-  settingGroups: ISettingGroup[] = [
+  settingGroups: IListGroup[] = [
     {
       group: $r("app.string.source"),
       items: [
@@ -135,13 +118,6 @@ export struct VSetting {
   @State
   private _pageEnter: boolean = true;
   private _navDestinationId?: string;
-  //
-  private _primary: ResourceColor = $r("app.color.primary");
-  private _font: ResourceColor = $r('app.color.font');
-  private _subtitleText: ResourceColor = $r("app.color.fontSecondary");
-  private _buttonNormal: ResourceColor = $r('app.color.button_normal');
-  private _iconSize: Length = $r('app.float.icon_size');
-  private _textSm: Length = $r('app.float.text_sm');
 
   aboutToAppear(): void {
     this._pageEnter = this.isLarge;
@@ -150,58 +126,15 @@ export struct VSetting {
   build() {
     NavDestination() {
       TitleBar({ title: $r("app.string.setting"), menuItems: this.navMenus })
-      List({ space: VSetting.padding }) {
-        ForEach(this.settingGroups, (group: ISettingGroup) => {
-          ListItemGroup({ header: this.buildHead(group.group), style: ListItemGroupStyle.CARD }) {
-            ForEach(group.items, (item: ISettingGroupItem) => {
-              ListItem() {
-                Button({ type: ButtonType.Normal, buttonStyle: ButtonStyleMode.TEXTUAL }) {
-                  Row() {
-                    Image(item.value)
-                      .borderRadius(999)
-                      .fillColor(this._primary)
-                      .width(this._iconSize)
-                      .height(this._iconSize)
-                    Column() {
-                      Text(item.label)
-                      if (item.subtitle) {
-                        Text(item.subtitle)
-                          .fontColor(this._subtitleText)
-                          .fontSize(this._textSm)
-                          .margin({ top: VSetting.margin })
-                      }
-                    }
-                    .margin({ left: VSetting.margin })
-                    .alignItems(HorizontalAlign.Start)
-                  }
-                  .width('100%')
-                }
-                .fontColor(this._font)
-                .padding(VSetting.padding)
-                .borderRadius(VSetting.padding)
-                .width('100%')
-                .onClick(item.action)
-              }
-              .width('100%')
-            })
-          }
-          .width('100%')
-          .borderWidth(0.5)
-          .borderColor(this._buttonNormal)
-          .shadow({ color: this._buttonNormal, radius: VSetting.padding })
-          .backgroundColor(Color.Transparent)
-        })
-      }
-      .width('100%')
-      .height('auto')
-      .flexGrow(1)
-      .flexShrink(1)
-      .flexBasis('0%')
-      .padding({ top: 12 })
+      ListGroup({ groups: this.settingGroups, ListSpace: 12 })
+        .flexGrow(1)
+        .flexShrink(1)
+        .flexBasis('0%')
+        .padding({ top: 12 })
     }
     .hideTitleBar(true)
     .hideToolBar(true)
-    .backgroundColor($r('app.color.background'))
+    .backgroundColor(Const.cBackground)
     .opacity(this._pageEnter ? 0 : 1)
     .onDisAppear(() => site.unregisterNavTransition(this._navDestinationId!))
     .onReady((ctx) => {
@@ -210,16 +143,5 @@ export struct VSetting {
         onEnd: (isExit) => this._pageEnter = isExit
       });
     })
-  }
-
-  @Builder
-  buildHead(group?: ResourceStr) {
-    if (group) {
-      Text(group)
-        .fontColor(this._primary)
-        .fontSize(this._textSm)
-        .padding({ left: VSetting.padding })
-        .margin({ top: 4, bottom: VSetting.margin })
-    }
   }
 }

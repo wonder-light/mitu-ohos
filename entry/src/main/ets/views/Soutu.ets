@@ -53,8 +53,6 @@ export struct VSoutu {
   private selectContents: ISheetInfo[] = [];
   /** 数据源 */
   declare private dao: BaseDao<PictureSource, number>;
-  //
-  private _primary: ResourceColor = $r("app.color.primary");
 
   aboutToAppear(): void {
     this.loadData();
@@ -94,7 +92,7 @@ export struct VSoutu {
     }
     .hideTitleBar(true)
     .hideToolBar(true)
-    .backgroundColor($r('app.color.background'))
+    .backgroundColor(Const.cBackground)
     .opacity(this._pageEnter ? 0 : 1)
     .onDisAppear(() => site.unregisterNavTransition(this._navDestinationId!))
     .onReady((ctx) => {
@@ -113,9 +111,9 @@ export struct VSoutu {
   getTabBarStyle(name: ResourceStr): SubTabBarStyle {
     return SubTabBarStyle.of(name)
       .padding(0)
-      .indicator({ color: this._primary, marginTop: 2 })
+      .indicator({ color: Const.cPrimary, marginTop: 2 })
       .labelStyle({
-        selectedColor: this._primary,
+        selectedColor: Const.cPrimary,
         heightAdaptivePolicy: TextHeightAdaptivePolicy.MAX_LINES_FIRST
       })
   }
