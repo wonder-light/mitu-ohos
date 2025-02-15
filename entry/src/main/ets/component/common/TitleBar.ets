@@ -1,5 +1,5 @@
 import { LengthMetrics } from '@kit.ArkUI';
-import { TCustomBuilder } from '../../common';
+import { Const, TCustomBuilder } from '../../common';
 import { CustomItem } from './Custom';
 /**
  * 标题栏菜单项
@@ -37,7 +37,6 @@ export declare interface TitleBarMenuItem {
  */
 @Component
 export struct TitleBar {
-  static readonly imageSize = $r('app.float.icon_size');
   static readonly imageHotZoneWidth = 40;
   static readonly buttonBorderRadius = 8;
   static readonly totalHeight = 50;
@@ -58,7 +57,7 @@ export struct TitleBar {
   /** 返回操作 */
   backCall?: VoidCallback = undefined;
   /** 背景色 */
-  bgColor: ResourceColor = $r('app.color.accent');
+  bgColor: ResourceColor = Const.cAccent;
   /** 自定义标题组件 */
   @BuilderParam
   customTitle?: () => void;
@@ -100,15 +99,15 @@ export struct TitleBar {
             if (this.title !== undefined) {
               Text(this.title)
                 .fontWeight(FontWeight.Medium)
-                .fontSize($r('app.float.text_xl'))
-                .fontColor($r('app.color.font'))
+                .fontSize(Const.fTextXl)
+                .fontColor(Const.cFont)
                 .maxLines(this.subtitle !== undefined ? 1 : 2)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
             }
             if (this.subtitle !== undefined) {
               Text(this.subtitle)
-                .fontSize($r('app.float.text_sm'))
-                .fontColor($r("app.color.fontSecondary"))
+                .fontSize(Const.fTextSm)
+                .fontColor(Const.cFontSecondary)
                 .maxLines(1)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
             }
@@ -163,7 +162,7 @@ export struct TitleBar {
         }
       })
     }
-    .backgroundColor($r('app.color.background'))
+    .backgroundColor(Const.cBackground)
   }
 
   @Styles
@@ -178,16 +177,15 @@ export struct TitleBar {
 @Component
 export struct ImageButton {
   static readonly space: LengthMetrics = LengthMetrics.vp(4);
-  static font: ResourceColor = $r('app.color.font');
   /** 菜单项 */
   @Prop
   item: TitleBarMenuItem;
   /** 定义文本fontColor */
   @Prop
-  textColor?: ResourceColor = ImageButton.font;
+  textColor?: ResourceColor = Const.cFont;
   /** 定义图标填充颜色 */
   @Prop
-  iconColor?: ResourceColor = ImageButton.font;
+  iconColor?: ResourceColor = Const.cFont;
   /** 定义命中测试模式 */
   hitTest: HitTestMode = HitTestMode.Default;
   /** 设置元素的水平布局 */
@@ -210,7 +208,7 @@ export struct ImageButton {
         }) {
           this.buildImage()
           Text(this.item.label)
-            .fontSize($r('app.float.text_xs'))
+            .fontSize(Const.fTextXs)
             .maxLines(1)
             .fontColor(this.textColor)//.colorBlend(this.textColor)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -224,8 +222,8 @@ export struct ImageButton {
         .backgroundColor(Color.Transparent)
       },
       clicked: {
-        .foregroundColor($r('app.color.button_normal'))
-        .backgroundColor($r('app.color.button_normal'))
+        .foregroundColor(Const.cButtonNormal)
+        .backgroundColor(Const.cButtonNormal)
       }
     })
     .borderRadius(this.item.label != null ? 8 : null)
@@ -247,8 +245,8 @@ export struct ImageButton {
       Image(this.item.value)
         .draggable(false)
         .matchTextDirection(true)
-        .width(TitleBar.imageSize)
-        .height(TitleBar.imageSize)
+        .width(Const.fIconSize)
+        .height(Const.fIconSize)
         .fillColor(this.iconColor)
       //.colorBlend(this.iconColor)
     }

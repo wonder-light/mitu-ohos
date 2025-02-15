@@ -50,11 +50,7 @@ export struct SelectDialog {
   private selectState: Map<number, boolean> = new Map();
   /** 选中的索引 */
   private selectIndex: Map<number, Set<number>> = new Map();
-  //
-  private _primary = $r("app.color.primary");
-  private _divider = $r('app.color.button_divider');
-  private _selectAll = $r('app.string.select_all');
-  private _notSelectAll = $r('app.string.not_select_all');
+  /** 分组前缀 */
   private _prefix = '';
 
   aboutToAppear(): void {
@@ -99,22 +95,22 @@ export struct SelectDialog {
           Row() {
             CheckboxGroup({ group: this._prefix + this.currentIndex })
               .margin({ left: 6, right: 6 })
-              .selectedColor(this._primary)
+              .selectedColor(Const.cPrimary)
               .onChange((event) => {
                 this.selectState.set(this.currentIndex, event.status !== SelectStatus.None);
               })
-            Text(this.selectState.get(this.currentIndex) ? this._notSelectAll : this._selectAll)
-              .fontColor(this._primary)
+            Text(this.selectState.get(this.currentIndex) ? $r('app.string.not_select_all') : $r('app.string.select_all'))
+              .fontColor(Const.cPrimary)
           }
           .width(60)
         }
 
         Button($r('app.string.cancel'), { buttonStyle: ButtonStyleMode.TEXTUAL })
-          .fontColor(this._divider)
+          .fontColor(Const.cButtonDivider)
           .onClick(() => this.dialogController.close())
 
         Button($r('app.string.confirm'), { buttonStyle: ButtonStyleMode.TEXTUAL })
-          .fontColor(this._primary)
+          .fontColor(Const.cPrimary)
           .onClick(() => this.confirm())
       }
       .width('100%')
@@ -132,9 +128,9 @@ export struct SelectDialog {
     Button(name, { buttonStyle: ButtonStyleMode.TEXTUAL })
       .width('100%')
       .height(SelectDialog.tabHeight - 6)
-      .fontColor(this.currentIndex === index ? $r('app.color.icon_on') : $r('app.color.font'))
-      .backgroundColor(this.currentIndex === index ? this._primary : Color.Transparent)
-      .border(this.currentIndex !== index ? { width: 1, color: this._divider } : { width: 0 })
+      .fontColor(this.currentIndex === index ? Const.cIconOn : Const.cFont)
+      .backgroundColor(this.currentIndex === index ? Const.cPrimary : Color.Transparent)
+      .border(this.currentIndex !== index ? { width: 1, color: Const.cButtonDivider } : { width: 0 })
   }
 
   /** 构建内容列表 */
@@ -147,7 +143,7 @@ export struct SelectDialog {
             if (option.isRadio ?? true) {
               Radio({ value: item.item.value.toString(), group: this._prefix + index })
                 .checked(this.selectIndex.get(index)?.has(item.index))
-                .radioStyle({ checkedBackgroundColor: this._primary })
+                .radioStyle({ checkedBackgroundColor: Const.cPrimary })
                 .onChange((isChecked) => {
                   let set = this.selectIndex.get(index);
                   isChecked ? set?.add(item.index) : set?.delete(item.index);
@@ -155,7 +151,7 @@ export struct SelectDialog {
             } else {
               Checkbox({ name: item.item.value.toString(), group: this._prefix + index })
                 .select(this.selectIndex.get(index)?.has(item.index))
-                .selectedColor(this._primary)
+                .selectedColor(Const.cPrimary)
                 .onChange((isChecked) => {
                   let set = this.selectIndex.get(index);
                   isChecked ? set?.add(item.index) : set?.delete(item.index);
