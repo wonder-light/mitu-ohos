@@ -60,8 +60,10 @@ struct Index {
             }
             .opacity(this.activeIndex === index ? 1 : 0)
             .tabBar(this.getTabStyle(item))
+            .safeArea()
           })
         }
+        .safeArea()
         .divider(null)
         .scrollable(false)
         .barBackgroundColor(Const.cAccent)
@@ -91,6 +93,13 @@ struct Index {
       dividerMargin: Const.fIconSize,
       selectIndex: this.activeIndex
     })
+  }
+
+  /** 扩大安全区域 */
+  @Styles
+  safeArea() {
+    .height('100%')
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
   }
 
   /** 导航切换动画 */

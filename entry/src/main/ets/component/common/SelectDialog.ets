@@ -33,7 +33,7 @@ export declare interface IContentInfo {
 export struct SelectDialog {
   static readonly actionHeight = 40;
   static readonly padding = 8;
-  static readonly tabHeight = 8;
+  static readonly tabHeight = 32;
   /** 弹窗控制器 */
   declare dialogController: CustomDialogController;
   /** 标题 */
@@ -45,9 +45,6 @@ export struct SelectDialog {
   /** 当前选中的索引 */
   @State
   private currentIndex: number = 0;
-  /** 列表的最大高度 */
-  @State
-  private maxHeight?: number = undefined;
   /** 多选框的选中状态 */
   @State
   private selectState: Map<number, boolean> = new Map();
@@ -82,10 +79,11 @@ export struct SelectDialog {
                 this.buildList(content, index)
               }
               .tabBar(this.buildTabBar(index, content.name))
-              .constraintSize({ maxHeight: this.maxHeight ? this.maxHeight - (SelectDialog.tabHeight + SelectDialog.padding * 2) : undefined })
+              .flex()
             })
           }
           .height('auto')
+          .flex()
           .barHeight(SelectDialog.tabHeight)
           .animationDuration(Const.animate.duration)
           .onAnimationStart((_, index: number) => animateTo(Const.animate, () => this.currentIndex = index))
@@ -94,7 +92,7 @@ export struct SelectDialog {
         }
       }
       .padding(SelectDialog.padding)
-      .constraintSize({ maxHeight: this.maxHeight })
+      .flex()
 
       Row() {
         if (this.options[this.currentIndex]?.isRadio === false) {
@@ -125,10 +123,7 @@ export struct SelectDialog {
       .justifyContent(FlexAlign.SpaceBetween)
     }
     .padding({ bottom: SelectDialog.padding })
-    .backgroundColor($r('app.color.background'))
-    .onAreaChange((_, area) => {
-      this.maxHeight = area.height as number - TitleBar.totalHeight - SelectDialog.actionHeight - SelectDialog.padding;
-    })
+    .backgroundColor(Const.cBackground)
   }
 
   /** 构建 TabBar */
@@ -173,6 +168,14 @@ export struct SelectDialog {
     }
     .width('auto')
     .height('auto')
+    .flex()
+  }
+
+  @Styles
+  flex() {
+    .flexGrow(1)
+    .flexShrink(1)
+    .flexBasis('0%')
   }
 
   /** 获取选中项 */
