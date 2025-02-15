@@ -36,12 +36,22 @@
         ]
       }
     ],
+    "extensionAbilities": [
+      {
+        "name": "ShareExtAbility",
+        "srcEntry": "./ets/ability/Share.ets",
+        "description": "share_ext_ability",
+        "icon": "$media:layered_image",
+        "type": "share",
+        "exported": true
+      }
+    ],
     "requestPermissions": [
       {
-        "name": "ohos.permission.INTERNET",
+        "name": "ohos.permission.INTERNET"
       },
       {
-        "name": "ohos.permission.GET_WIFI_INFO",
+        "name": "ohos.permission.GET_WIFI_INFO"
       }
     ]
   }

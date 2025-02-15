@@ -6,13 +6,23 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 export class Log {
   static readonly domain = 0xFF00;
   static readonly prefix = 'logger';
+  private static _prefix?: string = undefined;
+
+  /**
+   * 设置日志前缀
+   * @param prefix
+   */
+  static setPrefix(prefix: string) {
+    Log._prefix = prefix;
+  }
 
   /**
    * 打印调试信息
    * @param args
    */
   static d(...args: string[]) {
-    hilog.debug(Log.domain, Log.prefix, '%{public}s'.repeat(args.length), ...args);
+    hilog.debug(Log.domain, Log._prefix ?? Log.prefix, '%{public}s'.repeat(args.length), ...args);
+    Log._prefix = undefined;
   }
 
   /**
@@ -20,7 +30,8 @@ export class Log {
    * @param args
    */
   static i(...args: string[]) {
-    hilog.info(Log.domain, Log.prefix, '%{public}s'.repeat(args.length), ...args);
+    hilog.info(Log.domain, Log._prefix ?? Log.prefix, '%{public}s'.repeat(args.length), ...args);
+    Log._prefix = undefined;
   }
 
   /**
@@ -28,7 +39,8 @@ export class Log {
    * @param args
    */
   static w(...args: string[]) {
-    hilog.warn(Log.domain, Log.prefix, '%{public}s'.repeat(args.length), ...args);
+    hilog.warn(Log.domain, Log._prefix ?? Log.prefix, '%{public}s'.repeat(args.length), ...args);
+    Log._prefix = undefined;
   }
 
   /**
@@ -36,6 +48,7 @@ export class Log {
    * @param args
    */
   static e(...args: string[]) {
-    hilog.error(Log.domain, Log.prefix, '%{public}s'.repeat(args.length), ...args);
+    hilog.error(Log.domain, Log._prefix ?? Log.prefix, '%{public}s'.repeat(args.length), ...args);
+    Log._prefix = undefined;
   }
 }
