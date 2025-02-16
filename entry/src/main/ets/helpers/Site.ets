@@ -1,12 +1,16 @@
+import { WebViewControllerProxy } from '@hzw/ohos-dsbridge';
 import { bundleManager, common, ConfigurationConstant } from '@kit.AbilityKit';
 import { sendablePreferences } from '@kit.ArkData';
 import { HashMap, worker } from '@kit.ArkTS';
+import { webview } from '@kit.ArkWeb';
 import { emitter } from '@kit.BasicServicesKit';
 import { DaoSession } from '@ohos/dataorm';
 import { DEBUG } from 'BuildProfile';
 import { Const, IDiscoverRule, INavTransition, ISearchRule, IStage } from '../common';
 import { BedSource, PictureSource } from '../models';
+import { Log } from '../utils';
 import { DbHelper } from './Database';
+import { JsBridge } from './Js';
 
 /**
  * 站点基础
@@ -101,10 +105,6 @@ class SiteNavManage extends BaseSite {
    */
   protected _navTransitions: HashMap<string, INavTransition> = new HashMap();
 
-  constructor() {
-    super();
-  }
-
   public dispose(): void {
     super.dispose();
     this._navTransitions.clear();
@@ -139,10 +139,45 @@ class SiteNavManage extends BaseSite {
 }
 
 /**
+ * 站点的 Web 管理
+ */
+class WebSiteManage extends SiteNavManage {
+  /** webview 控制器 */
+  protected declare _web: WebViewControllerProxy;
+
+  /** webview 控制器 */
+  public get web(): WebViewControllerProxy {
+    return this._web;
+  }
+
+  public initState(context: Context): void {
+    super.initState(context);
+    // 初始化 webview
+    webview.WebviewController.initializeWebEngine();
+    webview.WebCookieManager.putAcceptCookieEnabled(true);
+    webview.WebCookieManager.putAcceptThirdPartyCookieEnabled(true);
+    // 初始化 webview 代理
+    this._web = WebViewControllerProxy.createController();
+    // 添加 JSBridge
+    this._web.addJavascriptObject(new JsBridge(), 'ets');
+    // 异常
+    this._web.setGlobalErrorMessageListener((error: string) => {
+      Log.setPrefix('webview');
+      Log.e(error);
+    });
+  }
+
+  public dispose(): void {
+    super.dispose();
+    this._web.destroy();
+  }
+}
+
+/**
  * 站点控制
  */
 @Observed
-export class Site extends SiteNavManage {
+export class Site extends WebSiteManage {
   /** 单例 */
   static readonly instance: Site = new Site();
 

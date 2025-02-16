@@ -70,6 +70,11 @@ struct Index {
         .animationDuration(Const.animate.duration)
         .customContentTransition((from, to) => this.tabTransition(from, to))
       }
+      Web({ src: $rawfile('index.html'), controller: site.web.getWebViewController() })
+        .javaScriptAccess(true)
+        .javaScriptProxy(site.web.javaScriptProxy)
+        .mixedMode(MixedMode.All)
+        .visibility(Visibility.Hidden)
     }
     .onAppear(() => this.navAppear())
     .mode(NavigationMode.Auto)

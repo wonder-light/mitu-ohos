@@ -8,7 +8,8 @@
   "dependencies": {
     "@rv/image-preview": "^1.0.14",
     "@hadss/debug-db": "^1.0.0-rc.6",
-    "@ohos/dataorm": "file:../dataorm"
+    "@ohos/dataorm": "file:../dataorm",
+    "@hzw/ohos-dsbridge": "^1.7.2"
   },
   "devDependencies": {},
   "dynamicDependencies": {}
