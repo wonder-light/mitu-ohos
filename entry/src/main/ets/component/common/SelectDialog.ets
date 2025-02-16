@@ -31,9 +31,7 @@ export declare interface IContentInfo {
 @Component
 @CustomDialog
 export struct SelectDialog {
-  static readonly actionHeight = 40;
-  static readonly padding = 8;
-  static readonly tabHeight = 32;
+  static readonly tabHeight = Const.fPadding8;
   /** 弹窗控制器 */
   declare dialogController: CustomDialogController;
   /** 标题 */
@@ -87,14 +85,14 @@ export struct SelectDialog {
           this.buildList(this.options[0], 0)
         }
       }
-      .padding(SelectDialog.padding)
+      .padding(Const.fPadding2)
       .flex()
 
-      Row() {
+      RelativeContainer() {
         if (this.options[this.currentIndex]?.isRadio === false) {
           Row() {
             CheckboxGroup({ group: this._prefix + this.currentIndex })
-              .margin({ left: 6, right: 6 })
+              .margin({ left: Const.fPadding2, right: Const.fPadding2 })
               .selectedColor(Const.cPrimary)
               .onChange((event) => {
                 this.selectState.set(this.currentIndex, event.status !== SelectStatus.None);
@@ -102,23 +100,25 @@ export struct SelectDialog {
             Text(this.selectState.get(this.currentIndex) ? $r('app.string.not_select_all') : $r('app.string.select_all'))
               .fontColor(Const.cPrimary)
           }
-          .width(60)
+          .alignRules(this.getAligns(-1))
         }
 
         Button($r('app.string.cancel'), { buttonStyle: ButtonStyleMode.TEXTUAL })
-          .fontColor(Const.cButtonDivider)
+          .fontColor(Const.cFontSecondary)
           .onClick(() => this.dialogController.close())
+          .alignRules(this.getAligns(this.options[this.currentIndex]?.isRadio === false ? 0 : -1))
 
         Button($r('app.string.confirm'), { buttonStyle: ButtonStyleMode.TEXTUAL })
           .fontColor(Const.cPrimary)
           .onClick(() => this.confirm())
+          .id(this._prefix + 'confirm')
+          .alignRules(this.getAligns(1))
       }
       .width('100%')
-      .height(SelectDialog.actionHeight)
-      .padding({ left: SelectDialog.padding, right: SelectDialog.padding })
-      .justifyContent(FlexAlign.SpaceBetween)
+      .height('auto')
+      .padding({ left: Const.fPadding2, right: Const.fPadding2 })
     }
-    .padding({ bottom: SelectDialog.padding })
+    .padding({ bottom: Const.fPadding2 })
     .backgroundColor(Const.cBackground)
   }
 
@@ -136,7 +136,7 @@ export struct SelectDialog {
   /** 构建内容列表 */
   @Builder
   buildList(option: IContentInfo, index: number) {
-    List({ space: 4 }) {
+    List({ space: Const.fPadding1 }) {
       Repeat(Array.isArray(option.contents) ? option.contents : option.contents()).each((item) => {
         ListItem() {
           Row() {
@@ -157,7 +157,7 @@ export struct SelectDialog {
                   isChecked ? set?.add(item.index) : set?.delete(item.index);
                 })
             }
-            Text(item.item.title).margin({ left: 6 })
+            Text(item.item.title).margin({ left: Const.fPadding2 })
           }
         }
       }).virtualScroll()
@@ -172,6 +172,25 @@ export struct SelectDialog {
     .flexGrow(1)
     .flexShrink(1)
     .flexBasis('0%')
+  }
+
+  /**
+   * 获取对齐规则\
+   * option < 0, 对齐左边\
+   * option = 0, 对齐中间\
+   * option > 0, 对齐右边
+   */
+  protected getAligns(option: number): AlignRuleOption {
+    let item: AlignRuleOption = { center: { anchor: this._prefix + 'confirm', align: VerticalAlign.Center } };
+    if (option < 0) {
+      item.left = { anchor: '__container__', align: HorizontalAlign.Start }
+    } else if (option > 0) {
+      item.center = undefined;
+      item.right = { anchor: '__container__', align: HorizontalAlign.End }
+    } else {
+      item.middle = { anchor: '__container__', align: HorizontalAlign.Center };
+    }
+    return item
   }
 
   /** 获取选中项 */
