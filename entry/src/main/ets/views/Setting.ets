@@ -48,7 +48,7 @@ export struct VSetting {
       ],
       onConfirm: (_, items) => site.themeMode = items[0] as number
     }),
-    cornerRadius: 16
+    cornerRadius: Const.fPadding4
   });
   /** 设置分组列表 */
   settingGroups: IListGroup[] = [
@@ -130,7 +130,7 @@ export struct VSetting {
         .flexGrow(1)
         .flexShrink(1)
         .flexBasis('0%')
-        .padding({ top: 12 })
+        .padding({ top: Const.fPadding3 })
     }
     .hideTitleBar(true)
     .hideToolBar(true)

@@ -15,8 +15,6 @@ export type TItemGenerate = Callback<TItemCallback>;
 @Reusable
 @Component
 export struct SourceResultList {
-  /** 图片间距 */
-  static readonly itemGap = 10;
   /** 是大屏 */
   @Consume('isLarge')
   isLarge: boolean;
@@ -74,8 +72,8 @@ export struct SourceResultList {
           })
         }
         .columnsTemplate(`repeat(auto-fit, ${this.isLarge ? 240 : 160})`)
-        .columnsGap(SourceResultList.itemGap)
-        .rowsGap(SourceResultList.itemGap)
+        .columnsGap(Const.fPadding2)
+        .rowsGap(Const.fPadding2)
         .edgeEffect(EdgeEffect.Spring)
         .scrollBarWidth(2)
         .fadingEdge(true, { fadingEdgeLength: LengthMetrics.vp(40) })
@@ -91,7 +89,7 @@ export struct SourceResultList {
       .onRefreshing(() => this.refreshData())
     }
     .height('100%')
-    .padding({ bottom: SourceResultList.itemGap })
+    .padding({ bottom: Const.fPadding2 })
   }
 
   @Builder

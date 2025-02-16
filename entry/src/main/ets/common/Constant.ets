@@ -57,6 +57,13 @@ export class Const {
   static readonly fTextXl: Resource = $r("app.float.text_xl");
   static readonly fIconSize: Resource = $r("app.float.icon_size");
   static readonly fIconSizeLg: Resource = $r("app.float.icon_size_lg");
+  static readonly fPadding1: number = 4;
+  static readonly fPadding2: number = 8;
+  static readonly fPadding3: number = 12;
+  static readonly fPadding4: number = 16;
+  static readonly fPadding8: number = 32;
+  static readonly fImageButton: number = 40;
+  static readonly fTitleBarHeight: number = 50;
   static readonly mArrowRight: Resource = $r("sys.media.ohos_ic_public_arrow_right");
   // ----------------------------------- 资源 -----------------------------------
 }

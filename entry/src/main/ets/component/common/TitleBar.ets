@@ -37,10 +37,6 @@ export declare interface TitleBarMenuItem {
  */
 @Component
 export struct TitleBar {
-  static readonly imageHotZoneWidth = 40;
-  static readonly buttonBorderRadius = 8;
-  static readonly totalHeight = 50;
-  static readonly leftPadding = 12;
   static readonly PUBLIC_BACK: Resource = $r('sys.symbol.arrow_left');
   /** 图片项 */
   item?: TitleBarMenuItem = undefined;
@@ -78,18 +74,18 @@ export struct TitleBar {
   }
 
   build() {
-    Row({ space: TitleBar.leftPadding }) {
-      Row({ space: TitleBar.leftPadding }) {
+    Row({ space: Const.fPadding3 }) {
+      Row({ space: Const.fPadding3 }) {
         if (this.enableBack) {
           ImageButton({ item: { value: TitleBar.PUBLIC_BACK, action: this.backCall } })
         }
 
         if (this.item !== undefined) {
           Image(this.item.value)
-            .width(TitleBar.imageHotZoneWidth)
-            .height(TitleBar.imageHotZoneWidth)
+            .width(Const.fImageButton)
+            .height(Const.fImageButton)
             .focusable(false)
-            .borderRadius(TitleBar.buttonBorderRadius)
+            .borderRadius(Const.fPadding2)
         }
 
         Column() {
@@ -143,10 +139,10 @@ export struct TitleBar {
       }
     }
     .width('100%')
-    .constraintSize({ minHeight: TitleBar.totalHeight })
+    .constraintSize({ minHeight: Const.fTitleBarHeight })
     .justifyContent(FlexAlign.SpaceBetween)
     .alignSelf(ItemAlign.Stretch)
-    .padding({ left: TitleBar.leftPadding, right: TitleBar.leftPadding })
+    .padding({ left: Const.fPadding3, right: Const.fPadding3 })
     .backgroundColor(this.bgColor)
     .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP])
   }
@@ -176,7 +172,7 @@ export struct TitleBar {
 @Reusable
 @Component
 export struct ImageButton {
-  static readonly space: LengthMetrics = LengthMetrics.vp(4);
+  static readonly space: LengthMetrics = LengthMetrics.vp(Const.fPadding1);
   /** 菜单项 */
   @Prop
   item: TitleBarMenuItem;
@@ -226,9 +222,9 @@ export struct ImageButton {
         .backgroundColor(Const.cButtonNormal)
       }
     })
-    .borderRadius(this.item.label != null ? 8 : null)
-    .width(this.item.label != null ? '100%' : TitleBar.imageHotZoneWidth)
-    .height(this.item.label != null ? '100%' : TitleBar.imageHotZoneWidth)
+    .borderRadius(this.item.label != null ? Const.fPadding2 : null)
+    .width(this.item.label != null ? '100%' : Const.fImageButton)
+    .height(this.item.label != null ? '100%' : Const.fImageButton)
     .align(Alignment.Center)
     .hitTestBehavior(this.hitTest)
     .onClick(this.item.action)

@@ -28,10 +28,10 @@ export struct ListGroup {
   groups: IListGroup[] = [];
   /** ListItemGroup 之间的间距 */
   @Param
-  ListSpace?: string | number = 4;
+  ListSpace?: string | number = Const.fPadding1;
   /** ListItemGroup 之间的间距 */
   @Param
-  groupSpace?: string | number = 4;
+  groupSpace?: string | number = Const.fPadding1;
   /** 设置当前List初次加载时显示区域起始位置的item索引值 */
   @Param
   @Once
@@ -47,10 +47,10 @@ export struct ListGroup {
   dividerMargin?: Length = undefined;
   /** 列表项内边距 */
   @Param
-  itemPadding?: number | Resource = 12;
+  itemPadding?: number | Resource = Const.fPadding3;
   /** 列表项外边距 */
   @Param
-  itemMargin?: number | Resource = 8;
+  itemMargin?: number | Resource = Const.fPadding2;
   /** 强调前缀图标 */
   @Param
   accentPrefix?: boolean = undefined;
@@ -112,7 +112,7 @@ export struct ListGroup {
           .fillColor(this.accentPrefix === true ? Const.cIconOn : Const.cPrimary)
           .width(this.accentPrefix === true ? Const.fIconSizeLg : Const.fIconSize)
           .height(this.accentPrefix === true ? Const.fIconSizeLg : Const.fIconSize)
-          .padding(this.accentPrefix === true ? 4 : undefined)
+          .padding(this.accentPrefix === true ? Const.fPadding1 : undefined)
       }
 
       Column() {
@@ -147,7 +147,7 @@ export struct ListGroup {
         .fontColor(Const.cPrimary)
         .fontSize(Const.fTextSm)
         .padding({ left: this.itemPadding })
-        .margin({ top: 4, bottom: this.itemMargin })
+        .margin({ top: Const.fPadding1, bottom: this.itemMargin })
     }
   }
 }

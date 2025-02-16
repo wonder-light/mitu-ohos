@@ -1,9 +1,11 @@
 import { common } from '@kit.AbilityKit';
 import { uniformTypeDescriptor as utd } from '@kit.ArkData';
 import { systemShare } from '@kit.ShareKit';
+import { updateManager } from '@kit.StoreKit';
 import { Const } from '../../common';
 import { IListGroup, ListGroup, TitleBar, TitleBarMenuItem } from '../../component';
 import { site } from '../../helpers';
+import { Log } from '../../utils';
 
 @Builder
 export function buildAbout() {
@@ -39,7 +41,8 @@ export struct VAbout {
           subtitle: $r("app.string.version_param", site.versionName)
         },
         {
-          label: $r("app.string.check_update")
+          label: $r("app.string.check_update"),
+          action: () => this.checkUpdate()
         }
       ]
     }
@@ -52,7 +55,7 @@ export struct VAbout {
   build() {
     NavDestination() {
       TitleBar({ enableBack: true, title: $r("app.string.about"), menuItems: this.navMenus })
-      ListGroup({ groups: this.groups })
+      ListGroup({ groups: this.groups }).margin({ top: Const.fPadding3 })
     }
     .hideTitleBar(true)
     .hideToolBar(true)
@@ -67,10 +70,10 @@ export struct VAbout {
       Text($r('app.string.app_description'))
         .fontSize(Const.fTextSm)
         .fontColor(Const.cFontSecondary)
-        .margin({ top: 8 })
+        .margin({ top: Const.fPadding2 })
     }
     .alignItems(HorizontalAlign.Center)
-    .padding(12)
+    .padding(Const.fPadding3)
   }
 
   /** 分享 */
@@ -97,5 +100,17 @@ export struct VAbout {
       entities: ["entity.system.browsable"],
       uri: url
     })
+  }
+
+  /** 检查更新 */
+  async checkUpdate(): Promise<void> {
+    try {
+      let result = await updateManager.checkAppUpdate(this.ctx);
+      if (result.updateAvailable == updateManager.UpdateAvailableCode.LATER_VERSION_EXIST) {
+        await updateManager.checkAppUpdate(this.ctx);
+      }
+    } catch (e) {
+      Log.e(`checkUpdate error: ${e}`)
+    }
   }
 }

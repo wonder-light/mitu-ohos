@@ -75,7 +75,7 @@ export struct VSearch {
       ],
       onConfirm: (index, items) => this.confirmSelects(index, items)
     }),
-    cornerRadius: 16
+    cornerRadius: Const.fPadding4
   });
   /** 数据源 */
   declare private dao: BaseDao<PictureSource, number>;
@@ -141,7 +141,7 @@ export struct VSearch {
               })
           }
           .width('100%')
-          .padding({ left: 8, right: 8 })
+          .padding({ left: Const.fPadding2, right: Const.fPadding2 })
           .justifyContent(FlexAlign.SpaceBetween)
 
           Scroll() {
@@ -157,7 +157,7 @@ export struct VSearch {
             }
           }
           .flex()
-          .padding(8)
+          .padding(Const.fPadding2)
           .scrollBar(BarState.Off)
           .align(Alignment.TopStart)
         } else if (this.isLoading) {
@@ -169,7 +169,7 @@ export struct VSearch {
           SourceResultList({ dataSource: this.dataSource })
             .width('100%')
             .height('100%')
-            .margin({ top: 10 })
+            .margin({ top: Const.fPadding3 })
         }
       }
       .width('100%')

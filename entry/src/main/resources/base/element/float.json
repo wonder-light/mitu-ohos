@@ -1,10 +1,6 @@
 {
   "float": [
     {
-      "name": "page_text_font_size",
-      "value": "50fp"
-    },
-    {
       "name": "icon_size_lg",
       "value": "28"
     },
@@ -27,6 +23,22 @@
     {
       "name": "text_xl",
       "value": "20"
+    },
+    {
+      "name": "padding_1",
+      "value": "4"
+    },
+    {
+      "name": "padding_2",
+      "value": "8"
+    },
+    {
+      "name": "padding_3",
+      "value": "12"
+    },
+    {
+      "name": "padding_4",
+      "value": "16"
     }
   ]
 }

@@ -47,7 +47,7 @@ export struct VSoutu {
       options: [{ contents: () => this.getSelectContents(), selectedIndex: () => this.getSelectIndex() }],
       onConfirm: (_, items) => this.loadData(items.shift() as number | undefined)
     }),
-    cornerRadius: 16
+    cornerRadius: Const.fPadding4
   });
   /** 弹窗的选项列表 */
   private selectContents: ISheetInfo[] = [];
@@ -80,7 +80,7 @@ export struct VSoutu {
           .scrollable(true)
           .barHeight(40)
           .barMode(BarMode.Scrollable, { nonScrollableLayoutStyle: LayoutStyle.ALWAYS_AVERAGE_SPLIT })
-          .animationDuration(300)
+          .animationDuration(Const.animate.duration)
           .fadingEdge(true)
         }
       }
