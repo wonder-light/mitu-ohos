@@ -219,6 +219,40 @@ export interface IBedSource extends IBaseSource {
   imageRule?: IImageRule;
 }
 
+/**
+ * 资源颜色接口
+ */
+export interface IBaseThemeSource extends IBasicTable {
+  /** 主色调 */
+  primary?: string;
+
+  /** 标题栏、导航栏颜色 */
+  accent?: string;
+
+  /** 背景色 */
+  background?: string;
+
+  /** 激活按钮的颜色 */
+  buttonActive?: string;
+
+  /** 第一级文本颜色, 默认文本及标题等等 */
+  font?: string;
+
+  /** 次要文本颜色, 子标题等等 */
+  fontSecondary?: string;
+
+  /** 图标的反转颜色, 用于彩色背景 */
+  iconOn?: string;
+
+  /** 字体的反转颜色, 用于彩色背景 */
+  fontOn?: string;
+
+  /** 按钮的分割线颜色 */
+  buttonDivider?: string;
+
+  /** 点击按钮时的喷溅颜色 */
+  buttonNormal?: string;
+}
 
 /**
  * 阶段接口

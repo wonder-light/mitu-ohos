@@ -79,5 +79,7 @@ export class Const {
   static readonly tImageRule: string = 'ImageRule';
   /** 图源搜索规则 */
   static readonly tSearchRule: string = 'SearchRule';
+  /** 主题源 */
+  static readonly tThemeSource: string = 'ThemeSource';
   // ----------------------------------- 数据库表 -----------------------------------
 }

@@ -131,10 +131,10 @@ export struct VSearch {
           Row() {
             Text($r("app.string.search_history"))
               .fontSize(Const.fTextXs)
-              .fontColor(Const.cButtonDivider)
+              .fontColor(Const.cFontSecondary)
             Button($r("app.string.clear"), { buttonStyle: ButtonStyleMode.TEXTUAL, controlSize: ControlSize.SMALL })
               .fontSize(Const.fTextXs)
-              .fontColor(Const.cButtonDivider)
+              .fontColor(Const.cFontSecondary)
               .onClick(() => {
                 this.histories.splice(0, this.histories.length);
                 this.clearHistory = !this.clearHistory;

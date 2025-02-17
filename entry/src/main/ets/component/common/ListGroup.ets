@@ -86,12 +86,12 @@ export struct ListGroup {
         }
         .width('100%')
         .borderWidth(0.5)
-        .borderColor(Const.cButtonNormal)
+        .borderColor(Const.cButtonDivider)
         .shadow({ color: Const.cButtonNormal, radius: this.itemPadding })
         .backgroundColor(Color.Transparent)
         .divider({
           strokeWidth: this.dividerWidth,
-          color: Const.cButtonNormal,
+          color: Const.cButtonDivider,
           startMargin: this.dividerMargin,
           endMargin: this.dividerMargin
         })
