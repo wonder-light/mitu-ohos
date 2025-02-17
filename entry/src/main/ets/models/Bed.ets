@@ -1,6 +1,6 @@
 import { Entity, ToOne } from '@ohos/dataorm';
-import { IBedSource } from '../common';
-import { BaseSource } from './Base';
+import { Const, IBedSource } from '../common';
+import { BaseSource } from './BaseSource';
 import { AlbumRule } from './rule/Album';
 import { ImageRule } from './rule/Image';
 
@@ -8,7 +8,7 @@ import { ImageRule } from './rule/Image';
  * 图床源
  */
 @Observed
-@Entity('BedSource')
+@Entity(Const.tBedSource)
 export class BedSource extends BaseSource implements IBedSource {
   @ToOne({ joinProperty: 'id', targetObj: AlbumRule })
   albumRule: AlbumRule;

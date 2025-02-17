@@ -1,12 +1,12 @@
 import { Columns, ColumnType, Entity } from '@ohos/dataorm';
-import { IAlbumRule } from '../../common';
+import { Const, IAlbumRule } from '../../common';
 import { BasicTable } from '../Base';
 
 /**
  * 相册规则
  */
 @Observed
-@Entity('AlbumRule')
+@Entity(Const.tAlbumRule)
 export class AlbumRule extends BasicTable implements IAlbumRule {
   @Columns({ columnName: 'listRule', types: ColumnType.str })
   listRule: string;

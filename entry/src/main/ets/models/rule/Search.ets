@@ -1,4 +1,5 @@
 import { Columns, ColumnType, Entity } from '@ohos/dataorm';
+import { Const } from '../../common';
 import { ISearchRule } from '../../common/Interface';
 import { BasicTable } from '../Base';
 
@@ -6,7 +7,7 @@ import { BasicTable } from '../Base';
  * 图源搜索规则
  */
 @Observed
-@Entity('SearchRule')
+@Entity(Const.tSearchRule)
 export class SearchRule extends BasicTable implements ISearchRule {
   @Columns({ columnName: 'urlRule', types: ColumnType.str })
   urlRule: string;

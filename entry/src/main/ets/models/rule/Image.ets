@@ -1,12 +1,12 @@
 import { Columns, ColumnType, Entity } from '@ohos/dataorm';
-import { IImageRule } from '../../common';
+import { Const, IImageRule } from '../../common';
 import { BasicTable } from '../Base';
 
 /**
  * 图片规则
  */
 @Observed
-@Entity('ImageRule')
+@Entity(Const.tImageRule)
 export class ImageRule extends BasicTable implements IImageRule {
   @Columns({ columnName: 'listRule', types: ColumnType.str })
   listRule: string;

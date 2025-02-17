@@ -66,4 +66,18 @@ export class Const {
   static readonly fTitleBarHeight: number = 50;
   static readonly mArrowRight: Resource = $r("sys.media.ohos_ic_public_arrow_right");
   // ----------------------------------- 资源 -----------------------------------
+  // ----------------------------------- 数据库表 -----------------------------------
+  /** 图片源 */
+  static readonly tPictureSource: string = 'PictureSource';
+  /** 图床源 */
+  static readonly tBedSource: string = 'BedSource';
+  /** 相册规则 */
+  static readonly tAlbumRule: string = 'AlbumRule';
+  /** 图源发现规则 */
+  static readonly tDiscoverRule: string = 'DiscoverRule';
+  /** 图片规则 */
+  static readonly tImageRule: string = 'ImageRule';
+  /** 图源搜索规则 */
+  static readonly tSearchRule: string = 'SearchRule';
+  // ----------------------------------- 数据库表 -----------------------------------
 }
