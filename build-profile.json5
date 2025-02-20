@@ -40,6 +40,10 @@
     {
       "name": "dataorm",
       "srcPath": "./dataorm",
+    },
+    {
+      "name": "utils",
+      "srcPath": "./utils",
     }
   ]
 }
