@@ -42,6 +42,8 @@ export class BaseSource extends BasicTable implements IBaseSource {
   respondTime: number;
   @Columns({ columnName: 'enabledCookie', types: ColumnType.real })
   enabledCookie: boolean;
+  @Columns({ columnName: 'cookieJar', types: ColumnType.real })
+  cookieJar: string;
   @Columns({ columnName: 'concurrentRate', types: ColumnType.str })
   concurrentRate: string;
   @Columns({ columnName: 'header', types: ColumnType.str })
@@ -74,6 +76,7 @@ export class BaseSource extends BasicTable implements IBaseSource {
     this.isHide = item?.isHide ?? false;
     this.respondTime = item?.respondTime ?? -1;
     this.enabledCookie = item?.enabledCookie ?? true;
+    this.cookieJar = item?.cookieJar ?? '';
     this.concurrentRate = item?.concurrentRate ?? '';
     this.header = item?.header ?? '';
     this.decodeJs = item?.decodeJs ?? '';

@@ -41,6 +41,8 @@ export class Const {
   static readonly animate: AnimateParam = { duration: 200, curve: Curve.Ease };
   /** 动画参数 */
   static readonly animate3: AnimateParam = { duration: 300, curve: Curve.Ease };
+  /** 设置web的共享渲染进程令牌 */
+  static readonly webToken: string = 'webSharedRenderProcessToken';
   // ----------------------------------- 参数 -----------------------------------
   // ----------------------------------- 资源 -----------------------------------
   static readonly cFont: Resource = $r('app.color.font');

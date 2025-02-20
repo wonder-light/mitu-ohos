@@ -10,7 +10,7 @@ import { Const, IDiscoverRule, INavTransition, ISearchRule, IStage } from '../co
 import { BedSource, PictureSource } from '../models';
 import { Log } from '../utils';
 import { DbHelper } from './Database';
-import { JsBridge } from './Js';
+import { EtsBridge, JsBridge } from './Js';
 
 /**
  * 站点基础
@@ -150,6 +150,14 @@ class WebSiteManage extends SiteNavManage {
     return this._web;
   }
 
+  /** 注册在 ETS 中调用的函数 */
+  protected declare _js: JsBridge;
+
+  /** 注册在 ETS 中调用的函数 */
+  public get js(): JsBridge {
+    return this._js;
+  }
+
   public initState(context: Context): void {
     super.initState(context);
     // 初始化 webview
@@ -159,7 +167,9 @@ class WebSiteManage extends SiteNavManage {
     // 初始化 webview 代理
     this._web = WebViewControllerProxy.createController();
     // 添加 JSBridge
-    this._web.addJavascriptObject(new JsBridge(), 'ets');
+    this._web.addJavascriptObject(new EtsBridge(), 'ets');
+    // 初始化 webview 事件
+    this._js = new JsBridge();
     // 异常
     this._web.setGlobalErrorMessageListener((error: string) => {
       Log.setPrefix('webview');

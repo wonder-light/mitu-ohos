@@ -147,6 +147,9 @@ export interface IBaseSource extends IBasicTable {
   /** 启用 ok http Cookie Jar 自动保存每次请求的 cookie */
   enabledCookie?: boolean;
 
+  /** http Cookie Jar */
+  cookieJar?: string;
+
   /** 并发率 */
   concurrentRate?: string;
 
