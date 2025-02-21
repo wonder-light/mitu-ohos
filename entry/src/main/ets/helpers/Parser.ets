@@ -1,6 +1,7 @@
 import { collections, lang } from '@kit.ArkTS';
-import { site, task } from '.';
-import { Log } from '../utils';
+import { TAny, TRecord } from '../common';
+import { site } from './Site';
+import { task } from './Task';
 
 'use shared'
 
@@ -24,7 +25,7 @@ class ParserType implements lang.ISendable {
   ]);
 
   /** 一个布尔值，指示具有指定值的元素是否存在于集合中*/
-  public has(type: string) {
+  public has(type: string): boolean {
     return this.ruleSet.has(type);
   }
 }
@@ -57,7 +58,7 @@ export class Parser implements lang.ISendable {
    * @param context 上下文
    * @returns
    */
-  public async parseUrl(rule: string, context: Record<string, Object>): Promise<string> {
+  public async parseUrl(rule: string, context: TRecord): Promise<string> {
     return this.parse(rule, context, this.types.url);
   }
 
@@ -67,7 +68,7 @@ export class Parser implements lang.ISendable {
    * @param context 上下文
    * @returns
    */
-  public async parseXpath(rule: string, context: Record<string, Object>): Promise<string> {
+  public async parseXpath(rule: string, context: TRecord): Promise<string> {
     return this.parse(rule, context, this.types.xpath);
   }
 
@@ -77,7 +78,7 @@ export class Parser implements lang.ISendable {
    * @param context 上下文
    * @returns
    */
-  public async parseJsonpath(rule: string, context: Record<string, Object>): Promise<string> {
+  public async parseJsonpath(rule: string, context: TRecord): Promise<string> {
     return this.parse(rule, context, this.types.json);
   }
 
@@ -87,7 +88,7 @@ export class Parser implements lang.ISendable {
    * @param context 上下文
    * @returns
    */
-  public async parseJs(rule: string, context: Record<string, Object>): Promise<string> {
+  public async parseJs(rule: string, context: TRecord): Promise<string> {
     return this.parse(rule, context, this.types.js);
   }
 
@@ -97,7 +98,7 @@ export class Parser implements lang.ISendable {
    * @param context 上下文
    * @returns
    */
-  public async parse(rule: string, context: Record<string, Object>, defaultParse?: string): Promise<string> {
+  public async parse(rule: string, context: TRecord, defaultParse?: string): Promise<string> {
     // 替换插值变量 {{_}}
     let replacer = (match: string, key: string): string => {
       try {
@@ -109,7 +110,6 @@ export class Parser implements lang.ISendable {
     // 按照类型分割段落
     const rules = rule.split(/$^([\r\n]+\s*)+/g);
     for (let item of rules) {
-      Log.d('rule: ', item);
       // 替换插值变量 {{_}}
       item = item.replace(/\{\{(.*?)\}\}/g, replacer);
       // 获取规则类型
@@ -146,31 +146,41 @@ export class Parser implements lang.ISendable {
    * @returns
    * @implements
    */
-  protected async parseUrlImpl(rule: string, context: Record<string, Object>): Promise<string> {
+  protected async parseUrlImpl(rule: string, context: TRecord): Promise<TRecord> {
     let items = rule.trim().replace(/,\s*(?=\{)/, '@@@@').split('@@@@')
-    let url = items[0];
-    let options: Record<string, Object>;
+    // 选项
+    let options: TRecord = {};
     try {
-      options = JSON.parse(items[1]) ?? {};
-    } catch (e) {
-      options = {};
-    }
+      let value: TAny = JSON.parse(items[1]);
+      if (typeof value === 'object') {
+        options = value;
+      }
+    } catch (e) { }
+    // URL
+    let url = items[0];
     if (url.endsWith(',')) url = url.substring(0, url.length - 1);
+    // http
     let response = await task.get(url, options);
-
-    return 'parseUrl'
+    if (response.responseCode < 400) {
+      // 结果类型为 string | Object | ArrayBuffer
+      context.result = response.result;
+    } else {
+      throw new Error(`请求 URL 失败, 响应代码: ${response.responseCode}, 结果: ${response.result}`);
+    }
+    return context;
   }
 
   /**
    * 解析 XPath 规则
    * @param rule 规则
    * @param context 上下文
+   * @param isHtml 解析的结果是否尽可能的返回 HTML 字符串
    * @returns
    * @implements
    */
-  protected async parseXpathImpl(rule: string, context: Record<string, Object>): Promise<string> {
-    Log.d('rule Xpath: ');
-    return 'parseUrl'
+  protected async parseXpathImpl(rule: string, context: TRecord, isHtml: boolean = false): Promise<TRecord> {
+    context.result = await site.js.htmlPath(context.result as string, rule, isHtml);
+    return context
   }
 
   /**
@@ -180,9 +190,9 @@ export class Parser implements lang.ISendable {
    * @returns
    * @implements
    */
-  protected async parseJsonpathImpl(rule: string, context: Record<string, Object>): Promise<string> {
-    Log.d('rule Jsonpath: ');
-    return 'parseUrl'
+  protected async parseJsonpathImpl(rule: string, context: TRecord): Promise<TRecord> {
+    context.result = await site.js.jsonPath(context.result, rule);
+    return context
   }
 
   /**
@@ -192,15 +202,12 @@ export class Parser implements lang.ISendable {
    * @returns
    * @implements
    */
-  protected async parseJsImpl(rule: string, context: Record<string, Object>): Promise<string> {
-    try {
-      let value = await site.js.exeEval(rule, context) as Object;
-      Log.d('rule javascript: ', JSON.stringify(value));
-      //let value = await site.web.runJavaScript(`eval(${rule})`);
-    } catch (e) {
-      Log.e('rule javascript: ', JSON.stringify(e, null, 2));
-    }
-    return 'parseUrl'
+  protected async parseJsImpl(rule: string, context: TRecord): Promise<TRecord> {
+    // 执行 js 代码
+    let value = await site.js.exeEval(rule, context) as Object;
+    context.result = value;
+    //let value = await site.web.runJavaScript(`eval(${rule})`);
+    return context;
   }
 }
 

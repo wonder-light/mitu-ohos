@@ -21,3 +21,5 @@ export type TParserCallback<T> = AsyncCallback2<string, Record<string, Object>, 
 export type TAny = any;
 
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'HEAD' | 'OPTIONS' | 'CONNECT' | 'TRACE';
+
+export type TRecord = Record<string, Object>;
