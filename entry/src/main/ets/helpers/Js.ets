@@ -72,4 +72,24 @@ export class JsBridge {
       })
     });
   }
+
+  /** JSONPath 解析 */
+  public async jsonPath(json: Object, path: string): Promise<Object> {
+    return await new Promise<TAny>((resolve, reject) => {
+      site.web.callJs('js.jsonPath', [json, path], (result: TAny) => {
+        if (JsBridge.isError(result)) return reject(result);
+        resolve(result);
+      })
+    });
+  }
+
+  /** HTMLPath 解析 */
+  public async htmlPath(html: string, path: string, isHtml: boolean): Promise<string[]> {
+    return await new Promise<TAny>((resolve, reject) => {
+      site.web.callJs('js.htmlPath', [html, path, isHtml], (result: TAny) => {
+        if (JsBridge.isError(result)) return reject(result);
+        resolve(result);
+      })
+    });
+  }
 }
